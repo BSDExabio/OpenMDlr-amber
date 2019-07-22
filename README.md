@@ -20,24 +20,18 @@ BioPython: https://biopython.org (specifically Bio.PDB)
 
 
 **To Run:**
-
 Download and Install reqs
-
 Make directory for desired protein with the four letter name, put FASTA/seq file and original pdb (for comparison and restraints generation) inside
 
-**For one run:**
+    **For one run:**
+    Edit pipeline_script with desired parameters
+    Run
 
-Edit pipeline_script with desired parameters
-
-Run
-
-**For multiple runs:**
-
-Edit make_runs w/desired parameters
-
-Make sure correct lines in pipeline_script are (un)commented annealing_script can be almost directly copied to a pbs script
-
-Run
+    **For multiple runs:**
+    Edit make_runs w/desired parameters
+    Make sure correct lines in pipeline_script are (un)commented
+    annealing_script can be almost directly copied to a pbs script
+    Run
 
 **References:**
 D.A. Case, I.Y. Ben-Shalom, S.R. Brozell, D.S. Cerutti, T.E. Cheatham, III, V.W.D. Cruzeiro, T.A. Darden, R.E. Duke, D. Ghoreishi, M.K. Gilson, H. Gohlke, A.W. Goetz, D. Greene, R Harris, N. Homeyer, S. Izadi, A. Kovalenko, T. Kurtzman, T.S. Lee, S. LeGrand, P. Li, C. Lin, J. Liu, T. Luchko, R. Luo, D.J. Mermelstein, K.M. Merz, Y. Miao, G. Monard, C. Nguyen, H. Nguyen, I. Omelyan, A. Onufriev, F. Pan, R. Qi, D.R. Roe, A. Roitberg, C. Sagui, S. Schott-Verdugo, J. Shen, C.L. Simmerling, J. Smith, R. Salomon-Ferrer, J. Swails, R.C. Walker, J. Wang, H. Wei, R.M. Wolf, X. Wu, L. Xiao, D.M. York and P.A. Kollman, AMBER 2018. University of California, San Francisco (2018).
