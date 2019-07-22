@@ -5,7 +5,7 @@ Input: amino acid sequence as a FASTA or txt file
 
 Output: folded protein in pdb file
 
-<b>Reqs:<b>
+Reqs:
 AmberTools: http://ambermd.org/GetAmber.php
 TMScore: https://zhanglab.ccmb.med.umich.edu/TM-score/
 Python3
