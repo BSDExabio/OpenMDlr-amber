@@ -12,9 +12,9 @@ cp NAME.pdb SUB/NAME.pdb
 cd SUB
 
 
-python ../../pl.7.2.py ../fasta "NAME"
+python ../../amber_setup.py ../fasta "NAME"
 
-python ../../getRST.py "NAME" ANGRST DISTRST
+python ../../get_rst.py "NAME" ANGRST DISTRST
 
 makeDIST_RST -ual 8col.dist -pdb linear.pdb -rst RST.dist
 
@@ -27,7 +27,7 @@ sed -i 's/rk2=20.0, rk3=20.0/rk2=DISTFORCERST1, rk3=DISTFORCERST1/g' RST.dist
 cat RST.dist RST.angles > RST
 
 #min
-mpirun -np 4 sander -O -i ../../min1.in -o min.out -p prmtop -c rst7 -r min.ncrst
+mpirun -np 4 sander -O -i ../../min.in -o min.out -p prmtop -c rst7 -r min.ncrst
 
 #cycle1
 mpirun -np 4 sander -O -i ../../siman.in -p prmtop -c min.ncrst -r siman1.ncrst -o siman1.out -x siman1.nc
