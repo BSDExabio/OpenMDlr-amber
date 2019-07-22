@@ -17,12 +17,12 @@ Download and Install reqs
 Make directory for desired protein with the four letter name, put FASTA/seq file and original pdb (for comparison and restraints generation) inside
 
 For one run:
-Edit annealing_script with desired parameters
+Edit pipeline_script with desired parameters
 Run
 
 For multiple runs:
 Edit make_runs w/desired parameters
-Make sure correct lines in annealing_script are (un)commented annealing_script can be almost directly copied to a pbs script
+Make sure correct lines in pipeline_script are (un)commented annealing_script can be almost directly copied to a pbs script
 Run
 
 References:
