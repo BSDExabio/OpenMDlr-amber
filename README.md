@@ -9,15 +9,10 @@ Pipeline for protein folding using distance and torsion restraints from an amino
 
 
 **Reqs:**
-
-AmberTools: http://ambermd.org/GetAmber.php
-
-TMScore: https://zhanglab.ccmb.med.umich.edu/TM-score/
-
-Python3
-
-BioPython: https://biopython.org (specifically Bio.PDB)
-
+1. AmberTools: http://ambermd.org/GetAmber.php
+2. TMScore: https://zhanglab.ccmb.med.umich.edu/TM-score/
+3. Python3
+4. BioPython: https://biopython.org (specifically Bio.PDB)
 
 **To Run:**
 1. Download and Install reqs
@@ -34,6 +29,7 @@ BioPython: https://biopython.org (specifically Bio.PDB)
 3. Run
 
 **References:**
+
 D.A. Case, I.Y. Ben-Shalom, S.R. Brozell, D.S. Cerutti, T.E. Cheatham, III, V.W.D. Cruzeiro, T.A. Darden, R.E. Duke, D. Ghoreishi, M.K. Gilson, H. Gohlke, A.W. Goetz, D. Greene, R Harris, N. Homeyer, S. Izadi, A. Kovalenko, T. Kurtzman, T.S. Lee, S. LeGrand, P. Li, C. Lin, J. Liu, T. Luchko, R. Luo, D.J. Mermelstein, K.M. Merz, Y. Miao, G. Monard, C. Nguyen, H. Nguyen, I. Omelyan, A. Onufriev, F. Pan, R. Qi, D.R. Roe, A. Roitberg, C. Sagui, S. Schott-Verdugo, J. Shen, C.L. Simmerling, J. Smith, R. Salomon-Ferrer, J. Swails, R.C. Walker, J. Wang, H. Wei, R.M. Wolf, X. Wu, L. Xiao, D.M. York and P.A. Kollman, AMBER 2018. University of California, San Francisco (2018).
 
 
