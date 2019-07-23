@@ -22,12 +22,10 @@ BioPython: https://biopython.org (specifically Bio.PDB)
 **To Run:**
 1. Download and Install reqs
 2. Make directory for desired protein with the four letter name, put FASTA/seq file and original pdb (for comparison and restraints generation) inside
-
-**A. For one run:**
+**For one run:**
 3. Edit pipeline_script with desired parameters
 4. Run
-
-**B. For multiple runs:**
+**For multiple runs:**
 3. Edit make_runs w/desired parameters
 4. Make sure correct lines in pipeline_script are (un)commented
 4a. pipeline_script can be almost directly copied to a pbs script
