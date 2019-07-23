@@ -1,12 +1,9 @@
 # ProteinFoldingPipeline
 Pipeline for protein folding using distance and torsion restraints from an amino acid sequence; AmberTools18 wrapped in Python
 
-
 **Input:** amino acid sequence as a FASTA or txt file
 
-
-**Output:** folded protein in pdb file
-
+**Output:** folded protein in pdb file, scores txt file with RMSD, TMscore, angle comparison information
 
 **Reqs:**
 1. AmberTools: http://ambermd.org/GetAmber.php
