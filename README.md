@@ -1,5 +1,5 @@
 # ProteinFoldingPipeline
-Pipeline for protein folding using distance and torsion restraints from an amino acid sequence; AmberTools18 wrapped in Python
+Pipeline for protein folding using only simulated annealing, distance and torsion restraints; works from an amino acid sequence; AmberTools18 wrapped in Python
 
 **Input:** amino acid sequence as a FASTA or txt file, restraints info from txt file
 
@@ -13,27 +13,26 @@ For example:
     3   PHE   CB    15    GLY   CA    9.4     11.6
     etc
 
-**Output:** folded protein in pdb file, scores txt file with RMSD, TMscore, angle comparison information
+I used make_rst.py to make restraints. The file uses BioPython and should be easy to modify and use if you are making restraints from an original pdb file.
 
-**Reqs:**
+**Output:** folded protein in pdb file
+
+**Pre-Reqs:**
 1. AmberTools: http://ambermd.org/GetAmber.php
-2. TMScore: https://zhanglab.ccmb.med.umich.edu/TM-score/
 3. Python3
 4. BioPython: https://biopython.org (specifically Bio.PDB)
 
 **To Run:**
 1. Download and Install reqs
-2. Make directory for desired protein with the four letter name, put FASTA/seq file and original pdb (for comparison and restraints generation) inside
+    code examples
+2. Make Restraints 8 column file
+3. Run pipeline.py
 
-**For one run:**
-1. Edit pipeline_script with desired parameters
-2. Run
-
-**For multiple runs:**
-1. Edit make_runs w/desired parameters
-2. Make sure correct lines in pipeline_script are (un)commented
-2a. pipeline_script can be almost directly copied to a pbs script
-3. Run
+**Optional Scripts:**
+1. MULT RUNS
+2. SCORES + TMSCORE
+3. METRICS
+4. MAKE RST
 
 **References:**
 
