@@ -10,6 +10,8 @@ atom1_residue_number (int), atom1_residue_name, atom1_name, atom2_residue_number
 For example:
 
     2   MET   CB    41    ALA   CB    3.81    5.81
+    3   PHE   CB    15    GLY   CA    9.4     11.6
+    etc
 
 **Output:** folded protein in pdb file, scores txt file with RMSD, TMscore, angle comparison information
 
