@@ -5,7 +5,7 @@ Pipeline for protein folding using distance and torsion restraints from an amino
 
 Restraints File should be formatted as a list of restraints, with the following columns:
 
-atom1_residue_number (int), atom1_residue_name, atom1_name, atom2_residue_number (int), atom2_residue_name , atom2_name, lower_bound_distance (float), upper_bound_distance (float)
+atom1_residue_number (int), atom1_residue_name, atom1_name, atom2_residue_number (int), atom2_residue_name, atom2_name, lower_bound_distance (float), upper_bound_distance (float)
 
 For example:
 
