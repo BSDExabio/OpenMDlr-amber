@@ -1,7 +1,15 @@
 # ProteinFoldingPipeline
 Pipeline for protein folding using distance and torsion restraints from an amino acid sequence; AmberTools18 wrapped in Python
 
-**Input:** amino acid sequence as a FASTA or txt file
+**Input:** amino acid sequence as a FASTA or txt file, restraints info from txt file
+
+Restraints File should be formatted as a list of restraints, like so:
+
+atom1_residue_number (int)     atom1_residue_name     atom1_name     atom2_residue_number (int)     atom2_residue_name     atom2_name     lower_bound_distance (float)    upper_bound_distance (float)
+
+For example:
+
+2     MET     CB     41     ALA     CB     3.81     5.81
 
 **Output:** folded protein in pdb file, scores txt file with RMSD, TMscore, angle comparison information
 
