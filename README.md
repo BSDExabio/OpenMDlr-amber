@@ -1,7 +1,34 @@
 # ProteinFoldingPipeline
 Pipeline for protein folding using only simulated annealing, distance and torsion restraints; works from an amino acid sequence; AmberTools18 wrapped in Python
 
-**Input:** amino acid sequence as a FASTA or txt file, restraints info from txt file
+**Pre-Reqs:**
+1. Python (3 or later, though you can probably modify the code to work with 2) (https://www.python.org)
+2. AmberTools: http://ambermd.org/GetAmber.php. <br/>
+For a simple-to-install, non parallelized version, you can used conda (Miniconda: https://docs.conda.io/en/latest/miniconda.html):
+```
+conda install ambertools=19 -c ambermd
+conda install numpy
+```
+
+3. BioPython: https://biopython.org <br/>
+If you have pip, you can do:
+```
+pip install biopython
+```
+
+**To Run:**
+1. Download and Install Required programs
+2. Make Restraints 8 column file (format below)
+3. Run fold_protein.py:
+```
+python fold_protein <fasta> <name string> <restraints file> <force constant> <# cycles simulated annealing>
+```
+
+**Input:**
+
+1. FASTA file (or txt file) with the sequence in single letters (i.e., "NLYIQWLKDGGPSSGRPPPS")
+2. name of the protein as a string (used for output files)
+3. Restraints list in 8 col file:
 
 Restraints File should be formatted as a list of restraints, with the following columns:
 
@@ -13,32 +40,24 @@ For example:
     3   PHE   CB    15    GLY   CA    9.4     11.6
     etc
 
-I used make_rst.py to make restraints. The file uses BioPython and should be easy to modify and use if you are making restraints from an original pdb file. Feel free to create your restraints list in other ways
+I used make_rst.py to make restraints. The file uses BioPython and should be easy to modify and use if you are making restraints from an original pdb file. Feel free to create your restraints list in other ways.
+
+4. Force Constant for the restraints as a float (in kcal/mol·Angstroms)
+
+5. Number of simulated annealing cycles to run (int)
 
 **Output:** folded protein in pdb file
 
-**Pre-Reqs:**
-1. Python3
-2. AmberTools: http://ambermd.org/GetAmber.php
-For a simple-to-install, non parallelized version, you can used conda (Miniconda: https://docs.conda.io/en/latest/miniconda.html):
-```
-conda install ambertools=19 -c ambermd
-conda install numpy
-```
-
-3. BioPython: https://biopython.org (specifically Bio.PDB)
-
-**To Run:**
-1. Download and Install Required programs
-    
-2. Make Restraints 8 column file
-3. Run pipeline.py
-
 **Optional Scripts:**
-1. MULT RUNS
-2. SCORES + TMSCORE
+1. make_rst.py
+```
+python make_rst.py <name of pdb file without the .pdb extension> <# Angstroms above/below range midpoint (float)>
+```
+2. scores.py <br/>
+If you want RMSD and TMScores, the TMScore program () will produce both, and scores.py will parse the info and put it in a seperate file for you.
+```
+```
 3. METRICS
-4. MAKE RST
 
 **References:**
 
