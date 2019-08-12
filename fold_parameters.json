@@ -1,0 +1,10 @@
+{
+        "name": "1aki",
+        "fasta": "1aki.fasta",
+        "distanceRstFile": "8col.dist",
+        "angleRstFile": "5col.angles",
+        "distanceForce": [70.0, 70.0, 70.0],
+        "angleForce": [70.0, 70.0, 70.0],
+        "cycles": 3
+
+}
