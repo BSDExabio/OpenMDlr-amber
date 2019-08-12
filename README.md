@@ -19,19 +19,19 @@ pip install biopython
 **To Run WITH your own restriants (SUGGESTED):**
 1. Download and Install Required programs
 2. Pull Branch
-3. Make FASTA/txt file and 8 column restraints file (format below)
+3. Make FASTA/txt file, 8 column distance restraints file (format below), and 5 column torsion restraints file (format below)
 4. Run fold_protein.py:
 ```
-python fold_protein.py <fasta> <name string> <restraints file> <force constant> <# cycles simulated annealing>
+python fold_protein.py <fasta> <name string> <distance restraints file> <distance force constant> <torsion restraints file> <torsion force constant> <# cycles simulated annealing>
 ```
 
 **Input:**
 
 1. FASTA file (or txt file) with the sequence in single letters (i.e., "NLYIQWLKDGGPSSGRPPPS")
 2. name of the protein as a string (used for output files)
-3. Restraints list in 8 col file:
+3. Distance Restraints list in 8 col file:
 
-Restraints File should be formatted as a list of restraints, with the following columns:
+Distance Restraints File should be formatted as a list of restraints, with the following columns:
 
 atom1_residue_number (int), atom1_residue_name, atom1_name, atom2_residue_number (int), atom2_residue_name, atom2_name, lower_bound_distance (float), upper_bound_distance (float)
 
@@ -43,8 +43,24 @@ For example:
 
 I used make_rst.py to make restraints. The file uses BioPython and should be easy to modify and use if you are making restraints from an original pdb file. Feel free to create your restraints list in other ways.
 
-4. Force Constant for the restraints as a float (in kcal/mol·Angstroms)
-5. Number of simulated annealing cycles to run (int)
+4. Force Constant for the distance restraints as a float (in kcal/mol·Angstroms)
+5. Torsion Restraints list in 5 col file:
+
+Similar to Above, the columns are:
+
+residue_number (int), residue_name, angle_name, lower_bound (float), upper_bound (float)
+
+For example:
+```
+1    LYS    PSI    138.7    140.7
+2    VAL    PHI    -103.7    -101.7
+2    VAL    PSI    113.4    115.4
+3    PHE    PHI    -76.1    -74.1
+etc
+```
+
+6. Force Constant for the torsion restraints as a float (in in 70 kcal/mol·rad) 
+7. Number of simulated annealing cycles to run (int)
 
 **Output:** folded protein in pdb file
 
