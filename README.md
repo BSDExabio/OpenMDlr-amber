@@ -42,24 +42,26 @@ pip install biopython
 >7. Number of simulated annealing cycles to run (int)
 
 **Distance Restraints Format:**
-Distance Restraints File should be formatted as a list of restraints, with the following 8 columns:
 
-atom1_residue_number (int), atom1_residue_name, atom1_name, atom2_residue_number (int), atom2_residue_name, atom2_name, lower_bound_distance (float), upper_bound_distance (float)
+>Distance Restraints File should be formatted as a list of restraints, with the following 8 columns:
 
-For example:
+>atom1_residue_number (int), atom1_residue_name, atom1_name, atom2_residue_number (int), atom2_residue_name, atom2_name, lower_bound_distance (float), upper_bound_distance (float)
+
+>For example:
 
     2   MET   CB    41    ALA   CB    3.81    5.81
     3   PHE   CB    15    GLY   CA    9.4     11.6
     etc
 
-I used make_rst.py to make restraints. The file uses BioPython and should be easy to modify and use if you are making restraints from an original pdb file. Feel free to create your restraints list in other ways.
+>I used make_rst.py to make restraints. The file uses BioPython and should be easy to modify and use if you are making restraints from an original pdb file. Feel free to create your restraints list in other ways.
 
 **Torsion Restraints Format:**
-Similar to Above, but there are 5 columns:
 
-residue_number (int), residue_name, angle_name, lower_bound (float), upper_bound (float)
+>Similar to Above, but there are 5 columns:
 
-For example:
+>residue_number (int), residue_name, angle_name, lower_bound (float), upper_bound (float)
+
+>For example:
 ```
 1    LYS    PSI    138.7    140.7
 2    VAL    PHI    -103.7    -101.7
@@ -71,15 +73,15 @@ etc
 **Output:** folded protein in pdb file
 
 **Optional Scripts:**
-1. make_rst.py
+>1. make_rst.py
 ```
 python make_rst.py <name of pdb file without the .pdb extension> <# Angstroms above/below range midpoint (float)>
 ```
-2. scores.py <br/>
-If you want RMSD and TMScores, the TMScore program () will produce both, and scores.py will parse the info and put it in a seperate file for you.
+>2. scores.py <br/>
+>If you want RMSD and TMScores, the TMScore program () will produce both, and scores.py will parse the info and put it in a seperate file for you.
 ```
 ```
-3. METRICS
+>3. METRICS
 
 **References:**
 
