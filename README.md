@@ -16,16 +16,14 @@ If you have pip, you can do:
 pip install biopython
 ```
 
-**To Run WITH your own restriants (SUGGESTED):**
+**To Run:**
 1. Download and Install Required programs
 2. Pull Branch
 3. Make FASTA/txt file, 8 column distance restraints file (format below), and 5 column torsion restraints file (format below)
-4. Run fold_protein.py:
-```
-python fold_protein.py <fasta> <name string> <distance restraints file> <distance force constant> <torsion restraints file> <torsion force constant> <# cycles simulated annealing>
-```
+4. Put your parameters into fold_parameters.json (explaination below)
+4. Run fold_protein.py
 
-**Input:**
+**Input to the Program (fold_parameters.json):**
 
 1. FASTA file (or txt file) with the sequence in single letters (i.e., "NLYIQWLKDGGPSSGRPPPS")
 2. name of the protein as a string (used for output files)
@@ -63,16 +61,6 @@ etc
 7. Number of simulated annealing cycles to run (int)
 
 **Output:** folded protein in pdb file
-
-**To Run WITHOUT your own restriants:**
-1. Download and Install Required programs
-2. Pull Branch
-3. Make/Download FASTA/txt file
-4. Download original pdb file to pull restraints from
-5. Run automate_pipeline.py:
-```
-python automate_pipeline.py <fasta> <name string (MUST match name on pdb file)> <Angrstoms for restraint range (float)> <force constant> <# cycles simulated annealing>
-```
 
 **Optional Scripts:**
 1. make_rst.py
