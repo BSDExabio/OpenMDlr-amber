@@ -20,8 +20,11 @@ pip install biopython
 1. Download and Install Required programs
 2. Pull Branch
 3. Make FASTA/txt file, 8 column distance restraints file (format below), and 5 column torsion restraints file (format below)
-4. Put your parameters into fold_parameters.json (explaination below)
-5. Run fold_protein.py
+4. Edit fold_parameters.json with your parameters (explaination below)
+5. Run fold_protein.py:
+```
+python fold_protein.py
+```
 
 **Input to the Program:**
 
