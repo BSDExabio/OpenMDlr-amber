@@ -15,15 +15,6 @@ If you have pip, you can do:
 ```
 pip install biopython
 ```
-**To Run WITHOUT your own restriants:**
-1. Download and Install Required programs
-2. Pull Branch
-3. Make/Download FASTA/txt file
-4. Download original pdb file to pull restraints from
-5. Run automate_pipeline.py:
-```
-python automate_pipeline.py <fasta> <name string (MUST match name on pdb file)> <Angrstoms for restraint range (float)> <force constant> <# cycles simulated annealing>
-```
 
 **To Run WITH your own restriants (SUGGESTED):**
 1. Download and Install Required programs
@@ -56,6 +47,16 @@ I used make_rst.py to make restraints. The file uses BioPython and should be eas
 5. Number of simulated annealing cycles to run (int)
 
 **Output:** folded protein in pdb file
+
+**To Run WITHOUT your own restriants:**
+1. Download and Install Required programs
+2. Pull Branch
+3. Make/Download FASTA/txt file
+4. Download original pdb file to pull restraints from
+5. Run automate_pipeline.py:
+```
+python automate_pipeline.py <fasta> <name string (MUST match name on pdb file)> <Angrstoms for restraint range (float)> <force constant> <# cycles simulated annealing>
+```
 
 **Optional Scripts:**
 1. make_rst.py
