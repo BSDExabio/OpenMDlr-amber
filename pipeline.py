@@ -1,22 +1,25 @@
 #!/usr/bin/env python
 
-########################################################################
-#       PIPELINE - FASTA to AMBER TOOLS output
-#
-#       input:  1. fasta (or txt) file with the seqence in single letters (i.e., "NLYIQWLKDGGPSSGRPPPS"),
-#               2. name of the protein as a string (for output files),
-#               3. distance restraints file in 8 column format
-#               4. distance force constant as a float (in kcal/mol·Angstroms)
-#               5. cycles of simulated annealing you wish to run (int)
-#
-#       forcefeild currently hardcoded
-#
-#       output: linear pdb file, amber tools parameters
-#
-########################################################################
+#########################################################################################################################
+#                                                                                                                       #
+#       PIPELINE - From Sequence to Folded Protein                                                                      #
+#                                                                                                                       #       
+#       input:  1. fasta (or txt) file with the seqence in single letters (i.e., "NLYIQWLKDGGPSSGRPPPS"),               #
+#               2. name of the protein as a string (for output files),                                                  #
+#               3. distance restraints file in 8 column format                                                          #
+#               4. distance force constant as a float (in kcal/mol·Angstroms)                                           #
+#               5. cycles of simulated annealing you wish to run (int)                                                  #
+#                                                                                                                       #
+#       Notes: forcefeild option and machine specific prefix for mpi can be optionally changed/specified below          #
+#                                                                                                                       #
+#       main output: final pdb file with folded protein                                                                 #
+#                                                                                                                       #
+#       other output: AmberTools linear/parameters files, sander minimization/simulated annealing files                 #
+#                                                                                                                       #
+#########################################################################################################################
 
 import sys
-from subprocess import Popen, PIPE
+import subprocess
 import Bio.PDB
 import numpy as np
 import math
@@ -24,14 +27,17 @@ import warnings
 from Bio import BiopythonWarning
 
 mpi_prefix = ""
+forcefeild = "ff14SB" #path to amber forcefeild
 
+fasta = sys.argv[1]
 name = sys.argv[2]
-distance_force = sys.argv[4]
-annealing_runs = sys.argv[5]
+distance_rst = sys.argv[3]
+distance_force = float(sys.argv[4])
+annealing_runs = int(sys.argv[5])
 
 print("Reading Sequence ...")
 #open and read FASTA
-f = open(sys.argv[1], "r")
+f = open(fasta, "r")
 lines = f.readlines()
 seq = ""
 for l in lines:
@@ -77,8 +83,7 @@ triseq = triseq + "}"
 print("Sequence is: "+ str(triseq))
 
 #generate Amber Tools helper file
-process = Popen(['cp', '../../ff14SB', 'amberscript'], stdout=PIPE, stderr=PIPE)
-stdout, stderr = process.communicate()
+subprocess.call('cp '+forcefeild+' amberscript', shell=True)
 
 h = open("amberscript", "a")
 
@@ -89,8 +94,7 @@ h.close()
 print("Generating linear peptide ...")
 
 #call Amber Tools tleap
-process = Popen(['tleap', '-s', '-f', 'amberscript'], stdout=PIPE, stderr=PIPE)
-stdout, stderr = process.communicate()
+subprocess.call('tleap -s -f amberscript', shell=True)
 
 print("Amber paramaters and linear file generated")
 
@@ -102,14 +106,17 @@ with warnings.catch_warnings():
         for chain in model:
             for  res in chain:
                 for atom in res:
-                    linear_serials.update({(res.id[1], res.resname, atom.id) : atom.serial_number})
+                    resname = res.resname
+                    #weird Amber linear naming conversions
+                    if (resname == "HID") or (resname == "HIE") or (resname == "HIP"): resname = "HIS"
+                    linear_serials.update({(res.id[1], resname, atom.id) : atom.serial_number})
 print("Reading user restraints and matching with linear file ....")
 
 #make restraints given user input
 first = 1
 d = open("RST", "w+")
 
-with open(sys.argv[1]) as input_file:
+with open(distance_rst) as input_file:
     for line in input_file:
         columns = line.split()
         atom1_resnum = int(columns[0])
@@ -126,7 +133,7 @@ with open(sys.argv[1]) as input_file:
             atom1_index = linear_serials.get((atom1_resnum, atom1_resname, atom1_name)) # correct index from linear file
             atom2_index = linear_serials.get((atom2_resnum, atom2_resname, atom2_name))
             if first == 1:
-                d.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, k, k))
+                d.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, distance_force, distance_force))
                 first = 0
             else:
                 d.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n" % (atom1_index, atom2_index, r1, r2, r3, r4))
@@ -138,31 +145,29 @@ print("Restraints file successfully generated")
 #write helper file to run sander 
 h2 = open("sanderscript", "w+")
 
-h2.write(SHEBANG+"\n"+"mkdir "+name+"\n"+"cd "+name+"\n")
-h2.write('echo "Running Minimization ..."')
-h2.write(mpi_prefix+"sander -O -i ../min.in -o min.out -p prmtop -c rst7 -r min.ncrst\n")
-h2.write('echo "Running Simulated Annealing cycle #1"')
-h2.write(mpi_prefix+"sander -O -i ../siman.in -p prmtop -c min.ncrst -r siman1.ncrst -o siman1.out -x siman1.nc\n")
+h2.write("#!/bin/bash\n")
+h2.write('echo "Running Minimization ..."\n')
+h2.write(mpi_prefix+"sander -O -i min.in -o min.out -p prmtop -c rst7 -r min.ncrst\n")
+h2.write('echo "Running Simulated Annealing cycle #1"\n')
+h2.write(mpi_prefix+"sander -O -i siman.in -p prmtop -c min.ncrst -r siman1.ncrst -o siman1.out -x siman1.nc\n")
 h2.write("wait\n")
 
 j = 1
 for i in range(1, annealing_runs):
     j = i+1
-    h2.write('echo "Running Simulated Annealing cycle #'+j+'"')
-    h2.write(mpi_prefix+"sander -O -i ../siman.in -p prmtop -c siman"+i+".ncrst -r siman"+j+".ncrst -o siman"+j+".out -x siman"+j+".nc\n")
+    h2.write('echo "Running Simulated Annealing cycle #'+str(j)+'"\n')
+    h2.write(mpi_prefix+"sander -O -i siman.in -p prmtop -c siman"+str(i)+".ncrst -r siman"+str(j)+".ncrst -o siman"+str(j)+".out -x siman"+str(j)+".nc\n")
     h2.write("wait\n")
 
-h2.write('echo "Writing Final pdb ..."')
-h2.write("ambpdb -p prmtop -c siman"+j+".ncrst > "+name+"_final.pdb\n")
+h2.write('echo "Writing Final pdb ..."\n')
+h2.write("ambpdb -p prmtop -c siman"+str(j)+".ncrst > "+name+"_final.pdb\n")
 
 h2.close()
 
 print("Running sander minimization and simulated annealing ...")
 #Run helper file
-process = Popen(['chmod u+x', 'sanderscript'], stdout=PIPE, stderr=PIPE)
-stdout, stderr = process.communicate()
+subprocess.call('chmod u+x sanderscript', shell=True)
 
-process = Popen(['source', 'sanderscript'], stdout=PIPE, stderr=PIPE)
-stdout, stderr = process.communicate()
+subprocess.call('./sanderscript', shell=True)
 
 print("Complete")
