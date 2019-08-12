@@ -31,7 +31,7 @@ python automate_pipeline.py <fasta> <name string (MUST match name on pdb file)> 
 3. Make FASTA/txt file and 8 column restraints file (format below)
 4. Run fold_protein.py:
 ```
-python fold_protein <fasta> <name string> <restraints file> <force constant> <# cycles simulated annealing>
+python fold_protein.py <fasta> <name string> <restraints file> <force constant> <# cycles simulated annealing>
 ```
 
 **Input:**
