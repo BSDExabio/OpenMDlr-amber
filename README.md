@@ -17,11 +17,11 @@ pip install biopython
 ```
 
 **To Run:**
->1. Download and Install Required programs
->2. Pull Branch
->3. Make FASTA/txt file, 8 column distance restraints file (format below), and 5 column torsion restraints file (format below)
->4. Put your parameters into fold_parameters.json (explaination below)
->5. Run fold_protein.py
+1. Download and Install Required programs
+2. Pull Branch
+3. Make FASTA/txt file, 8 column distance restraints file (format below), and 5 column torsion restraints file (format below)
+4. Put your parameters into fold_parameters.json (explaination below)
+5. Run fold_protein.py
 
 **Input to the Program:**
 
@@ -73,15 +73,15 @@ etc
 **Output:** folded protein in pdb file
 
 **Optional Scripts:**
->1. make_rst.py
+1. make_rst.py
 ```
 python make_rst.py <name of pdb file without the .pdb extension> <# Angstroms above/below range midpoint (float)>
 ```
->2. scores.py <br/>
->If you want RMSD and TMScores, the TMScore program () will produce both, and scores.py will parse the info and put it in a seperate file for you.
+2. scores.py <br/>
+If you want RMSD and TMScores, the TMScore program () will produce both, and scores.py will parse the info and put it in a seperate file for you.
 ```
 ```
->3. METRICS
+3. METRICS
 
 **References:**
 
