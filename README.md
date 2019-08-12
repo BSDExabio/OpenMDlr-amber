@@ -22,7 +22,7 @@ pip install biopython
 4. Download original pdb file to pull restraints from
 5. Run automate_pipeline.py:
 ```
-python automate_pipeline.py <fasta> <name string (MUST match name on pdb file)> <Angrstoms for restraint range (float) <force constant> <# cycles simulated annealing>
+python automate_pipeline.py <fasta> <name string (MUST match name on pdb file)> <Angrstoms for restraint range (float)> <force constant> <# cycles simulated annealing>
 ```
 
 **To Run WITH your own restriants (SUGGESTED):**
