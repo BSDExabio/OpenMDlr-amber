@@ -17,19 +17,32 @@ pip install biopython
 ```
 
 **To Run:**
-1. Download and Install Required programs
-2. Pull Branch
-3. Make FASTA/txt file, 8 column distance restraints file (format below), and 5 column torsion restraints file (format below)
-4. Put your parameters into fold_parameters.json (explaination below)
-4. Run fold_protein.py
+>1. Download and Install Required programs
+>2. Pull Branch
+>3. Make FASTA/txt file, 8 column distance restraints file (format below), and 5 column torsion restraints file (format below)
+>4. Put your parameters into fold_parameters.json (explaination below)
+>5. Run fold_protein.py
 
-**Input to the Program (fold_parameters.json):**
+**Input to the Program:**
 
-1. FASTA file (or txt file) with the sequence in single letters (i.e., "NLYIQWLKDGGPSSGRPPPS")
-2. name of the protein as a string (used for output files)
-3. Distance Restraints list in 8 col file:
+**fold_parameters.json**
+>1. name of the protein (or run) as a string; this is just to identify output files, so you can really use any string you want
+>2. FASTA file (or txt file) with the sequence in single letters (i.e., "NLYIQWLKDGGPSSGRPPPS")
+>3. Distance Restraints list in 8 col file
+>4. Torsion Restraints list in 5 col file
+>5. List of Force Constants for the distance restraints as a float (in kcal/mol·Angstroms)
+>6. List of Force Constants for the torsion restraints as a float (in in 70 kcal/mol·rad) 
 
-Distance Restraints File should be formatted as a list of restraints, with the following columns:
+>>If the length of these Force Constant Lists is 1, then that 1 value is used for all of the simulated annealing cycles.
+>>If the length of these lists is = number of cycles, then the first value is used for the first cycle, the second value for the second cycle, and so on.
+>>If the length is > cycles, the extra values are ignored.
+>>If the length is < cycles, the first value is used for all cycles.
+>>A Force Constanat value is allow to be one.
+
+>7. Number of simulated annealing cycles to run (int)
+
+**Distance Restraints Format:**
+Distance Restraints File should be formatted as a list of restraints, with the following 8 columns:
 
 atom1_residue_number (int), atom1_residue_name, atom1_name, atom2_residue_number (int), atom2_residue_name, atom2_name, lower_bound_distance (float), upper_bound_distance (float)
 
@@ -41,10 +54,8 @@ For example:
 
 I used make_rst.py to make restraints. The file uses BioPython and should be easy to modify and use if you are making restraints from an original pdb file. Feel free to create your restraints list in other ways.
 
-4. Force Constant for the distance restraints as a float (in kcal/mol·Angstroms)
-5. Torsion Restraints list in 5 col file:
-
-Similar to Above, the columns are:
+**Torsion Restraints Format:**
+Similar to Above, but there are 5 columns:
 
 residue_number (int), residue_name, angle_name, lower_bound (float), upper_bound (float)
 
@@ -56,9 +67,6 @@ For example:
 3    PHE    PHI    -76.1    -74.1
 etc
 ```
-
-6. Force Constant for the torsion restraints as a float (in in 70 kcal/mol·rad) 
-7. Number of simulated annealing cycles to run (int)
 
 **Output:** folded protein in pdb file
 
