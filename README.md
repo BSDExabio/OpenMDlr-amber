@@ -33,7 +33,7 @@ python fold_protein.py
 4. Torsion Restraints list in 5 col file
 5. List of Force Constants for the distance restraints as floats (in kcal/mol·Angstroms)
 6. List of Force Constants for the torsion restraints as floats (in in 70 kcal/mol·rad)
-7. List of Temperatures for the simulated annealing cycles as floats (in K)
+7. List of (highest) Temperatures for the simulated annealing cycles as floats (in K)
 
 >If the length of these Lists (#5-7) is 1, then that single value is used for all of the simulated annealing cycles.<br/>
 >If the length of these lists is = number of cycles, then the first value is used for the first cycle, the second value for the second cycle, and so on.<br/>
@@ -57,7 +57,7 @@ For example:
     3   PHE   CB    15    GLY   CA    9.4     11.6
     etc
 
-I used make_rst.py to make restraints. The file uses BioPython and should be easy to modify and use if you are making restraints from an original pdb file. Feel free to create your restraints list in other ways.
+I used make_rst.py (details below) to make restraints. The file uses BioPython and should be easy to modify and use if you are making restraints from an original pdb file. Feel free to create your restraints list in other ways.
 
 **Torsion Restraints Format:**
 
