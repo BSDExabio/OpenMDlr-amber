@@ -4,11 +4,7 @@
 #                                                                                                                       #
 #       PIPELINE - From Sequence to Folded Protein                                                                      #
 #                                                                                                                       #       
-#       input:  1. fasta (or txt) file with the seqence in single letters (i.e., "NLYIQWLKDGGPSSGRPPPS"),               #
-#               2. name of the protein as a string (for output files),                                                  #
-#               3. distance restraints file in 8 column format                                                          #
-#               4. distance force constant as a float (in kcal/mol·Angstroms)                                           #
-#               5. cycles of simulated annealing you wish to run (int)                                                  #
+#       input: should all come from fold_parameters.json file                                                           #
 #                                                                                                                       #
 #       Notes: forcefeild option and machine specific prefix for mpi can be optionally changed/specified below          #
 #                                                                                                                       #
@@ -20,6 +16,7 @@
 
 import sys
 import subprocess
+import json
 import Bio.PDB
 import numpy as np
 import math
@@ -29,11 +26,16 @@ from Bio import BiopythonWarning
 mpi_prefix = ""
 forcefeild = "ff14SB" #path to amber forcefeild
 
-fasta = sys.argv[1]
-name = sys.argv[2]
-distance_rst = sys.argv[3]
-distance_force = float(sys.argv[4])
-annealing_runs = int(sys.argv[5])
+with open('fold_parameters.json') as json_file:
+    data = json.load(json_file)
+    name = data['name']
+    fasta = data['fasta']
+    distance_rst = data['distanceRstFile']
+    distance_force = data['distanceForce']
+    torsion_rst = data['angleRstFile']
+    torsion_force = data['angleForce']
+    temp = data['temp']
+    annealing_runs = int(data['cycles'])
 
 print("Reading Sequence ...")
 #open and read FASTA
@@ -114,7 +116,7 @@ print("Reading user restraints and matching with linear file ....")
 
 #make restraints given user input
 first = 1
-d = open("RST", "w+")
+d = open("RST.dist", "w+")
 
 with open(distance_rst) as input_file:
     for line in input_file:
@@ -133,36 +135,83 @@ with open(distance_rst) as input_file:
             atom1_index = linear_serials.get((atom1_resnum, atom1_resname, atom1_name)) # correct index from linear file
             atom2_index = linear_serials.get((atom2_resnum, atom2_resname, atom2_name))
             if first == 1:
-                d.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, distance_force, distance_force))
+                d.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, distance_force[0], distance_force[0]))
                 first = 0
             else:
                 d.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n" % (atom1_index, atom2_index, r1, r2, r3, r4))
         except KeyError:
                 raise Exception("Mismatch detected between residue sequences")
 d.close()
-print("Restraints file successfully generated")
+print("Distance Restraints file successfully generated")
 
-#write helper file to run sander 
-h2 = open("sanderscript", "w+")
+#angle restraints - we use AmberTools built in makeANG_RST program
+print("Making Angle Restraints ... make sure the AmberTools makeANG_RST finds all its libraries and runs correctly")
+subprocess.call('makeANG_RST -pdb linear.pdb -con '+torsion_rst+' -lib tordef.lib > RST.angles', shell=True)
+# replace force constant
+subprocess.call("sed -i 's/rk2 =   2.0, rk3 =   2.0/rk2 =   "+str(torsion_force[0])+", rk3 =   "+str(torsion_force[0])+"/g' RST.angles", shell=True)
+#merge
+subprocess.call("cat RST.dist RST.angles > RST", shell=True)
 
-h2.write("#!/bin/bash\n")
-h2.write('echo "Running Minimization ..."\n')
-h2.write(mpi_prefix+"sander -O -i min.in -o min.out -p prmtop -c rst7 -r min.ncrst\n")
-h2.write('echo "Running Simulated Annealing cycle #1"\n')
-h2.write(mpi_prefix+"sander -O -i siman.in -p prmtop -c min.ncrst -r siman1.ncrst -o siman1.out -x siman1.nc\n")
-h2.write("wait\n")
+#change temp
+subprocess.call("sed -i '18,20d' siman.in", shell=True)
+
+s = open("siman.in", "r")
+lines = s.readlines()
+s.close()
+
+lines.insert(17, " &wt type='TEMP0', istep1=0,istep2=5000,value1="+str(temp[0])+"\n")
+lines.insert(18, "            value2="+str(temp[0])+",    /\n")
+lines.insert(19, " &wt type=\'TEMP0\', istep1=5001, istep2=18000, value1="+str(temp[0])+"\n")
+
+s = open("siman.in", "w")
+lines = "".join(lines)
+s.write(lines)
+s.close()
+
+print("Running Minimization ...")
+subprocess.call(mpi_prefix+"sander -O -i min.in -o min.out -p prmtop -c rst7 -r min.ncrst", shell=True)
+print('Running Simulated Annealing cycle #1, distance force constant = '+str(distance_force[0])+', angle force constant = '+str(torsion_force[0])+', temperature = '+str(temp[0])+'K')
+subprocess.call(mpi_prefix+"sander -O -i siman.in -p prmtop -c min.ncrst -r siman1.ncrst -o siman1.out -x siman1.nc", shell=True)
+subprocess.call("wait", shell=True)
 
 j = 1
 for i in range(1, annealing_runs):
     j = i+1
-    h2.write('echo "Running Simulated Annealing cycle #'+str(j)+'"\n')
-    h2.write(mpi_prefix+"sander -O -i siman.in -p prmtop -c siman"+str(i)+".ncrst -r siman"+str(j)+".ncrst -o siman"+str(j)+".out -x siman"+str(j)+".nc\n")
-    h2.write("wait\n")
+    if (len(distance_force) < annealing_runs): dfc = distance_force[0]
+    else:
+        dfc = distance_force[i]
+        subprocess.call("sed -i 's/rk2="+str(distance_force[i-1])+", rk3="+str(distance_force[i-1])+"/rk2="+str(dfc)+", rk3="+str(dfc)+"/g' RST.dist", shell=True)
+        subprocess.call("cat RST.dist RST.angles > RST", shell=True)
 
-h2.write('echo "Writing Final pdb ..."\n')
-h2.write("ambpdb -p prmtop -c siman"+str(j)+".ncrst > "+name+"_final.pdb\n")
+    if (len(torsion_force) < annealing_runs): tfc = torsion_force[0]
+    else:
+        tfc = torsion_force[i]
+        subprocess.call("sed -i 's/rk2 =   "+str(torsion_force[i-1])+", rk3 =   "+str(torsion_force[i-1])+"/rk2 =   "+str(tfc)+", rk3 =   "+str(tfc)+"/g' RST.angles", shell=True)
+        subprocess.call("cat RST.dist RST.angles > RST", shell=True)
 
-h2.close()
+    if (len(temp) < annealing_runs): tp = temp[0]
+    else:
+        tp = temp[i]
+        subprocess.call("sed -i '18,20d' siman.in", shell=True)
+        s = open("siman.in", "r")
+        lines = s.readlines()
+        s.close()
+
+        lines.insert(17, " &wt type='TEMP0', istep1=0,istep2=5000,value1="+str(tp)+"\n")
+        lines.insert(18, "            value2="+str(tp)+",    /\n")
+        lines.insert(19, " &wt type=\'TEMP0\', istep1=5001, istep2=18000, value1="+str(tp)+"\n")
+
+        s = open("siman.in", "w")
+        lines = "".join(lines)
+        s.write(lines)
+        s.close()
+
+    print('Running Simulated Annealing cycle #'+str(j)+', distance force constant = '+str(dfc)+', angle force constant = '+str(tfc)+', temperature = '+str(tp)+'K')
+    subprocess.call(mpi_prefix+"sander -O -i siman.in -p prmtop -c siman"+str(i)+".ncrst -r siman"+str(j)+".ncrst -o siman"+str(j)+".out -x siman"+str(j)+".nc", shell=True)
+    subprocess.call("wait\n")
+
+print("Writing Final pdb ...")
+subprocess.call("ambpdb -p prmtop -c siman"+str(j)+".ncrst > "+name+"_final.pdb", shell=True)
 
 print("Running sander minimization and simulated annealing ...")
 #Run helper file
