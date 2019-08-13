@@ -88,8 +88,9 @@ If you want RMSD and TMScores, the TMScore program (https://zhanglab.ccmb.med.um
 python scores.py <TMScore executable> <original pdb file> <your new pdb file>
 ```
 3. metrics.py <br/>
-If you run it after you run scores.py, it will append "scores" with data on the XXX. Could be easily modified for other metrics.
+If you run it after you run scores.py, it will append the "scores" text file with data on the on the average difference between correct and new atom distances and torsions (as well as standard deviations). Could be easily modified for other metrics.
 ```
+python metrics.py <original pdb file> <your new pdb file>
 ```
 
 **Viewing Trajectory:**
