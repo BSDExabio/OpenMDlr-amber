@@ -33,14 +33,15 @@ python fold_protein.py
 >2. FASTA file (or txt file) with the sequence in single letters (i.e., "NLYIQWLKDGGPSSGRPPPS")
 >3. Distance Restraints list in 8 col file
 >4. Torsion Restraints list in 5 col file
->5. List of Force Constants for the distance restraints as a float (in kcal/mol·Angstroms)
->6. List of Force Constants for the torsion restraints as a float (in in 70 kcal/mol·rad) 
+>5. List of Force Constants for the distance restraints as floats (in kcal/mol·Angstroms)
+>6. List of Force Constants for the torsion restraints as floats (in in 70 kcal/mol·rad)
+>7. List of Temperatures for the simulated annealing cycles as floats (in K)
 
->>If the length of these Force Constant Lists is 1, then that 1 value is used for all of the simulated annealing cycles.
+>>If the length of these Lists (#5-7) is 1, then that single value is used for all of the simulated annealing cycles.
 >>If the length of these lists is = number of cycles, then the first value is used for the first cycle, the second value for the second cycle, and so on.
 >>If the length is > cycles, the extra values are ignored.
 >>If the length is < cycles, the first value is used for all cycles.
->>A Force Constanat value is allow to be one.
+>>Any of the values may be 0.0, but it is reccomended the temperature is not < 100.0K.
 
 >7. Number of simulated annealing cycles to run (int)
 
