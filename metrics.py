@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 #INPUT: original file, comparison file
-# should be within that folder
 
 
 import sys
@@ -97,18 +96,9 @@ for model in Bio.PDB.PDBParser().get_structure(sys.argv[2], sys.argv[2]):
                         if key in correct_distance:
                             comp = math.fabs(correct_distance.get(key) - float(distance))  
                             comp_distance.update( {key : comp} )
-#get some fuckin stats
+#get some stats
 list_dist = np.fromiter(comp_distance.values(), dtype=float)
 list_ang = np.fromiter(comp_torsion.values(), dtype=float)
-
-#print(correct_torsion.values())
-#print(correct_distance.values())
-
-#print(comp_torsion.values())
-#print(comp_distance)
-
-#print(list_ang)
-#print(list_dist)
 
 dist_std = np.std(list_dist)
 dist_mean = np.mean(list_dist)
