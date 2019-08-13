@@ -89,6 +89,10 @@ If you want RMSD and TMScores, the TMScore program () will produce both, and sco
 ```
 3. METRICS
 
+**Use:**
+Please feel free to use/modify code. Contact jesskwoods (at) gmail.com with corrections, questions, comments.
+
+
 **References:**
 
 Peter JA Cock, Tiago Antao, Jeffrey T Chang, Brad A Chapman, Cymon J Cox, Andrew
