@@ -2,7 +2,7 @@
 Pipeline for protein folding using only simulated annealing, distance and torsion restraints; works from an amino acid sequence; AmberTools18 wrapped in Python; only open-source programs used.
 
 **Pre-Reqs:**
-1. Python (3 or later, though you can probably modify the code to work with 2) (https://www.python.org)
+1. Python (3 or later, though you can probably modify the code to work with 2): (https://www.python.org)
 2. AmberTools: http://ambermd.org/GetAmber.php. <br/>
 For a simple-to-install, non parallelized version, you can used conda (Miniconda: https://docs.conda.io/en/latest/miniconda.html):
 ```
@@ -17,7 +17,7 @@ pip install biopython
 ```
 
 **To Run:**
-1. Download and Install Required programs
+1. Download and Install required programs
 2. Pull Branch
 3. Make FASTA/txt file, 8 column distance restraints file (format below), and 5 column torsion restraints file (format below)
 4. Edit fold_parameters.json with your parameters (explaination below)
@@ -92,9 +92,14 @@ If you run it after you run scores.py, it will append "scores" with data on the 
 ```
 ```
 
+**Viewing Trajectory:**
+
+The relevant files for viewing trajectory in VMD are "prmtop" (file type: AMBER7 Param) and "siman1.nc", "siman2.nc", etc (let VMD determine the file type automatically), up to the number of cycles of simulated annealing.
+
+
 **Use:**
 
-Please feel free to use/modify code. Everything is completely open-source. Contact jesskwoods (at) gmail.com with corrections, questions, comments.
+Please feel free to use/modify code. Everything is completely open-source. This work was done at the Center for Molecular Biophysics at Oak Ridge National Lab. Contact jesskwoods (at) gmail.com with corrections, questions, comments.
 
 
 **References:**
