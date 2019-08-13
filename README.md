@@ -85,10 +85,14 @@ Makes restraints from original pdb file.
 python make_rst.py <name of pdb file without the .pdb extension> <# Angstroms above/below range midpoint (float)>
 ```
 2. scores.py <br/>
-If you want RMSD and TMScores, the TMScore program (https://zhanglab.ccmb.med.umich.edu/TM-score/) will produce both, and scores.py will parse the info and put it in a seperate file for you.
+If you want RMSD and TMScores, the TMScore program (https://zhanglab.ccmb.med.umich.edu/TM-score/) will produce both; scores.py will run the program, parse the info and put it in a seperate file ("scores") for you.
 ```
+python scores.py <TMScore executable> <original pdb file> <your new pdb file>
 ```
 3. METRICS
+If you run it after you run scores.py, it will append "scores" with data on the XXX. Could be easily modified for other metrics.
+```
+```
 
 **Use:**
 
