@@ -29,43 +29,45 @@ python fold_protein.py
 **Input to the Program:**
 
 **fold_parameters.json**
->1. name of the protein (or run) as a string; this is just to identify output files, so you can really use any string you want
->2. FASTA file (or txt file) with the sequence in single letters (i.e., "NLYIQWLKDGGPSSGRPPPS")
->3. Distance Restraints list in 8 col file
->4. Torsion Restraints list in 5 col file
->5. List of Force Constants for the distance restraints as floats (in kcal/mol·Angstroms)
->6. List of Force Constants for the torsion restraints as floats (in in 70 kcal/mol·rad)
->7. List of Temperatures for the simulated annealing cycles as floats (in K)
+1. name of the protein (or run) as a string; this is just to identify output files, so you can really use any string you want
+2. FASTA file (or txt file) with the sequence in single letters (i.e., "NLYIQWLKDGGPSSGRPPPS")
+3. Distance Restraints list in 8 col file
+4. Torsion Restraints list in 5 col file
+5. List of Force Constants for the distance restraints as floats (in kcal/mol·Angstroms)
+6. List of Force Constants for the torsion restraints as floats (in in 70 kcal/mol·rad)
+7. List of Temperatures for the simulated annealing cycles as floats (in K)
 
->>If the length of these Lists (#5-7) is 1, then that single value is used for all of the simulated annealing cycles.
->>If the length of these lists is = number of cycles, then the first value is used for the first cycle, the second value for the second cycle, and so on.
->>If the length is > cycles, the extra values are ignored.
->>If the length is < cycles, the first value is used for all cycles.
->>Any of the values may be 0.0, but it is reccomended the temperature is not < 100.0K.
+>If the length of these Lists (#5-7) is 1, then that single value is used for all of the simulated annealing cycles.<br/>
+>If the length of these lists is = number of cycles, then the first value is used for the first cycle, the second value for the second cycle, and so on.<br/
+>If the length is > cycles, the extra values are ignored.<br/>
+>If the length is < cycles, the first value is used for all cycles.<br/>
+>Any of the values may be 0.0, but it is reccomended the temperature is not < 100.0K.<br/>
 
->7. Number of simulated annealing cycles to run (int)
+7. Number of simulated annealing cycles to run (int)
+
+>The given example file has what I have found to be good defaults.
 
 **Distance Restraints Format:**
 
->Distance Restraints File should be formatted as a list of restraints, with the following 8 columns:
+Distance Restraints File should be formatted as a list of restraints, with the following 8 columns:
 
 >atom1_residue_number (int), atom1_residue_name, atom1_name, atom2_residue_number (int), atom2_residue_name, atom2_name, lower_bound_distance (float), upper_bound_distance (float)
 
->For example:
+For example:
 
     2   MET   CB    41    ALA   CB    3.81    5.81
     3   PHE   CB    15    GLY   CA    9.4     11.6
     etc
 
->I used make_rst.py to make restraints. The file uses BioPython and should be easy to modify and use if you are making restraints from an original pdb file. Feel free to create your restraints list in other ways.
+I used make_rst.py to make restraints. The file uses BioPython and should be easy to modify and use if you are making restraints from an original pdb file. Feel free to create your restraints list in other ways.
 
 **Torsion Restraints Format:**
 
->Similar to Above, but there are 5 columns:
+Similar to Above, but there are 5 columns:
 
 >residue_number (int), residue_name, angle_name, lower_bound (float), upper_bound (float)
 
->For example:
+For example:
 ```
 1    LYS    PSI    138.7    140.7
 2    VAL    PHI    -103.7    -101.7
