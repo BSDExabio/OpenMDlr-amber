@@ -1,5 +1,5 @@
 # ProteinFoldingPipeline
-Pipeline for protein folding using only simulated annealing, distance and torsion restraints; works from an amino acid sequence; AmberTools18 wrapped in Python
+Pipeline for protein folding using only simulated annealing, distance and torsion restraints; works from an amino acid sequence; AmberTools18 wrapped in Python; only open-source programs used.
 
 **Pre-Reqs:**
 1. Python (3 or later, though you can probably modify the code to work with 2) (https://www.python.org)
@@ -94,7 +94,7 @@ If you run it after you run scores.py, it will append "scores" with data on the 
 
 **Use:**
 
-Please feel free to use/modify code. Contact jesskwoods (at) gmail.com with corrections, questions, comments.
+Please feel free to use/modify code. Everything is completely open-source. Contact jesskwoods (at) gmail.com with corrections, questions, comments.
 
 
 **References:**
