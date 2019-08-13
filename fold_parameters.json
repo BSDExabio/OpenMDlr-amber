@@ -4,7 +4,7 @@
 	"distanceRstFile": "dist_rst",
 	"angleRstFile": "torsion_rst",
 	"distanceForce": [70.0, 70.0],
-	"angleForce": [70.0, 70.0],
+	"angleForce": [30.0, 30.0],
 	"temp": [600.0, 600.0],
     	"cycles": 2
 }
