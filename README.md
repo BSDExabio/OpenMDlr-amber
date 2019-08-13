@@ -89,7 +89,7 @@ If you want RMSD and TMScores, the TMScore program (https://zhanglab.ccmb.med.um
 ```
 python scores.py <TMScore executable> <original pdb file> <your new pdb file>
 ```
-3. METRICS
+3. metrics.py <br/>
 If you run it after you run scores.py, it will append "scores" with data on the XXX. Could be easily modified for other metrics.
 ```
 ```
