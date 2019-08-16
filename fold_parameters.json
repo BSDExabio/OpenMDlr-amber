@@ -6,5 +6,7 @@
 	"distanceForce": [70.0, 70.0],
 	"angleForce": [40.0, 40.0],
 	"temp": [600.0, 600.0],
-    	"cycles": 2
+    	"cycles": 2,
+	"mpi": "mpirun -np 4 ",
+	"forcefeild": "ff14SB"
 }
