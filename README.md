@@ -77,7 +77,7 @@ For example:
 etc
 ```
 
-**Output:** folded protein in pdb file
+**Output:** folded protein in pdb file; note the starting velocities are randomized, so the output is nondeterministic
 
 **Optional Scripts:**
 1. make_rst.py <br/>
