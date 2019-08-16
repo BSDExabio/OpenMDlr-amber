@@ -26,6 +26,7 @@ pip install biopython
 ```
 python fold_protein.py
 ```
+Note: If you would like to change the forcefeild or run the program with mpi, those feilds can be changed inside "fold_protein.py", at the top
 
 **Input to the Program:  fold_parameters.json**
 1. name of the protein (or run) as a string; this is just to identify output files, so you can really use any string you want
