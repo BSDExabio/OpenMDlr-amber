@@ -43,7 +43,7 @@ python fold_protein.py
 >Any of the values may be 0.0, but it is reccomended the temperature is >= 100.0K.<br/>
 
 7. Number of simulated annealing cycles to run (int)
-8. The mpi "prefix" (for example, "mpirun -np 4 "), if you would like to call sander (AmberTools minimization and simulated anealing program) with mpi threading. This is completely optional and can take an empty string ("").
+8. The mpi "prefix" (for example, "mpirun -np 4 "), if you would like to call sander (AmberTools minimization and simulated anealing program) with mpi threading (https://www.open-mpi.org/). This is completely optional and can take an empty string instead ("").
 9. The path to the Amber forcefield, if you would like to change the forcefield; will vary depending on where your AmberTools package is
 
 >The given example file has what I have found to be good defaults.
