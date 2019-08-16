@@ -2,16 +2,14 @@
 
 #########################################################################################################################
 #                                                                                                                       #
-#       PIPELINE - From Sequence to Folded Protein                                                                      #
-#                                                                                                                       #       
-#       input: should all come from fold_parameters.json file                                                           #
-#                                                                                                                       #
-#       Notes: forcefeild option and machine specific prefix for mpi can be optionally changed/specified below          #
-#                                                                                                                       #
-#       main output: final pdb file with folded protein                                                                 #
-#                                                                                                                       #
-#       other output: AmberTools linear/parameters files, sander minimization/simulated annealing files                 #
-#                                                                                                                       #
+#	PIPELINE - From Sequence to Folded Protein									#
+#														        #
+#	input: should all come from fold_parameters.json file								#
+#															#
+#	main output: final pdb file with folded protein									#
+#															#
+# 	other output: AmberTools linear/parameters files, sander minimization/simulated annealing files			#
+#															#
 #########################################################################################################################
 
 import sys
@@ -23,9 +21,6 @@ import math
 import warnings
 from Bio import BiopythonWarning
 
-mpi_prefix = ""         #for example: "mpirun -np 4 "
-forcefeild = "ff14SB"   #path to amber forcefeild
-
 with open('fold_parameters.json') as json_file:
     data = json.load(json_file)
     name = data['name']
@@ -36,8 +31,11 @@ with open('fold_parameters.json') as json_file:
     torsion_force = data['angleForce']
     temp = data['temp']
     annealing_runs = int(data['cycles'])
+    mpi_prefix = data["mpi"]
+    forcefield = data["forcefield"]
 
 print("Reading Sequence ...")
+
 #open and read FASTA
 f = open(fasta, "r")
 lines = f.readlines()
@@ -85,7 +83,7 @@ triseq = triseq + "}"
 print("Sequence is: "+ str(triseq))
 
 #generate Amber Tools helper file
-subprocess.call('cp '+forcefeild+' amberscript', shell=True)
+subprocess.call('cp '+forcefield+' amberscript', shell=True)
 
 h = open("amberscript", "a")
 
