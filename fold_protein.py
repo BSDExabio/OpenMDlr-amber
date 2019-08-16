@@ -23,8 +23,8 @@ import math
 import warnings
 from Bio import BiopythonWarning
 
-mpi_prefix = ""
-forcefeild = "ff14SB" #path to amber forcefeild
+mpi_prefix = ""         #for example: "mpirun -np 4 "
+forcefeild = "ff14SB"   #path to amber forcefeild
 
 with open('fold_parameters.json') as json_file:
     data = json.load(json_file)
@@ -172,7 +172,6 @@ print("Running Minimization ...")
 subprocess.call(mpi_prefix+"sander -O -i min.in -o min.out -p prmtop -c rst7 -r min.ncrst", shell=True)
 print('Running Simulated Annealing cycle #1, distance force constant = '+str(distance_force[0])+', angle force constant = '+str(torsion_force[0])+', temperature = '+str(temp[0])+'K')
 subprocess.call(mpi_prefix+"sander -O -i siman.in -p prmtop -c min.ncrst -r siman1.ncrst -o siman1.out -x siman1.nc", shell=True)
-subprocess.call("wait", shell=True)
 
 j = 1
 for i in range(1, annealing_runs):
@@ -208,7 +207,6 @@ for i in range(1, annealing_runs):
 
     print('Running Simulated Annealing cycle #'+str(j)+', distance force constant = '+str(dfc)+', angle force constant = '+str(tfc)+', temperature = '+str(tp)+'K')
     subprocess.call(mpi_prefix+"sander -O -i siman.in -p prmtop -c siman"+str(i)+".ncrst -r siman"+str(j)+".ncrst -o siman"+str(j)+".out -x siman"+str(j)+".nc", shell=True)
-    subprocess.call("wait\n")
 
 print("Writing Final pdb ...")
 subprocess.call("ambpdb -p prmtop -c siman"+str(j)+".ncrst > "+name+"_final.pdb", shell=True)
