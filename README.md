@@ -40,7 +40,7 @@ python fold_protein.py
 >If the length of these lists is = number of cycles, then the first value is used for the first cycle, the second value for the second cycle, and so on.<br/>
 >If the length is > cycles, the extra values are ignored.<br/>
 >If the length is < cycles, the first value is used for all cycles.<br/>
->Any of the values may be 0.0, but it is reccomended the temperature is not < 100.0K.<br/>
+>Any of the values may be 0.0, but it is reccomended the temperature is >= 100.0K.<br/>
 
 7. Number of simulated annealing cycles to run (int)
 
