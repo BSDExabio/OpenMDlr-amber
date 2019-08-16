@@ -8,5 +8,5 @@
 	"temp": [600.0, 600.0],
     	"cycles": 2,
 	"mpi": "mpirun -np 4 ",
-	"forcefeild": "ff14SB"
+	"forcefield": "ff14SB"
 }
