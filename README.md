@@ -98,7 +98,7 @@ python metrics.py <original pdb file> <your new pdb file>
 
 **Viewing Trajectory:**
 
-The relevant files for viewing trajectory in VMD are "prmtop" (file type: AMBER7 Param) and "siman1.nc", "siman2.nc", etc (let VMD determine the file type automatically), up to the number of cycles of simulated annealing.
+The relevant files for viewing trajectory in VMD are "prmtop" (file type: AMBER7 Param) and "siman1.nc", "siman2.nc", etc, up to the number of cycles of simulated annealing (let VMD determine the file type automatically).
 
 
 **Use:**
