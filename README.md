@@ -80,7 +80,7 @@ etc
 1. make_rst.py <br/>
 Makes restraints from original pdb file.
 ```
-python make_rst.py <name of pdb file without the .pdb extension> <# Angstroms above/below range midpoint (float)>
+python make_rst.py <name of pdb file without the .pdb extension> <distance range float in Angstroms> <angle range float in degrees>
 ```
 2. scores.py <br/>
 If you want RMSD and TMScores, the TMScore program (https://zhanglab.ccmb.med.umich.edu/TM-score/) will produce both; scores.py will run the program, parse the info and put it in a seperate file ("scores") for you.
