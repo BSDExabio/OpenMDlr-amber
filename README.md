@@ -26,7 +26,6 @@ pip install biopython
 ```
 python fold_protein.py
 ```
-Note: If you would like to change the forcefeild or run the program with mpi, those feilds can be changed inside "fold_protein.py", at the top
 
 **Input to the Program:  fold_parameters.json**
 1. name of the protein (or run) as a string; this is just to identify output files, so you can really use any string you want
@@ -44,6 +43,8 @@ Note: If you would like to change the forcefeild or run the program with mpi, th
 >Any of the values may be 0.0, but it is reccomended the temperature is >= 100.0K.<br/>
 
 7. Number of simulated annealing cycles to run (int)
+8. The mpi "prefix", if you would like to call sander with mpi threading. This is optional and can take an empty string ("").
+9. The path to the Amber forcefield, if you would like to change the forcefield; will vary depending on where your AmberTools package is
 
 >The given example file has what I have found to be good defaults.
 
