@@ -210,10 +210,4 @@ for i in range(1, annealing_runs):
 print("Writing Final pdb ...")
 subprocess.call("ambpdb -p prmtop -c siman"+str(j)+".ncrst > "+name+"_final.pdb", shell=True)
 
-print("Running sander minimization and simulated annealing ...")
-#Run helper file
-subprocess.call('chmod u+x sanderscript', shell=True)
-
-subprocess.call('./sanderscript', shell=True)
-
 print("Complete")           
