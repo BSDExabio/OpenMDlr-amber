@@ -2,14 +2,14 @@
 
 #########################################################################################################################
 #                                                                                                                       #
-#	PIPELINE - From Sequence to Folded Protein									#
-#														        #
-#	input: should all come from fold_parameters.json file								#
-#															#
-#	main output: final pdb file with folded protein									#
-#															#
-# 	other output: AmberTools linear/parameters files, sander minimization/simulated annealing files			#
-#															#
+#       PIPELINE - From Sequence to Folded Protein                                                                      #
+#                                                                                                                       #
+#       input: should all come from fold_parameters.json file                                                           #
+#                                                                                                                       #
+#       main output: final pdb file with folded protein                                                                 #
+#                                                                                                                       #
+#       other output: AmberTools linear/parameters files, sander minimization/simulated annealing files                 #
+#                                                                                                                       #
 #########################################################################################################################
 
 import sys
@@ -20,6 +20,7 @@ import numpy as np
 import math
 import warnings
 from Bio import BiopythonWarning
+
 
 with open('fold_parameters.json') as json_file:
     data = json.load(json_file)
@@ -34,8 +35,8 @@ with open('fold_parameters.json') as json_file:
     mpi_prefix = data["mpi"]
     forcefield = data["forcefield"]
 
-print("Reading Sequence ...")
 
+print("Reading Sequence ...")
 #open and read FASTA
 f = open(fasta, "r")
 lines = f.readlines()
@@ -215,4 +216,4 @@ subprocess.call('chmod u+x sanderscript', shell=True)
 
 subprocess.call('./sanderscript', shell=True)
 
-print("Complete")
+print("Complete")           
