@@ -77,7 +77,11 @@ def tri(x):
         }.get(x, '')
 
 triseq = "{ "
-for s in seq:
+for i,s in enumerate(seq):
+        if (i==0):
+                triseq = triseq + "N"
+        elif (i==len(seq)-1):
+                triseq = triseq + "C"
         triseq = triseq + tri(s) + " "
 triseq = triseq + "}"
 
