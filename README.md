@@ -1,12 +1,13 @@
-# ProteinFoldingPipeline
-Pipeline for protein folding using only simulated annealing, distance and torsion restraints; works from an amino acid sequence; AmberTools18 wrapped in Python; only open-source programs used.
+# openFoldTools
+Open source protein structure modeling tools:
+Protein folding using only simulated annealing, distance and torsion restraints; works from an amino acid sequence; AmberTools18 wrapped in Python
 
 **Pre-Reqs:**
 1. Python (3 or later, though you can probably modify the code to work with 2): (https://www.python.org)
 2. AmberTools: http://ambermd.org/GetAmber.php. <br/>
 For a simple-to-install, non parallelized version, you can used conda (Miniconda: https://docs.conda.io/en/latest/miniconda.html):
 ```
-conda install ambertools=19 -c ambermd
+conda install ambertools=18 -c ambermd
 conda install numpy
 ```
 

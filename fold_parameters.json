@@ -1,12 +1,13 @@
 {
 	"name": "1ubq",
-	"fasta": "1ubq.fasta.example",
-	"distanceRstFile": "1ubq.8col.example",
-	"angleRstFile": "1ubq.5col.example",
-	"distanceForce": [70.0, 70.0],
-	"angleForce": [40.0, 40.0],
-	"temp": [600.0, 600.0],
+	"fasta_filepath": "1ubq.fasta.example",
+	"distance_restraints_filepath": "1ubq.8col.example",
+	"torsion_restraints_filepath": "1ubq.5col.example",
+	"distance_force": [70.0, 70.0],
+	"torsion_force": [40.0, 40.0],
+	"temperature": [600.0, 600.0],
     	"cycles": 2,
 	"mpi": "",
-	"forcefield": "ff14SB"
+	"forcefield_filepath": "ff14SB",
+        "solvate": "",
 }

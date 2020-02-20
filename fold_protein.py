@@ -24,7 +24,7 @@ from Bio import PDB, BiopythonWarning
 with open('fold_parameters.json') as json_file:
     data = json.load(json_file)
     name = data['name']
-    fasta = data['fasta']
+    fasta = data['fasta_filepath']
     distance_rst = data['distance_restraints_filepath']
     distance_force = data['distance_force']
     torsion_rst = data['torsion_restraints_filepath']
@@ -32,7 +32,7 @@ with open('fold_parameters.json') as json_file:
     temp = data['temperature']
     annealing_runs = int(data['cycles'])
     mpi_prefix = data["mpi"]
-    forcefield = data["forcefield"]
+    forcefield = data["forcefield_filepath"]
     solvate = data["solvate"]
 
 print("======================== READING FASTA ========================")
