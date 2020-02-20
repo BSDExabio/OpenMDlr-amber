@@ -1,2 +1,4 @@
 ./openFold-amber/* linguist-language=Python
+./openFold-amber/1ubq_example/* linguist-language=Python
+./openFold-amber/1ubq_example_output/* linguist-language=Python
 README.md linguist-language=Python
