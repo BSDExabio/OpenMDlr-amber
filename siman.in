@@ -15,9 +15,9 @@ simulated anealing, 20 ps
 #from steps 5001-18000: re-cool to low temperatures with long tautp
 #from steps 18001-20000: final cooling with short tautp
 #
- &wt type='TEMP0', istep1=0,istep2=5000,value1=600.,
-            value2=600.,    /
- &wt type='TEMP0', istep1=5001, istep2=18000, value1=600.0,
+ &wt type='TEMP0', istep1=0,istep2=5000,value1=600.0
+            value2=600.0,    /
+ &wt type='TEMP0', istep1=5001, istep2=18000, value1=600.0
             value2=100.0,     /
  &wt type='TEMP0', istep1=18001, istep2=20000, value1=0.0,
             value2=0.0,     /

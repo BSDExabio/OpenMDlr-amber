@@ -1,13 +1,13 @@
 {
 	"name": "1ubq",
-	"fasta_filepath": "1ubq.fasta.example",
-	"distance_restraints_filepath": "1ubq.8col.example",
-	"torsion_restraints_filepath": "1ubq.5col.example",
+	"fasta_filepath": "1ubq_example/1ubq.fasta",
+	"distance_restraints_filepath": "1ubq_example/1ubq.8col",
+	"torsion_restraints_filepath": "1ubq_example/1ubq.5col",
 	"distance_force": [70.0, 70.0],
 	"torsion_force": [40.0, 40.0],
 	"temperature": [600.0, 600.0],
     	"cycles": 2,
 	"mpi": "",
 	"forcefield_filepath": "ff14SB",
-        "solvate": "",
+        "solvate": ""
 }

@@ -35,7 +35,7 @@ with open('fold_parameters.json') as json_file:
     forcefield = data["forcefield_filepath"]
     solvate = data["solvate"]
 
-print("======================== READING FASTA ========================")
+print("\n\n======================== READING FASTA ========================")
 #open and read FASTA
 f = open(fasta, "r")
 lines = f.readlines()
@@ -93,18 +93,18 @@ h.write("\n"+name+" = sequence "+triseq+"\nsaveoff "+name+" linear.lib\nsavepdb 
 
 h.close()
 
-print("=============== GENERATING LINEAR PDB WITH TLEAP ==============")
+print("\n\n=============== GENERATING LINEAR PDB WITH TLEAP ==============")
 
 #call Amber Tools tleap
 subprocess.call('tleap -s -f amberscript', shell=True)
 
-print("===== READING USER RESTRAINTS AND MATCHING WITH LINEAR PDB ====")
+print("\n\n===== READING USER RESTRAINTS AND MATCHING WITH LINEAR PDB ====")
 
 #extract correct atom indices from amber linear file
 with warnings.catch_warnings():
     warnings.simplefilter('ignore', BiopythonWarning)
     linear_serials = dict() # dict of {(residue #, atom name): linear serial number for cb atom}
-    for model in Bio.PDB.PDBParser().get_structure("linear", "linear.pdb"):
+    for model in PDB.PDBParser().get_structure("linear", "linear.pdb"):
         for chain in model:
             for  res in chain:
                 for atom in res:
@@ -144,7 +144,7 @@ d.close()
 print("DISTANCE RESTRAINTS CORRECTLY GENERATED")
 
 #angle restraints - we use AmberTools built in makeANG_RST program
-print("=================== MAKING ANGLE RESTRAINTS ===================")
+print("\n\n=================== MAKING ANGLE RESTRAINTS ===================")
 print("Make sure the AmberTools makeANG_RST finds all its libraries and runs correctly")
 subprocess.call('makeANG_RST -pdb linear.pdb -con '+torsion_rst+' -lib tordef.lib > RST.angles', shell=True)
 # replace force constant
@@ -168,10 +168,10 @@ lines = "".join(lines)
 s.write(lines)
 s.close()
 
-print("===================== RUNNING MINIMIZATION ====================")
+print("\n\n===================== RUNNING MINIMIZATION ====================")
 subprocess.call(mpi_prefix+"sander -O -i min.in -o min.out -p prmtop -c rst7 -r min.ncrst", shell=True)
 
-print("================= RUNNING SIMULATED ANNEALING =================")
+print("\n\n================= RUNNING SIMULATED ANNEALING =================")
 print('SIMULATED ANNEALING CYCLE #1, DISTANCE FORCE CONSTANT = '+str(distance_force[0])+', ANGLE FORCE CONSTANT = '+str(torsion_force[0])+', TEMPERATURE = '+str(temp[0])+'K')
 subprocess.call(mpi_prefix+"sander -O -i siman.in -p prmtop -c min.ncrst -r siman1.ncrst -o siman1.out -x siman1.nc", shell=True)
 
@@ -210,13 +210,15 @@ for i in range(1, annealing_runs):
     print('SIMULATED ANNEALING CYCLE #'+str(j)+', DISTANCE FORCE CONSTANT = '+str(dfc)+', ANGLE FORCE CONSTANT = '+str(tfc)+', TEMPERATURE = '+str(tp)+'K')
     subprocess.call(mpi_prefix+"sander -O -i siman.in -p prmtop -c siman"+str(i)+".ncrst -r siman"+str(j)+".ncrst -o siman"+str(j)+".out -x siman"+str(j)+".nc", shell=True)
 
-print("========================== SOLVATING ==========================")
+print("\n\n========================== SOLVATING ==========================")
 if (solvate == ""):
     print("Solvating not currently set.")
 else:
     #TODO: Amber solvation code
+    i = 0
 
-print("====================== WRITING FINAL PDB ======================")
+
+print("\n\n====================== WRITING FINAL PDB ======================")
 subprocess.call("ambpdb -p prmtop -c siman"+str(j)+".ncrst > "+name+"_final.pdb", shell=True)
 
-print("=========================== COMPLETE ==========================")           
+print("\n\n=========================== COMPLETE ==========================")           
