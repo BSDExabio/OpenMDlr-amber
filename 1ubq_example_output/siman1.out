@@ -1,0 +1,1772 @@
+
+          -------------------------------------------------------
+          Amber 18 SANDER                              2018
+          -------------------------------------------------------
+
+| Run on 02/20/2020 at 16:41:46
+
+|   Executable path: sander
+| Working directory: /home/73w/pfpcheck/ProteinFoldingPipeline
+|          Hostname: or-condo-login01.ornl.gov
+
+  [-O]verwriting output
+
+File Assignments:
+|  MDIN: siman.in                                                              
+| MDOUT: siman1.out                                                            
+|INPCRD: min.ncrst                                                             
+|  PARM: prmtop                                                                
+|RESTRT: siman1.ncrst                                                          
+|  REFC: refc                                                                  
+| MDVEL: mdvel                                                                 
+| MDFRC: mdfrc                                                                 
+|  MDEN: mden                                                                  
+| MDCRD: siman1.nc                                                             
+|MDINFO: mdinfo                                                                
+|  MTMD: mtmd                                                                  
+|INPDIP: inpdip                                                                
+|RSTDIP: rstdip                                                                
+|INPTRA: inptraj                                                               
+
+
+ Here is the input file:
+
+simulated anealing, 20 ps                                                      
+                                                                               
+ &cntrl                                                                        
+    nstlim=20000, pencut=-0.001, nmropt=1,                                     
+    ntpr=200, ntt=1, ntwx=200, tempi=100                                       
+    cut=15.0, ntb=0, vlimit=10, ig=-1                                          
+ /                                                                             
+ &ewald                                                                        
+    eedmeth=5,                                                                 
+ /                                                                             
+#                                                                              
+#Simple simulated annealing algorithm:                                         
+#                                                                              
+#from steps 0 to 5000: heat the system to 600K                                 
+#from steps 5001-18000: re-cool to low temperatures with long tautp            
+#from steps 18001-20000: final cooling with short tautp                        
+#                                                                              
+ &wt type='TEMP0', istep1=0,istep2=5000,value1=600.0                           
+            value2=600.0,    /                                                 
+ &wt type='TEMP0', istep1=5001, istep2=18000, value1=600.0                     
+            value2=100.0,     /                                                
+ &wt type='TEMP0', istep1=18001, istep2=20000, value1=0.0,                     
+            value2=0.0,     /                                                  
+                                                                               
+ &wt type='TAUTP', istep1=0,istep2=5000,value1=0.4,                            
+            value2=0.4,     /                                                  
+ &wt type='TAUTP', istep1=5001,istep2=18000,value1=4.0,                        
+            value2=4.0,     /                                                  
+ &wt type='TAUTP', istep1=18001,istep2=19000,value1=1.0,                       
+            value2=1.0,     /                                                  
+ &wt type='TAUTP', istep1=19001,istep2=20000,value1=0.1,                       
+            value2=0.05,    /                                                  
+                                                                               
+ &wt type='REST', istep1=0,istep2=3000,value1=0.1,                             
+            value2=1.0,  /                                                     
+ &wt type='REST', istep1=3001,istep2=20000,value1=1.0,                         
+            value2=1.0,  /                                                     
+                                                                               
+ &wt type='END'  /                                                             
+LISTOUT=POUT                                                                   
+DISANG=RST                                                                     
+
+--------------------------------------------------------------------------------
+   1.  RESOURCE   USE: 
+--------------------------------------------------------------------------------
+
+| Flags:                                                                        
+|    NONPERIODIC   ntb=0 and igb=0: Setting up nonperiodic simulation
+|Largest sphere to fit in unit cell has radius =    67.265
+| New format PARM file being parsed.
+| Version =    1.000 Date = 02/20/20 Time = 16:39:55
+ NATOM  =    1231 NTYPES =      14 NBONH =     629 MBONA  =     608
+ NTHETH =    1439 MTHETA =     818 NPHIH =    2860 MPHIA  =    2639
+ NHPARM =       0 NPARM  =       0 NNB   =    6824 NRES   =      76
+ NBONA  =     608 NTHETA =     818 NPHIA =    2639 NUMBND =      56
+ NUMANG =     130 NPTRA  =     163 NATYP =      28 NPHB   =       0
+ IFBOX  =       0 NMXRS  =      24 IFCAP =       0 NEXTRA =       0
+ NCOPY  =       0
+
+
+|     Memory Use     Allocated
+|     Real              116668
+|     Hollerith           3771
+|     Integer           351050
+|     Max Pairs         757065
+|     nblistReal         14772
+|     nblist Int       2560637
+|       Total            15372 kbytes
+
+| Note: 1-4 EEL scale factors are being read from the topology file.
+
+| Note: 1-4 VDW scale factors are being read from the topology file.
+| Duplicated    0 dihedrals
+| Duplicated    0 dihedrals
+Note: ig = -1. Setting random seed to   734640 based on wallclock time in microseconds.
+
+--------------------------------------------------------------------------------
+   2.  CONTROL  DATA  FOR  THE  RUN
+--------------------------------------------------------------------------------
+
+NMET                                                                            
+
+General flags:
+     imin    =       0, nmropt  =       1
+
+Nature and format of input:
+     ntx     =       1, irest   =       0, ntrx    =       1
+
+Nature and format of output:
+     ntxo    =       2, ntpr    =     200, ntrx    =       1, ntwr    =   20000
+     iwrap   =       0, ntwx    =     200, ntwv    =       0, ntwe    =       0
+     ioutfm  =       1, ntwprt  =       0, idecomp =       0, rbornstat=      0
+
+Potential function:
+     ntf     =       1, ntb     =       0, igb     =       0, nsnb    =      25
+     ipol    =       0, gbsa    =       0, iesp    =       0
+     dielc   =   1.00000, cut     =  15.00000, intdiel =   1.00000
+
+Frozen or restrained atoms:
+     ibelly  =       0, ntr     =       0
+
+Molecular dynamics:
+     nstlim  =     20000, nscm    =      1000, nrespa  =         1
+     t       =   0.00000, dt      =   0.00100, vlimit  =  10.00000
+
+Berendsen (weak-coupling) temperature regulation:
+     temp0   = 300.00000, tempi   = 100.00000, tautp   =   1.00000
+
+NMR refinement options:
+     iscale  =       0, noeskp  =       1, ipnlty  =       1, mxsub   =       1
+     scalm   = 100.00000, pencut  =  -0.00100, tausw   =   0.10000
+|  INFO: Old style inpcrd file read
+
+
+--------------------------------------------------------------------------------
+   3.  ATOMIC COORDINATES AND VELOCITIES
+--------------------------------------------------------------------------------
+
+NMET                                                                            
+ begin time read from input coords =     0.000 ps
+
+
+
+           Begin reading energy term weight changes/NMR restraints
+ WEIGHT CHANGES:
+ TEMP0         0   5000  600.000000  600.000000      0      0
+ TEMP0      5001  18000  600.000000  100.000000      0      0
+ TEMP0     18001  20000    0.000000    0.000000      0      0
+ TAUTP         0   5000    0.400000    0.400000      0      0
+ TAUTP      5001  18000    4.000000    4.000000      0      0
+ TAUTP     18001  19000    1.000000    1.000000      0      0
+ TAUTP     19001  20000    0.100000    0.050000      0      0
+ REST          0   3000    0.100000    1.000000      0      0
+ REST       3001  20000    1.000000    1.000000      0      0
+
+ RESTRAINTS:
+ Requested file redirections:
+  LISTOUT   = POUT
+  DISANG    = RST
+ Restraints will be read from file: RST
+Here are comments from the DISANG input file:
+
+                       Number of restraints read =  1149
+
+                  Done reading weight changes/NMR restraints
+
+
+ Number of triangulated 3-point waters found:        0
+
+     Sum of charges from parm topology file =  -0.00000004
+     Forcing neutrality...
+
+--------------------------------------------------------------------------------
+   4.  RESULTS
+--------------------------------------------------------------------------------
+
+|  # of SOLUTE  degrees of freedom (RNDFP):    3693.
+|  # of SOLVENT degrees of freedom (RNDFS):       0.
+|  NDFMIN =    3687.     NUM_NOSHAKE =      0     CORRECTED RNDFP =    3687.
+|  TOTAL # of degrees of freedom (RNDF) =    3687.
+ ---------------------------------------------------
+
+     eedmeth=5: Using 1/r dielectric
+
+ ---------------------------------------------------
+| Local SIZE OF NONBOND LIST =      81733
+| TOTAL SIZE OF NONBOND LIST =      81733
+
+ NSTEP =        0   TIME(PS) =       0.000  TEMP(K) =   102.25  PRESS =     0.0
+ Etot   =    542076.9700  EKtot   =       374.5674  EPtot      =    541702.4026
+ BOND   =        56.3621  ANGLE   =       127.5693  DIHED      =       782.6769
+ 1-4 NB =       199.8157  1-4 EEL =       860.9078  VDWAALS    =      -221.7861
+ EELEC  =     -1378.2192  EHBOND  =         0.0000  RESTRAINT  =    541275.0760
+ EAMBER (non-restraint)  =       427.3266
+ ------------------------------------------------------------------------------
+
+ NMR restraints: Bond =*********   Angle =     0.000   Torsion =    23.600
+===============================================================================
+vlimit exceeded for step     18; vmax =    10.6723
+vlimit exceeded for step     19; vmax =    10.9865
+vlimit exceeded for step     20; vmax =    10.8703
+vlimit exceeded for step     21; vmax =    10.7259
+vlimit exceeded for step     22; vmax =    10.5343
+vlimit exceeded for step     23; vmax =    10.5733
+vlimit exceeded for step     24; vmax =    10.5643
+vlimit exceeded for step     25; vmax =    10.7936
+vlimit exceeded for step     26; vmax =    10.6547
+vlimit exceeded for step     27; vmax =    10.2993
+vlimit exceeded for step     28; vmax =    10.1130
+vlimit exceeded for step     29; vmax =    10.0202
+vlimit exceeded for step     31; vmax =    10.5532
+vlimit exceeded for step     32; vmax =    11.3078
+vlimit exceeded for step     33; vmax =    10.2980
+vlimit exceeded for step     36; vmax =    10.8702
+vlimit exceeded for step     37; vmax =    10.1704
+vlimit exceeded for step     38; vmax =    10.8600
+vlimit exceeded for step     39; vmax =    10.5929
+vlimit exceeded for step     40; vmax =    10.2848
+vlimit exceeded for step     45; vmax =    10.4110
+vlimit exceeded for step     46; vmax =    10.7031
+vlimit exceeded for step     47; vmax =    10.6942
+vlimit exceeded for step     48; vmax =    10.3792
+vlimit exceeded for step     49; vmax =    10.9692
+vlimit exceeded for step     50; vmax =    10.8378
+vlimit exceeded for step     51; vmax =    10.6554
+vlimit exceeded for step     52; vmax =    10.4060
+vlimit exceeded for step     53; vmax =    10.8375
+vlimit exceeded for step     54; vmax =    10.5042
+vlimit exceeded for step     55; vmax =    10.4695
+vlimit exceeded for step     56; vmax =    10.4079
+vlimit exceeded for step     57; vmax =    10.4521
+vlimit exceeded for step     58; vmax =    10.5630
+vlimit exceeded for step     59; vmax =    11.1374
+vlimit exceeded for step     60; vmax =    10.5757
+vlimit exceeded for step     61; vmax =    10.4832
+vlimit exceeded for step     62; vmax =    10.6470
+vlimit exceeded for step     63; vmax =    10.2081
+vlimit exceeded for step     64; vmax =    10.1612
+vlimit exceeded for step     65; vmax =    10.8325
+vlimit exceeded for step     66; vmax =    11.2258
+vlimit exceeded for step     67; vmax =    11.0396
+vlimit exceeded for step     68; vmax =    10.9805
+vlimit exceeded for step     69; vmax =    10.8417
+vlimit exceeded for step     70; vmax =    11.1079
+vlimit exceeded for step     71; vmax =    12.0966
+vlimit exceeded for step     72; vmax =    11.6652
+vlimit exceeded for step     73; vmax =    10.9266
+vlimit exceeded for step     74; vmax =    10.8175
+vlimit exceeded for step     75; vmax =    11.1807
+vlimit exceeded for step     76; vmax =    11.0371
+vlimit exceeded for step     77; vmax =    10.7825
+vlimit exceeded for step     78; vmax =    10.4155
+vlimit exceeded for step     79; vmax =    10.5589
+vlimit exceeded for step     80; vmax =    10.5384
+vlimit exceeded for step     81; vmax =    11.4431
+vlimit exceeded for step     82; vmax =    11.1762
+vlimit exceeded for step     83; vmax =    11.1033
+vlimit exceeded for step     84; vmax =    11.4245
+vlimit exceeded for step     85; vmax =    10.7125
+vlimit exceeded for step     86; vmax =    10.4497
+vlimit exceeded for step     87; vmax =    10.5222
+vlimit exceeded for step     88; vmax =    10.3164
+vlimit exceeded for step     89; vmax =    10.9092
+vlimit exceeded for step     90; vmax =    11.2685
+vlimit exceeded for step     91; vmax =    11.8207
+vlimit exceeded for step     92; vmax =    11.3016
+vlimit exceeded for step     93; vmax =    11.2006
+vlimit exceeded for step     94; vmax =    10.9505
+vlimit exceeded for step     95; vmax =    10.8810
+vlimit exceeded for step     96; vmax =    11.0654
+vlimit exceeded for step     97; vmax =    11.4838
+vlimit exceeded for step     98; vmax =    11.6424
+vlimit exceeded for step     99; vmax =    11.7197
+vlimit exceeded for step    100; vmax =    11.6451
+vlimit exceeded for step    101; vmax =    11.3892
+vlimit exceeded for step    102; vmax =    11.2146
+vlimit exceeded for step    103; vmax =    11.0344
+vlimit exceeded for step    104; vmax =    11.0839
+vlimit exceeded for step    105; vmax =    11.4643
+vlimit exceeded for step    106; vmax =    11.1694
+vlimit exceeded for step    107; vmax =    11.3941
+vlimit exceeded for step    108; vmax =    11.5059
+vlimit exceeded for step    109; vmax =    11.4609
+vlimit exceeded for step    110; vmax =    11.5087
+vlimit exceeded for step    111; vmax =    11.7263
+vlimit exceeded for step    112; vmax =    11.8536
+vlimit exceeded for step    113; vmax =    12.7207
+vlimit exceeded for step    114; vmax =    13.6398
+vlimit exceeded for step    115; vmax =    13.6595
+vlimit exceeded for step    116; vmax =    12.1035
+vlimit exceeded for step    117; vmax =    11.7151
+vlimit exceeded for step    118; vmax =    11.7284
+vlimit exceeded for step    119; vmax =    11.7253
+vlimit exceeded for step    120; vmax =    12.9640
+vlimit exceeded for step    121; vmax =    12.3336
+vlimit exceeded for step    122; vmax =    12.3951
+vlimit exceeded for step    123; vmax =    12.4408
+vlimit exceeded for step    124; vmax =    12.9222
+vlimit exceeded for step    125; vmax =    13.0240
+vlimit exceeded for step    126; vmax =    13.5088
+vlimit exceeded for step    127; vmax =    12.7227
+vlimit exceeded for step    128; vmax =    11.5762
+vlimit exceeded for step    129; vmax =    12.1807
+vlimit exceeded for step    130; vmax =    12.6770
+vlimit exceeded for step    131; vmax =    12.9260
+vlimit exceeded for step    132; vmax =    12.9638
+vlimit exceeded for step    133; vmax =    12.7964
+vlimit exceeded for step    134; vmax =    12.4346
+vlimit exceeded for step    135; vmax =    12.0698
+vlimit exceeded for step    136; vmax =    12.2052
+vlimit exceeded for step    137; vmax =    12.2251
+vlimit exceeded for step    138; vmax =    12.5501
+vlimit exceeded for step    139; vmax =    12.5927
+vlimit exceeded for step    140; vmax =    12.4974
+vlimit exceeded for step    141; vmax =    12.5660
+vlimit exceeded for step    142; vmax =    12.6751
+vlimit exceeded for step    143; vmax =    12.7002
+vlimit exceeded for step    144; vmax =    12.5618
+vlimit exceeded for step    145; vmax =    12.2723
+vlimit exceeded for step    146; vmax =    12.4821
+vlimit exceeded for step    147; vmax =    12.6751
+vlimit exceeded for step    148; vmax =    12.7030
+vlimit exceeded for step    149; vmax =    12.6177
+vlimit exceeded for step    150; vmax =    12.7744
+vlimit exceeded for step    151; vmax =    12.6555
+vlimit exceeded for step    152; vmax =    12.8078
+vlimit exceeded for step    153; vmax =    12.8391
+vlimit exceeded for step    154; vmax =    12.6204
+vlimit exceeded for step    155; vmax =    13.2117
+vlimit exceeded for step    156; vmax =    13.7579
+vlimit exceeded for step    157; vmax =    13.8062
+vlimit exceeded for step    158; vmax =    13.2645
+vlimit exceeded for step    159; vmax =    12.3889
+vlimit exceeded for step    160; vmax =    12.4469
+vlimit exceeded for step    161; vmax =    12.5646
+vlimit exceeded for step    162; vmax =    12.5231
+vlimit exceeded for step    163; vmax =    12.3249
+vlimit exceeded for step    164; vmax =    12.0149
+vlimit exceeded for step    165; vmax =    12.3038
+vlimit exceeded for step    166; vmax =    12.6446
+vlimit exceeded for step    167; vmax =    12.8933
+vlimit exceeded for step    168; vmax =    13.0103
+vlimit exceeded for step    169; vmax =    12.9817
+vlimit exceeded for step    170; vmax =    12.8236
+vlimit exceeded for step    171; vmax =    12.5686
+vlimit exceeded for step    172; vmax =    12.2169
+vlimit exceeded for step    173; vmax =    11.7708
+vlimit exceeded for step    174; vmax =    11.7223
+vlimit exceeded for step    175; vmax =    11.8595
+vlimit exceeded for step    176; vmax =    12.1060
+vlimit exceeded for step    177; vmax =    11.9126
+vlimit exceeded for step    178; vmax =    11.6195
+vlimit exceeded for step    179; vmax =    30.5701
+vlimit exceeded for step    180; vmax =    46.3075
+vlimit exceeded for step    181; vmax =   159.2234
+vlimit exceeded for step    182; vmax =    14.9275
+vlimit exceeded for step    183; vmax =    19.5534
+vlimit exceeded for step    184; vmax =    14.6981
+vlimit exceeded for step    185; vmax =    14.3823
+vlimit exceeded for step    186; vmax =    14.2195
+vlimit exceeded for step    187; vmax =    12.4878
+vlimit exceeded for step    188; vmax =    12.6520
+vlimit exceeded for step    189; vmax =    12.6066
+vlimit exceeded for step    190; vmax =    15.5525
+vlimit exceeded for step    191; vmax =    14.8781
+vlimit exceeded for step    192; vmax =    13.0970
+vlimit exceeded for step    193; vmax =    12.9812
+vlimit exceeded for step    194; vmax =    12.8557
+vlimit exceeded for step    195; vmax =    12.7659
+vlimit exceeded for step    196; vmax =    13.6461
+vlimit exceeded for step    197; vmax =    13.4119
+vlimit exceeded for step    198; vmax =    12.6937
+vlimit exceeded for step    199; vmax =    12.6975
+
+ NSTEP =      200   TIME(PS) =       0.200  TEMP(K) = 43373.53  PRESS =     0.0
+ Etot   =    701473.4615  EKtot   =    158894.0518  EPtot      =    542579.4098
+ BOND   =      6750.5089  ANGLE   =      5236.1923  DIHED      =      1866.2383
+ 1-4 NB =       510.9032  1-4 EEL =       564.8997  VDWAALS    =       395.1285
+ EELEC  =     -1194.0921  EHBOND  =         0.0000  RESTRAINT  =    528449.6309
+ EAMBER (non-restraint)  =     14129.7788
+ ------------------------------------------------------------------------------
+
+ NMR restraints: Bond =*********   Angle =     0.000   Torsion =    43.086
+===============================================================================
+vlimit exceeded for step    200; vmax =    12.5313
+vlimit exceeded for step    201; vmax =    12.2945
+vlimit exceeded for step    202; vmax =    12.0679
+vlimit exceeded for step    203; vmax =    11.9927
+vlimit exceeded for step    204; vmax =    12.1801
+vlimit exceeded for step    205; vmax =    12.3443
+vlimit exceeded for step    206; vmax =    12.4475
+vlimit exceeded for step    207; vmax =    12.7827
+vlimit exceeded for step    208; vmax =    12.4264
+vlimit exceeded for step    209; vmax =    12.0080
+vlimit exceeded for step    210; vmax =    11.7176
+vlimit exceeded for step    211; vmax =    12.7485
+vlimit exceeded for step    212; vmax =    12.4167
+vlimit exceeded for step    213; vmax =    12.4667
+vlimit exceeded for step    214; vmax =    13.0280
+vlimit exceeded for step    215; vmax =    13.3168
+vlimit exceeded for step    216; vmax =    13.2595
+vlimit exceeded for step    217; vmax =    12.8578
+vlimit exceeded for step    218; vmax =    12.7470
+vlimit exceeded for step    219; vmax =    12.6470
+vlimit exceeded for step    220; vmax =    12.4326
+vlimit exceeded for step    221; vmax =    12.1691
+vlimit exceeded for step    222; vmax =    12.2416
+vlimit exceeded for step    223; vmax =    12.6992
+vlimit exceeded for step    224; vmax =    13.0948
+vlimit exceeded for step    225; vmax =    13.2050
+vlimit exceeded for step    226; vmax =    12.9668
+vlimit exceeded for step    227; vmax =    12.6515
+vlimit exceeded for step    228; vmax =    12.7762
+vlimit exceeded for step    229; vmax =    12.7735
+vlimit exceeded for step    230; vmax =    12.6413
+vlimit exceeded for step    231; vmax =    12.3933
+vlimit exceeded for step    232; vmax =    12.1752
+vlimit exceeded for step    233; vmax =    12.4945
+vlimit exceeded for step    234; vmax =    12.1556
+vlimit exceeded for step    235; vmax =    12.4205
+vlimit exceeded for step    236; vmax =    12.6992
+vlimit exceeded for step    237; vmax =    12.4198
+vlimit exceeded for step    238; vmax =    12.4106
+vlimit exceeded for step    239; vmax =    12.4082
+vlimit exceeded for step    240; vmax =    12.5642
+vlimit exceeded for step    241; vmax =    13.1483
+vlimit exceeded for step    242; vmax =    13.5275
+vlimit exceeded for step    243; vmax =    13.6066
+vlimit exceeded for step    244; vmax =    13.6715
+vlimit exceeded for step    245; vmax =    14.0002
+vlimit exceeded for step    246; vmax =    14.0152
+vlimit exceeded for step    247; vmax =    13.8841
+vlimit exceeded for step    248; vmax =    13.7450
+vlimit exceeded for step    249; vmax =    13.6044
+vlimit exceeded for step    250; vmax =    13.4272
+vlimit exceeded for step    251; vmax =    13.1859
+vlimit exceeded for step    252; vmax =    15.7729
+vlimit exceeded for step    253; vmax =    78.1058
+vlimit exceeded for step    254; vmax =   153.9241
+vlimit exceeded for step    255; vmax =    20.1380
+vlimit exceeded for step    256; vmax =   147.9163
+vlimit exceeded for step    257; vmax =    23.8434
+vlimit exceeded for step    258; vmax =    37.9268
+vlimit exceeded for step    259; vmax =    54.6416
+vlimit exceeded for step    260; vmax =   323.5427
+vlimit exceeded for step    261; vmax =    15.3154
+vlimit exceeded for step    262; vmax =    18.4858
+vlimit exceeded for step    263; vmax =    18.0342
+vlimit exceeded for step    264; vmax =    17.2461
+vlimit exceeded for step    265; vmax =    16.1682
+vlimit exceeded for step    266; vmax =    14.7287
+vlimit exceeded for step    267; vmax =    12.8618
+vlimit exceeded for step    268; vmax =    12.3221
+vlimit exceeded for step    269; vmax =    12.2970
+vlimit exceeded for step    270; vmax =    12.2220
+vlimit exceeded for step    271; vmax =    12.1393
+vlimit exceeded for step    272; vmax =    12.4637
+vlimit exceeded for step    273; vmax =    13.0193
+vlimit exceeded for step    274; vmax =    18.8000
+vlimit exceeded for step    275; vmax =    17.7414
+vlimit exceeded for step    276; vmax =    16.3859
+vlimit exceeded for step    277; vmax =    14.8453
+vlimit exceeded for step    278; vmax =    13.2997
+vlimit exceeded for step    279; vmax =    12.5828
+vlimit exceeded for step    280; vmax =    12.9822
+vlimit exceeded for step    281; vmax =    13.1273
+vlimit exceeded for step    282; vmax =    12.9649
+vlimit exceeded for step    283; vmax =    14.3276
+vlimit exceeded for step    284; vmax =    13.4869
+vlimit exceeded for step    285; vmax =    12.3571
+vlimit exceeded for step    286; vmax =    13.5545
+vlimit exceeded for step    287; vmax =    14.6671
+vlimit exceeded for step    288; vmax =    12.7567
+vlimit exceeded for step    289; vmax =    12.1720
+vlimit exceeded for step    290; vmax =    14.8344
+vlimit exceeded for step    291; vmax =    13.6764
+vlimit exceeded for step    292; vmax =    13.5347
+vlimit exceeded for step    293; vmax =    12.6139
+vlimit exceeded for step    294; vmax =    12.5657
+vlimit exceeded for step    295; vmax =    13.4439
+vlimit exceeded for step    296; vmax =    12.9875
+vlimit exceeded for step    297; vmax =    13.4631
+vlimit exceeded for step    298; vmax =    13.6101
+vlimit exceeded for step    299; vmax =    13.3075
+vlimit exceeded for step    300; vmax =    13.1691
+vlimit exceeded for step    301; vmax =    13.1899
+vlimit exceeded for step    302; vmax =    13.4324
+vlimit exceeded for step    303; vmax =    13.8542
+vlimit exceeded for step    304; vmax =    13.1807
+vlimit exceeded for step    305; vmax =    12.9191
+vlimit exceeded for step    306; vmax =    13.5807
+vlimit exceeded for step    307; vmax =    13.5497
+vlimit exceeded for step    308; vmax =    13.1224
+vlimit exceeded for step    309; vmax =    14.1907
+vlimit exceeded for step    310; vmax =    13.9622
+vlimit exceeded for step    311; vmax =    13.9189
+vlimit exceeded for step    312; vmax =    13.8918
+vlimit exceeded for step    313; vmax =    12.6341
+vlimit exceeded for step    314; vmax =    13.0243
+vlimit exceeded for step    315; vmax =    13.5015
+vlimit exceeded for step    316; vmax =    13.3199
+vlimit exceeded for step    317; vmax =    12.9460
+vlimit exceeded for step    318; vmax =    14.0390
+vlimit exceeded for step    319; vmax =    13.9236
+vlimit exceeded for step    320; vmax =    16.3602
+vlimit exceeded for step    321; vmax =    46.4624
+vlimit exceeded for step    322; vmax =   328.0530
+vlimit exceeded for step    323; vmax =    14.0654
+vlimit exceeded for step    324; vmax =    16.9423
+vlimit exceeded for step    325; vmax =    19.1789
+vlimit exceeded for step    326; vmax =    16.7492
+vlimit exceeded for step    327; vmax =    15.2700
+vlimit exceeded for step    328; vmax =    15.3419
+vlimit exceeded for step    329; vmax =    16.2825
+vlimit exceeded for step    330; vmax =    16.8784
+vlimit exceeded for step    331; vmax =    16.5296
+vlimit exceeded for step    332; vmax =    15.1180
+vlimit exceeded for step    333; vmax =    14.3423
+vlimit exceeded for step    334; vmax =    14.7959
+vlimit exceeded for step    335; vmax =    13.1315
+vlimit exceeded for step    336; vmax =    13.6574
+vlimit exceeded for step    337; vmax =    13.8763
+vlimit exceeded for step    338; vmax =    13.8428
+vlimit exceeded for step    339; vmax =    13.7259
+vlimit exceeded for step    340; vmax =    13.7007
+vlimit exceeded for step    341; vmax =    14.0361
+vlimit exceeded for step    342; vmax =    14.2134
+vlimit exceeded for step    343; vmax =    12.7009
+vlimit exceeded for step    344; vmax =    15.5001
+vlimit exceeded for step    345; vmax =    12.6273
+vlimit exceeded for step    346; vmax =    19.4727
+vlimit exceeded for step    347; vmax =    20.7040
+vlimit exceeded for step    348; vmax =    14.1198
+vlimit exceeded for step    349; vmax =    13.8960
+vlimit exceeded for step    350; vmax =    14.8993
+vlimit exceeded for step    351; vmax =    12.7335
+vlimit exceeded for step    352; vmax =    13.5451
+vlimit exceeded for step    353; vmax =    16.1890
+vlimit exceeded for step    354; vmax =    17.5464
+vlimit exceeded for step    355; vmax =    16.1597
+vlimit exceeded for step    356; vmax =    15.2080
+vlimit exceeded for step    357; vmax =    13.8360
+vlimit exceeded for step    358; vmax =    13.4983
+vlimit exceeded for step    359; vmax =    26.2675
+vlimit exceeded for step    360; vmax =    15.2530
+vlimit exceeded for step    361; vmax =    12.2028
+vlimit exceeded for step    362; vmax =    30.7986
+vlimit exceeded for step    363; vmax =    63.0870
+vlimit exceeded for step    364; vmax =    13.2915
+vlimit exceeded for step    365; vmax =    15.9935
+vlimit exceeded for step    366; vmax =    15.7032
+vlimit exceeded for step    367; vmax =    15.5205
+vlimit exceeded for step    368; vmax =    15.2059
+vlimit exceeded for step    369; vmax =    15.7627
+vlimit exceeded for step    370; vmax =    13.4172
+vlimit exceeded for step    371; vmax =    33.0971
+vlimit exceeded for step    372; vmax =   488.9257
+vlimit exceeded for step    373; vmax =    15.7195
+vlimit exceeded for step    374; vmax =    25.6423
+vlimit exceeded for step    375; vmax =    21.6593
+vlimit exceeded for step    376; vmax =    17.7279
+vlimit exceeded for step    377; vmax =    14.4765
+vlimit exceeded for step    378; vmax =    14.0386
+vlimit exceeded for step    379; vmax =    24.4424
+vlimit exceeded for step    380; vmax =    15.1681
+vlimit exceeded for step    381; vmax =    17.4151
+vlimit exceeded for step    382; vmax =    54.2555
+vlimit exceeded for step    383; vmax =    16.8204
+vlimit exceeded for step    384; vmax =   307.0841
+vlimit exceeded for step    385; vmax =    16.4354
+vlimit exceeded for step    386; vmax =    33.5069
+vlimit exceeded for step    387; vmax =    21.5465
+vlimit exceeded for step    388; vmax =    21.0040
+vlimit exceeded for step    389; vmax =    19.4961
+vlimit exceeded for step    390; vmax =    16.9863
+vlimit exceeded for step    391; vmax =    17.9392
+vlimit exceeded for step    392; vmax =    13.2937
+vlimit exceeded for step    393; vmax =    55.3466
+vlimit exceeded for step    394; vmax =    15.5233
+vlimit exceeded for step    395; vmax =    14.0969
+vlimit exceeded for step    396; vmax =    14.2280
+vlimit exceeded for step    397; vmax =    12.9766
+vlimit exceeded for step    398; vmax =    23.2617
+vlimit exceeded for step    399; vmax =    19.2051
+
+ NSTEP =      400   TIME(PS) =       0.400  TEMP(K) = 65052.29  PRESS =     0.0
+ Etot   =    528429.5235  EKtot   =    238311.7707  EPtot      =    290117.7528
+ BOND   =     17679.4586  ANGLE   =     13129.9822  DIHED      =      2455.6550
+ 1-4 NB =      1479.6737  1-4 EEL =       713.6546  VDWAALS    =      3259.8042
+ EELEC  =     -1317.6378  EHBOND  =         0.0000  RESTRAINT  =    252717.1623
+ EAMBER (non-restraint)  =     37400.5905
+ ------------------------------------------------------------------------------
+
+ NMR restraints: Bond =*********   Angle =     0.000   Torsion =    56.892
+===============================================================================
+vlimit exceeded for step    400; vmax =    19.3790
+vlimit exceeded for step    401; vmax =    13.4724
+vlimit exceeded for step    402; vmax =    13.5201
+vlimit exceeded for step    403; vmax =    15.6757
+vlimit exceeded for step    404; vmax =    17.3962
+vlimit exceeded for step    405; vmax =    16.5333
+vlimit exceeded for step    406; vmax =    16.7120
+vlimit exceeded for step    407; vmax =    16.1048
+vlimit exceeded for step    408; vmax =    16.9098
+vlimit exceeded for step    409; vmax =    16.2562
+vlimit exceeded for step    410; vmax =    16.6762
+vlimit exceeded for step    411; vmax =    18.2211
+vlimit exceeded for step    412; vmax =    15.8965
+vlimit exceeded for step    413; vmax =    13.3857
+vlimit exceeded for step    414; vmax =    13.9721
+vlimit exceeded for step    415; vmax =    17.1043
+vlimit exceeded for step    416; vmax =    12.9076
+vlimit exceeded for step    417; vmax =    19.3278
+vlimit exceeded for step    418; vmax =    12.9108
+vlimit exceeded for step    419; vmax =    12.9216
+vlimit exceeded for step    420; vmax =    42.3026
+vlimit exceeded for step    421; vmax =    14.5149
+vlimit exceeded for step    422; vmax =    14.3635
+vlimit exceeded for step    423; vmax =    13.9223
+vlimit exceeded for step    424; vmax =    23.6722
+vlimit exceeded for step    425; vmax =    14.0108
+vlimit exceeded for step    426; vmax =    19.5056
+vlimit exceeded for step    427; vmax =   167.1236
+vlimit exceeded for step    428; vmax =    20.1582
+vlimit exceeded for step    429; vmax =    13.9463
+vlimit exceeded for step    430; vmax =    13.7719
+vlimit exceeded for step    431; vmax =    18.4585
+vlimit exceeded for step    432; vmax =    14.7850
+vlimit exceeded for step    433; vmax =    13.4350
+vlimit exceeded for step    434; vmax =    13.6101
+vlimit exceeded for step    435; vmax =    14.9699
+vlimit exceeded for step    436; vmax =    14.9561
+vlimit exceeded for step    437; vmax =    13.8629
+vlimit exceeded for step    438; vmax =    14.8142
+vlimit exceeded for step    439; vmax =    15.8122
+vlimit exceeded for step    440; vmax =    13.6376
+vlimit exceeded for step    441; vmax =    12.9406
+vlimit exceeded for step    442; vmax =    15.2977
+vlimit exceeded for step    443; vmax =    13.0925
+vlimit exceeded for step    444; vmax =    15.4669
+vlimit exceeded for step    445; vmax =    13.7415
+vlimit exceeded for step    446; vmax =    13.0413
+vlimit exceeded for step    447; vmax =    13.4298
+vlimit exceeded for step    448; vmax =   290.1028
+vlimit exceeded for step    449; vmax =    13.8979
+vlimit exceeded for step    450; vmax =    12.3023
+vlimit exceeded for step    451; vmax =    13.0506
+vlimit exceeded for step    452; vmax =    15.4262
+vlimit exceeded for step    453; vmax =    14.9680
+vlimit exceeded for step    454; vmax =    14.6706
+vlimit exceeded for step    455; vmax =    14.7759
+vlimit exceeded for step    456; vmax =    15.4013
+vlimit exceeded for step    457; vmax =   307.0684
+vlimit exceeded for step    458; vmax =    20.2435
+vlimit exceeded for step    459; vmax =    19.0322
+vlimit exceeded for step    460; vmax =    16.1041
+vlimit exceeded for step    461; vmax =    15.2326
+vlimit exceeded for step    462; vmax =    14.6082
+vlimit exceeded for step    463; vmax =    13.8194
+vlimit exceeded for step    464; vmax =    13.3754
+vlimit exceeded for step    465; vmax =    14.5564
+vlimit exceeded for step    466; vmax =    13.6952
+vlimit exceeded for step    467; vmax =    13.7718
+vlimit exceeded for step    468; vmax =    13.0798
+vlimit exceeded for step    469; vmax =    15.2513
+vlimit exceeded for step    470; vmax =    15.4805
+vlimit exceeded for step    471; vmax =    14.6835
+vlimit exceeded for step    472; vmax =    15.3622
+vlimit exceeded for step    473; vmax =    15.3518
+vlimit exceeded for step    474; vmax =    54.4558
+vlimit exceeded for step    475; vmax =   604.8835
+vlimit exceeded for step    476; vmax =    15.3289
+vlimit exceeded for step    477; vmax =    12.3180
+vlimit exceeded for step    478; vmax =    12.3862
+vlimit exceeded for step    479; vmax =    13.8321
+vlimit exceeded for step    480; vmax =    15.7618
+vlimit exceeded for step    481; vmax =    13.0296
+vlimit exceeded for step    482; vmax =    13.3446
+vlimit exceeded for step    483; vmax =    13.1658
+vlimit exceeded for step    484; vmax =    13.1073
+vlimit exceeded for step    485; vmax =    15.3378
+vlimit exceeded for step    486; vmax =    17.6020
+vlimit exceeded for step    487; vmax =    14.6528
+vlimit exceeded for step    488; vmax =    12.8972
+vlimit exceeded for step    489; vmax =    14.4557
+vlimit exceeded for step    490; vmax =    12.8342
+vlimit exceeded for step    491; vmax =    12.8307
+vlimit exceeded for step    492; vmax =    13.1982
+vlimit exceeded for step    493; vmax =    13.3865
+vlimit exceeded for step    494; vmax =    13.6848
+vlimit exceeded for step    495; vmax =    16.8217
+vlimit exceeded for step    496; vmax =    15.5716
+vlimit exceeded for step    497; vmax =    13.1721
+vlimit exceeded for step    498; vmax =    12.8441
+vlimit exceeded for step    499; vmax =    13.7812
+vlimit exceeded for step    500; vmax =    13.0416
+vlimit exceeded for step    501; vmax =    11.9945
+vlimit exceeded for step    502; vmax =    12.6797
+vlimit exceeded for step    503; vmax =    12.9123
+vlimit exceeded for step    504; vmax =    13.7402
+vlimit exceeded for step    505; vmax =    14.1207
+vlimit exceeded for step    506; vmax =    13.0487
+vlimit exceeded for step    507; vmax =    14.7304
+vlimit exceeded for step    508; vmax =    13.4827
+vlimit exceeded for step    509; vmax =    13.4808
+vlimit exceeded for step    510; vmax =    11.9859
+vlimit exceeded for step    511; vmax =    11.4647
+vlimit exceeded for step    512; vmax =    12.0347
+vlimit exceeded for step    513; vmax =    79.9369
+vlimit exceeded for step    514; vmax =   319.6196
+vlimit exceeded for step    515; vmax =    54.9625
+vlimit exceeded for step    516; vmax =   139.0209
+vlimit exceeded for step    517; vmax =   211.5947
+vlimit exceeded for step    518; vmax =   322.2386
+vlimit exceeded for step    519; vmax =    21.9492
+vlimit exceeded for step    520; vmax =    26.8962
+vlimit exceeded for step    521; vmax =    21.5613
+vlimit exceeded for step    522; vmax =  1520.3943
+vlimit exceeded for step    523; vmax =    36.1658
+vlimit exceeded for step    524; vmax =    51.5040
+vlimit exceeded for step    525; vmax =    51.5976
+vlimit exceeded for step    526; vmax =   162.9413
+vlimit exceeded for step    527; vmax =  2232.5546
+vlimit exceeded for step    528; vmax =    20.7306
+vlimit exceeded for step    529; vmax =    25.9164
+vlimit exceeded for step    530; vmax =    24.4378
+vlimit exceeded for step    531; vmax =    22.0171
+vlimit exceeded for step    532; vmax =    19.4396
+vlimit exceeded for step    533; vmax =    16.6925
+vlimit exceeded for step    534; vmax =    13.6869
+vlimit exceeded for step    535; vmax =    12.7970
+vlimit exceeded for step    536; vmax =    11.9170
+vlimit exceeded for step    537; vmax =    12.6642
+vlimit exceeded for step    538; vmax =    13.5376
+vlimit exceeded for step    539; vmax =    13.2043
+vlimit exceeded for step    540; vmax =    12.6866
+vlimit exceeded for step    541; vmax =    12.5672
+vlimit exceeded for step    542; vmax =    12.3137
+vlimit exceeded for step    543; vmax =    13.3963
+vlimit exceeded for step    544; vmax =    13.2627
+vlimit exceeded for step    545; vmax =    13.5010
+vlimit exceeded for step    546; vmax =    13.2834
+vlimit exceeded for step    547; vmax =    13.5654
+vlimit exceeded for step    548; vmax =    14.5054
+vlimit exceeded for step    549; vmax =    13.5407
+vlimit exceeded for step    550; vmax =    12.9102
+vlimit exceeded for step    551; vmax =    12.9980
+vlimit exceeded for step    552; vmax =    12.9418
+vlimit exceeded for step    553; vmax =    13.2672
+vlimit exceeded for step    554; vmax =    14.0354
+vlimit exceeded for step    555; vmax =    15.1742
+vlimit exceeded for step    556; vmax =    13.2274
+vlimit exceeded for step    557; vmax =    12.6423
+vlimit exceeded for step    558; vmax =    12.8762
+vlimit exceeded for step    559; vmax =    14.5053
+vlimit exceeded for step    560; vmax =    16.7081
+vlimit exceeded for step    561; vmax =    29.2239
+vlimit exceeded for step    562; vmax =   132.7302
+vlimit exceeded for step    563; vmax =    15.0590
+vlimit exceeded for step    564; vmax =    25.3307
+vlimit exceeded for step    565; vmax =    21.3016
+vlimit exceeded for step    566; vmax =    17.6149
+vlimit exceeded for step    567; vmax =    16.6439
+vlimit exceeded for step    568; vmax =    19.7031
+vlimit exceeded for step    569; vmax =    23.3410
+vlimit exceeded for step    570; vmax =    52.2270
+vlimit exceeded for step    571; vmax =   265.1834
+vlimit exceeded for step    572; vmax =    13.5753
+vlimit exceeded for step    573; vmax =    15.4029
+vlimit exceeded for step    574; vmax =    15.6299
+vlimit exceeded for step    575; vmax =    16.4907
+vlimit exceeded for step    576; vmax =    20.2361
+vlimit exceeded for step    577; vmax =    61.2538
+vlimit exceeded for step    578; vmax =  5589.7573
+vlimit exceeded for step    579; vmax =    47.6769
+vlimit exceeded for step    580; vmax =    44.7183
+vlimit exceeded for step    581; vmax =    19.6969
+vlimit exceeded for step    582; vmax =    13.8835
+vlimit exceeded for step    583; vmax =    27.0525
+vlimit exceeded for step    584; vmax =    26.3453
+vlimit exceeded for step    585; vmax =    17.7601
+vlimit exceeded for step    586; vmax =    35.4461
+vlimit exceeded for step    587; vmax =    20.5130
+vlimit exceeded for step    588; vmax =    57.8309
+vlimit exceeded for step    589; vmax =    15.2178
+vlimit exceeded for step    590; vmax =    16.6728
+vlimit exceeded for step    591; vmax =   110.4071
+vlimit exceeded for step    592; vmax =    18.0265
+vlimit exceeded for step    593; vmax =   368.5390
+vlimit exceeded for step    594; vmax =    42.9121
+vlimit exceeded for step    595; vmax =    23.2083
+vlimit exceeded for step    596; vmax =    24.9730
+vlimit exceeded for step    597; vmax =    23.5688
+vlimit exceeded for step    598; vmax =    21.5406
+vlimit exceeded for step    599; vmax =    19.3797
+
+ NSTEP =      600   TIME(PS) =       0.600  TEMP(K) = 59561.77  PRESS =     0.0
+ Etot   =    339567.6412  EKtot   =    218197.8604  EPtot      =    121369.7809
+ BOND   =     16365.6680  ANGLE   =     18564.4650  DIHED      =      3007.1079
+ 1-4 NB =      2200.7259  1-4 EEL =       353.2884  VDWAALS    =      4963.1508
+ EELEC  =     -1164.1423  EHBOND  =         0.0000  RESTRAINT  =     77079.5170
+ EAMBER (non-restraint)  =     44290.2638
+ ------------------------------------------------------------------------------
+
+ NMR restraints: Bond =77000.919   Angle =     0.000   Torsion =    78.598
+===============================================================================
+vlimit exceeded for step    600; vmax =    16.8428
+vlimit exceeded for step    601; vmax =    13.7009
+vlimit exceeded for step    602; vmax =    13.0971
+vlimit exceeded for step    603; vmax =    13.4421
+vlimit exceeded for step    604; vmax =    13.5392
+vlimit exceeded for step    605; vmax =    13.4223
+vlimit exceeded for step    606; vmax =    14.5770
+vlimit exceeded for step    607; vmax =    16.8384
+vlimit exceeded for step    608; vmax =    15.0370
+vlimit exceeded for step    609; vmax =   170.8294
+vlimit exceeded for step    610; vmax =    19.1725
+vlimit exceeded for step    611; vmax =    18.4175
+vlimit exceeded for step    612; vmax =    13.7822
+vlimit exceeded for step    613; vmax =    13.9592
+vlimit exceeded for step    614; vmax =    76.7518
+vlimit exceeded for step    615; vmax =    84.5505
+vlimit exceeded for step    616; vmax =    32.0758
+vlimit exceeded for step    617; vmax =   299.0762
+vlimit exceeded for step    618; vmax =    19.3837
+vlimit exceeded for step    619; vmax =    19.0118
+vlimit exceeded for step    620; vmax =    15.6893
+vlimit exceeded for step    621; vmax =    16.1525
+vlimit exceeded for step    622; vmax =    14.5296
+vlimit exceeded for step    623; vmax =    35.2135
+vlimit exceeded for step    624; vmax =    15.0810
+vlimit exceeded for step    625; vmax =    14.3747
+vlimit exceeded for step    626; vmax =    15.8106
+vlimit exceeded for step    627; vmax =    16.4844
+vlimit exceeded for step    628; vmax =    13.3685
+vlimit exceeded for step    629; vmax =    18.0075
+vlimit exceeded for step    630; vmax =    28.0519
+vlimit exceeded for step    631; vmax =   199.3296
+vlimit exceeded for step    632; vmax =    15.8116
+vlimit exceeded for step    633; vmax =    19.3449
+vlimit exceeded for step    634; vmax =    17.5634
+vlimit exceeded for step    635; vmax =    21.1378
+vlimit exceeded for step    636; vmax =    43.0079
+vlimit exceeded for step    637; vmax =    17.5216
+vlimit exceeded for step    638; vmax =    19.9071
+vlimit exceeded for step    639; vmax =    23.2055
+vlimit exceeded for step    640; vmax =    16.9474
+vlimit exceeded for step    641; vmax =    27.5145
+vlimit exceeded for step    642; vmax =    16.7638
+vlimit exceeded for step    643; vmax =    17.3921
+vlimit exceeded for step    644; vmax =    14.4043
+vlimit exceeded for step    645; vmax =    13.6758
+vlimit exceeded for step    646; vmax =    19.7596
+vlimit exceeded for step    647; vmax =    14.9198
+vlimit exceeded for step    648; vmax =    12.7481
+vlimit exceeded for step    649; vmax =    14.7442
+vlimit exceeded for step    650; vmax =    15.1736
+vlimit exceeded for step    651; vmax =    15.8297
+vlimit exceeded for step    652; vmax =    17.6331
+vlimit exceeded for step    653; vmax =    22.1832
+vlimit exceeded for step    654; vmax =    42.0029
+vlimit exceeded for step    655; vmax =    51.7070
+vlimit exceeded for step    656; vmax =   294.3571
+vlimit exceeded for step    657; vmax =    20.4851
+vlimit exceeded for step    658; vmax =    16.1563
+vlimit exceeded for step    659; vmax =    13.7549
+vlimit exceeded for step    660; vmax =    13.7145
+vlimit exceeded for step    661; vmax =    15.6633
+vlimit exceeded for step    662; vmax =    34.3194
+vlimit exceeded for step    663; vmax =   699.9002
+vlimit exceeded for step    664; vmax =    16.8000
+vlimit exceeded for step    665; vmax =    16.4243
+vlimit exceeded for step    666; vmax =    40.4705
+vlimit exceeded for step    667; vmax =    18.9024
+vlimit exceeded for step    668; vmax =    18.1234
+vlimit exceeded for step    669; vmax =    14.9640
+vlimit exceeded for step    670; vmax =    15.8492
+vlimit exceeded for step    671; vmax =   394.8758
+vlimit exceeded for step    672; vmax =    26.2945
+vlimit exceeded for step    673; vmax =    40.2167
+vlimit exceeded for step    674; vmax =   343.8413
+vlimit exceeded for step    675; vmax =    19.9231
+vlimit exceeded for step    676; vmax =    16.6785
+vlimit exceeded for step    677; vmax =    14.3653
+vlimit exceeded for step    678; vmax =    28.2093
+vlimit exceeded for step    679; vmax =   387.0823
+vlimit exceeded for step    680; vmax =    13.8960
+vlimit exceeded for step    681; vmax =    14.1449
+vlimit exceeded for step    682; vmax =    13.9900
+vlimit exceeded for step    683; vmax =    16.1908
+vlimit exceeded for step    684; vmax =    17.0919
+vlimit exceeded for step    685; vmax =    18.2102
+vlimit exceeded for step    686; vmax =    13.7001
+vlimit exceeded for step    687; vmax =    19.5512
+vlimit exceeded for step    688; vmax =    15.4363
+vlimit exceeded for step    689; vmax =    20.2353
+vlimit exceeded for step    690; vmax =    15.1448
+vlimit exceeded for step    691; vmax =    40.9214
+vlimit exceeded for step    692; vmax =    14.5007
+vlimit exceeded for step    693; vmax =    14.4539
+vlimit exceeded for step    694; vmax =    13.7512
+vlimit exceeded for step    695; vmax =    14.7616
+vlimit exceeded for step    696; vmax =    49.2919
+vlimit exceeded for step    697; vmax =    37.1081
+vlimit exceeded for step    698; vmax =    28.7621
+vlimit exceeded for step    699; vmax =    21.8276
+vlimit exceeded for step    700; vmax =    16.1249
+vlimit exceeded for step    701; vmax =    15.5561
+vlimit exceeded for step    702; vmax =    51.8884
+vlimit exceeded for step    703; vmax =    14.3763
+vlimit exceeded for step    704; vmax =    13.4282
+vlimit exceeded for step    705; vmax =    13.3800
+vlimit exceeded for step    706; vmax =    16.4062
+vlimit exceeded for step    707; vmax =    15.3683
+vlimit exceeded for step    708; vmax =    15.0012
+vlimit exceeded for step    709; vmax =    15.7408
+vlimit exceeded for step    710; vmax =    24.1867
+vlimit exceeded for step    711; vmax =    15.0868
+vlimit exceeded for step    712; vmax =    15.3698
+vlimit exceeded for step    713; vmax =    14.4031
+vlimit exceeded for step    714; vmax =    13.9223
+vlimit exceeded for step    715; vmax =    15.6886
+vlimit exceeded for step    716; vmax =    23.8156
+vlimit exceeded for step    717; vmax =    14.8865
+vlimit exceeded for step    718; vmax =    12.8080
+vlimit exceeded for step    719; vmax =    12.7663
+vlimit exceeded for step    720; vmax =    12.3452
+vlimit exceeded for step    721; vmax =    15.7999
+vlimit exceeded for step    722; vmax =    20.4762
+vlimit exceeded for step    723; vmax =    13.7319
+vlimit exceeded for step    724; vmax =    16.0735
+vlimit exceeded for step    725; vmax =    14.4839
+vlimit exceeded for step    726; vmax =    13.2221
+vlimit exceeded for step    727; vmax =    17.3288
+vlimit exceeded for step    728; vmax =    15.8563
+vlimit exceeded for step    729; vmax =    13.6035
+vlimit exceeded for step    730; vmax =    13.0774
+vlimit exceeded for step    731; vmax =    13.1530
+vlimit exceeded for step    732; vmax =    12.3592
+vlimit exceeded for step    733; vmax =    15.1281
+vlimit exceeded for step    734; vmax =    14.9668
+vlimit exceeded for step    735; vmax =    15.2056
+vlimit exceeded for step    736; vmax =    13.7098
+vlimit exceeded for step    737; vmax =    13.2261
+vlimit exceeded for step    738; vmax =    13.3940
+vlimit exceeded for step    739; vmax =    13.4084
+vlimit exceeded for step    740; vmax =    21.1806
+vlimit exceeded for step    741; vmax =    13.7808
+vlimit exceeded for step    742; vmax =    46.6400
+vlimit exceeded for step    743; vmax =    12.5436
+vlimit exceeded for step    744; vmax =    12.6524
+vlimit exceeded for step    745; vmax =    13.5456
+vlimit exceeded for step    746; vmax =    13.3445
+vlimit exceeded for step    747; vmax =    13.3604
+vlimit exceeded for step    748; vmax =    13.6549
+vlimit exceeded for step    749; vmax =    13.1703
+vlimit exceeded for step    750; vmax =    12.6609
+vlimit exceeded for step    751; vmax =    12.4137
+vlimit exceeded for step    752; vmax =    20.5246
+vlimit exceeded for step    753; vmax =    12.9323
+vlimit exceeded for step    754; vmax =    17.2835
+vlimit exceeded for step    755; vmax =    14.6149
+vlimit exceeded for step    756; vmax =    14.5052
+vlimit exceeded for step    757; vmax =    12.7698
+vlimit exceeded for step    758; vmax =    13.8224
+vlimit exceeded for step    759; vmax =    12.9122
+vlimit exceeded for step    760; vmax =    12.6043
+vlimit exceeded for step    761; vmax =    12.2995
+vlimit exceeded for step    762; vmax =    13.3196
+vlimit exceeded for step    763; vmax =    12.8332
+vlimit exceeded for step    764; vmax =    12.6779
+vlimit exceeded for step    765; vmax =    15.1957
+vlimit exceeded for step    766; vmax =    13.5837
+vlimit exceeded for step    767; vmax =    17.7255
+vlimit exceeded for step    768; vmax =    12.9544
+vlimit exceeded for step    769; vmax =    13.1053
+vlimit exceeded for step    770; vmax =    13.4086
+vlimit exceeded for step    771; vmax =    12.1174
+vlimit exceeded for step    772; vmax =    13.7451
+vlimit exceeded for step    773; vmax =    13.5192
+vlimit exceeded for step    774; vmax =    12.7244
+vlimit exceeded for step    775; vmax =    13.8617
+vlimit exceeded for step    776; vmax =    12.8443
+vlimit exceeded for step    777; vmax =    17.6423
+vlimit exceeded for step    778; vmax =    12.6714
+vlimit exceeded for step    779; vmax =    15.4898
+vlimit exceeded for step    780; vmax =    13.5777
+vlimit exceeded for step    781; vmax =    13.7514
+vlimit exceeded for step    782; vmax =    13.1107
+vlimit exceeded for step    783; vmax =    30.2719
+vlimit exceeded for step    784; vmax =    24.3208
+vlimit exceeded for step    785; vmax =   155.3844
+vlimit exceeded for step    786; vmax =    13.6307
+vlimit exceeded for step    787; vmax =    12.3699
+vlimit exceeded for step    788; vmax =    27.8853
+vlimit exceeded for step    789; vmax =   295.9026
+vlimit exceeded for step    790; vmax =    16.4152
+vlimit exceeded for step    791; vmax =    20.1976
+vlimit exceeded for step    792; vmax =    13.0594
+vlimit exceeded for step    793; vmax =    17.5947
+vlimit exceeded for step    794; vmax =    19.3742
+vlimit exceeded for step    795; vmax =    19.8469
+vlimit exceeded for step    796; vmax =    17.8549
+vlimit exceeded for step    797; vmax =    16.0135
+vlimit exceeded for step    798; vmax =    13.7607
+vlimit exceeded for step    799; vmax =    12.8356
+
+ NSTEP =      800   TIME(PS) =       0.800  TEMP(K) = 19388.13  PRESS =     0.0
+ Etot   =    194120.2089  EKtot   =     71026.2504  EPtot      =    123093.9585
+ BOND   =     23456.4393  ANGLE   =     20128.2580  DIHED      =      3412.5474
+ 1-4 NB =      1852.4486  1-4 EEL =       178.0433  VDWAALS    =      2762.3863
+ EELEC  =      -981.2643  EHBOND  =         0.0000  RESTRAINT  =     72285.1000
+ EAMBER (non-restraint)  =     50808.8585
+ ------------------------------------------------------------------------------
+
+ NMR restraints: Bond =72181.390   Angle =     0.000   Torsion =   103.710
+===============================================================================
+vlimit exceeded for step    800; vmax =    12.5428
+vlimit exceeded for step    801; vmax =    12.1973
+vlimit exceeded for step    802; vmax =    12.0794
+vlimit exceeded for step    803; vmax =    12.4929
+vlimit exceeded for step    804; vmax =    14.2814
+vlimit exceeded for step    805; vmax =    13.1365
+vlimit exceeded for step    806; vmax =    13.4149
+vlimit exceeded for step    807; vmax =    13.9252
+vlimit exceeded for step    808; vmax =    13.5464
+vlimit exceeded for step    809; vmax =    15.6164
+vlimit exceeded for step    810; vmax =    13.7694
+vlimit exceeded for step    811; vmax =    13.3292
+vlimit exceeded for step    812; vmax =    13.1103
+vlimit exceeded for step    813; vmax =    12.8751
+vlimit exceeded for step    814; vmax =    34.3098
+vlimit exceeded for step    815; vmax =    12.4858
+vlimit exceeded for step    816; vmax =    14.6150
+vlimit exceeded for step    817; vmax =    12.6693
+vlimit exceeded for step    818; vmax =    13.3819
+vlimit exceeded for step    819; vmax =    13.7716
+vlimit exceeded for step    820; vmax =    12.2959
+vlimit exceeded for step    821; vmax =    12.4649
+vlimit exceeded for step    822; vmax =    13.1019
+vlimit exceeded for step    823; vmax =    12.2975
+vlimit exceeded for step    824; vmax =    11.7799
+vlimit exceeded for step    825; vmax =    22.9126
+vlimit exceeded for step    826; vmax =    11.6177
+vlimit exceeded for step    827; vmax =    13.5792
+vlimit exceeded for step    828; vmax =    14.4954
+vlimit exceeded for step    829; vmax =    12.8104
+vlimit exceeded for step    830; vmax =    12.4246
+vlimit exceeded for step    831; vmax =    12.1712
+vlimit exceeded for step    832; vmax =    12.3621
+vlimit exceeded for step    833; vmax =    12.9333
+vlimit exceeded for step    834; vmax =    12.8914
+vlimit exceeded for step    835; vmax =    14.1705
+vlimit exceeded for step    836; vmax =    13.2462
+vlimit exceeded for step    837; vmax =    12.9400
+vlimit exceeded for step    838; vmax =    13.6347
+vlimit exceeded for step    839; vmax =    12.9286
+vlimit exceeded for step    840; vmax =    12.6139
+vlimit exceeded for step    841; vmax =    14.5634
+vlimit exceeded for step    842; vmax =    14.3511
+vlimit exceeded for step    843; vmax =    14.0946
+vlimit exceeded for step    844; vmax =    12.5549
+vlimit exceeded for step    845; vmax =    13.0177
+vlimit exceeded for step    846; vmax =    12.2227
+vlimit exceeded for step    847; vmax =    12.1797
+vlimit exceeded for step    848; vmax =    16.2340
+vlimit exceeded for step    849; vmax =    12.3416
+vlimit exceeded for step    850; vmax =    12.0188
+vlimit exceeded for step    851; vmax =    12.4209
+vlimit exceeded for step    852; vmax =    12.6394
+vlimit exceeded for step    853; vmax =    12.7553
+vlimit exceeded for step    854; vmax =    13.0848
+vlimit exceeded for step    855; vmax =    11.9544
+vlimit exceeded for step    856; vmax =    12.3952
+vlimit exceeded for step    857; vmax =    12.4018
+vlimit exceeded for step    858; vmax =    13.9969
+vlimit exceeded for step    859; vmax =    12.8776
+vlimit exceeded for step    860; vmax =    11.5608
+vlimit exceeded for step    861; vmax =    13.7613
+vlimit exceeded for step    862; vmax =    46.7253
+vlimit exceeded for step    863; vmax =   359.5969
+vlimit exceeded for step    864; vmax =    27.5612
+vlimit exceeded for step    865; vmax =   146.1586
+vlimit exceeded for step    866; vmax =    67.3577
+vlimit exceeded for step    867; vmax =   699.3815
+vlimit exceeded for step    868; vmax =    63.0817
+vlimit exceeded for step    869; vmax =   218.0029
+vlimit exceeded for step    870; vmax =    99.0702
+vlimit exceeded for step    871; vmax = 12433.3399
+vlimit exceeded for step    872; vmax =    28.1600
+vlimit exceeded for step    873; vmax =    25.7970
+vlimit exceeded for step    874; vmax =    20.2444
+vlimit exceeded for step    875; vmax =    15.3231
+vlimit exceeded for step    876; vmax =    12.8205
+vlimit exceeded for step    877; vmax =    12.1660
+vlimit exceeded for step    878; vmax =    12.2487
+vlimit exceeded for step    879; vmax =    12.8476
+vlimit exceeded for step    880; vmax =    12.6157
+vlimit exceeded for step    881; vmax =    12.3322
+vlimit exceeded for step    882; vmax =    11.7376
+vlimit exceeded for step    883; vmax =    12.2566
+vlimit exceeded for step    884; vmax =    12.8695
+vlimit exceeded for step    885; vmax =    11.9338
+vlimit exceeded for step    886; vmax =    12.3773
+vlimit exceeded for step    887; vmax =    14.4460
+vlimit exceeded for step    888; vmax =    12.5324
+vlimit exceeded for step    889; vmax =    11.9736
+vlimit exceeded for step    890; vmax =    13.6326
+vlimit exceeded for step    891; vmax =    12.9491
+vlimit exceeded for step    892; vmax =    12.8655
+vlimit exceeded for step    893; vmax =    12.7814
+vlimit exceeded for step    894; vmax =    14.4441
+vlimit exceeded for step    895; vmax =    11.1606
+vlimit exceeded for step    896; vmax =    11.1148
+vlimit exceeded for step    897; vmax =    11.6192
+vlimit exceeded for step    898; vmax =    32.7019
+vlimit exceeded for step    899; vmax =   370.6458
+vlimit exceeded for step    900; vmax =    11.9272
+vlimit exceeded for step    901; vmax =    12.0846
+vlimit exceeded for step    902; vmax =    12.8429
+vlimit exceeded for step    903; vmax =    12.9598
+vlimit exceeded for step    904; vmax =    19.9429
+vlimit exceeded for step    905; vmax =    85.1839
+vlimit exceeded for step    906; vmax =    88.4365
+vlimit exceeded for step    907; vmax =    34.2723
+vlimit exceeded for step    908; vmax =   490.4457
+vlimit exceeded for step    909; vmax =    11.7236
+vlimit exceeded for step    910; vmax =    16.3969
+vlimit exceeded for step    911; vmax =    13.9110
+vlimit exceeded for step    912; vmax =    11.3212
+vlimit exceeded for step    913; vmax =    16.5335
+vlimit exceeded for step    914; vmax =    15.5295
+vlimit exceeded for step    915; vmax =    13.3912
+vlimit exceeded for step    916; vmax =    12.2652
+vlimit exceeded for step    917; vmax =    12.5922
+vlimit exceeded for step    918; vmax =    12.2543
+vlimit exceeded for step    919; vmax =    13.1398
+vlimit exceeded for step    920; vmax =    11.8412
+vlimit exceeded for step    921; vmax =    11.8327
+vlimit exceeded for step    922; vmax =    12.0587
+vlimit exceeded for step    923; vmax =    17.9539
+vlimit exceeded for step    924; vmax =    14.0325
+vlimit exceeded for step    925; vmax =    15.9219
+vlimit exceeded for step    926; vmax =    14.0319
+vlimit exceeded for step    927; vmax =    17.7292
+vlimit exceeded for step    928; vmax =    12.6897
+vlimit exceeded for step    929; vmax =    12.9919
+vlimit exceeded for step    930; vmax =    11.8055
+vlimit exceeded for step    931; vmax =    12.3896
+vlimit exceeded for step    932; vmax =    11.8848
+vlimit exceeded for step    933; vmax =    16.0294
+vlimit exceeded for step    934; vmax =    14.0458
+vlimit exceeded for step    935; vmax =    12.4429
+vlimit exceeded for step    936; vmax =    12.2740
+vlimit exceeded for step    937; vmax =    12.9098
+vlimit exceeded for step    938; vmax =    53.0142
+vlimit exceeded for step    939; vmax =   320.3454
+vlimit exceeded for step    940; vmax =    26.5777
+vlimit exceeded for step    941; vmax =    29.9474
+vlimit exceeded for step    942; vmax =    24.0323
+vlimit exceeded for step    943; vmax =    19.0127
+vlimit exceeded for step    944; vmax =    14.0625
+vlimit exceeded for step    945; vmax =    21.8336
+vlimit exceeded for step    946; vmax =    20.1117
+vlimit exceeded for step    947; vmax =    11.8739
+vlimit exceeded for step    948; vmax =    14.7650
+vlimit exceeded for step    949; vmax =    12.5290
+vlimit exceeded for step    950; vmax =    11.6909
+vlimit exceeded for step    951; vmax =    11.4488
+vlimit exceeded for step    952; vmax =    12.1618
+vlimit exceeded for step    953; vmax =    11.9849
+vlimit exceeded for step    954; vmax =    81.8185
+vlimit exceeded for step    955; vmax =   131.7899
+vlimit exceeded for step    956; vmax =   410.6952
+vlimit exceeded for step    957; vmax =    18.3332
+vlimit exceeded for step    958; vmax =    16.2509
+vlimit exceeded for step    959; vmax =    13.9010
+vlimit exceeded for step    960; vmax =    14.1117
+vlimit exceeded for step    961; vmax =    14.3073
+vlimit exceeded for step    962; vmax =    12.2379
+vlimit exceeded for step    963; vmax =    11.9123
+vlimit exceeded for step    964; vmax =    12.4834
+vlimit exceeded for step    965; vmax =    14.6168
+vlimit exceeded for step    966; vmax =    12.5962
+vlimit exceeded for step    967; vmax =    12.5440
+vlimit exceeded for step    968; vmax =    13.0986
+vlimit exceeded for step    969; vmax =    12.7050
+vlimit exceeded for step    970; vmax =    12.2866
+vlimit exceeded for step    971; vmax =    11.6967
+vlimit exceeded for step    972; vmax =    12.4280
+vlimit exceeded for step    973; vmax =    12.7432
+vlimit exceeded for step    974; vmax =    13.0887
+vlimit exceeded for step    975; vmax =    14.8912
+vlimit exceeded for step    976; vmax =    13.1252
+vlimit exceeded for step    977; vmax =    11.7240
+vlimit exceeded for step    978; vmax =    11.8346
+vlimit exceeded for step    979; vmax =    12.8492
+vlimit exceeded for step    980; vmax =    12.1214
+vlimit exceeded for step    981; vmax =    12.3558
+vlimit exceeded for step    982; vmax =    12.6294
+vlimit exceeded for step    983; vmax =    12.5371
+vlimit exceeded for step    984; vmax =    11.5310
+vlimit exceeded for step    985; vmax =    12.1053
+vlimit exceeded for step    986; vmax =    12.1725
+vlimit exceeded for step    987; vmax =    11.7550
+vlimit exceeded for step    988; vmax =    12.2077
+vlimit exceeded for step    989; vmax =    12.9611
+vlimit exceeded for step    990; vmax =    13.3758
+vlimit exceeded for step    991; vmax =    12.6966
+vlimit exceeded for step    992; vmax =    13.5128
+vlimit exceeded for step    993; vmax =   128.4370
+vlimit exceeded for step    994; vmax =    14.5569
+vlimit exceeded for step    995; vmax =    13.4877
+vlimit exceeded for step    996; vmax =    14.8099
+vlimit exceeded for step    997; vmax =    15.0085
+vlimit exceeded for step    998; vmax =    16.2848
+vlimit exceeded for step    999; vmax =    14.7561
+
+   KE Trans =  1855.2549   KE Rot =  1537.2744   C.O.M. Vel =    0.658196
+
+   Translational and rotational motion removed
+
+   KE Trans =     0.0000   KE Rot =     0.0000   C.O.M. Vel =    0.000000
+
+ NSTEP =     1000   TIME(PS) =       1.000  TEMP(K) = 13374.93  PRESS =     0.0
+ Etot   =    145154.7239  EKtot   =     48997.5662  EPtot      =     96157.1577
+ BOND   =     16984.6761  ANGLE   =     16592.5958  DIHED      =      3253.4085
+ 1-4 NB =      1528.4275  1-4 EEL =       185.1511  VDWAALS    =      2474.8668
+ EELEC  =     -1033.3133  EHBOND  =         0.0000  RESTRAINT  =     56171.3450
+ EAMBER (non-restraint)  =     39985.8127
+ ------------------------------------------------------------------------------
+
+ NMR restraints: Bond =56048.822   Angle =     0.000   Torsion =   122.523
+===============================================================================
+vlimit exceeded for step   1000; vmax =    17.1297
+vlimit exceeded for step   1001; vmax =    13.2990
+vlimit exceeded for step   1002; vmax =    11.6231
+vlimit exceeded for step   1003; vmax =    12.9000
+vlimit exceeded for step   1004; vmax =    14.2362
+vlimit exceeded for step   1005; vmax =    14.0926
+vlimit exceeded for step   1006; vmax =    12.0061
+vlimit exceeded for step   1007; vmax =    20.7936
+vlimit exceeded for step   1008; vmax =  2154.8058
+vlimit exceeded for step   1009; vmax =    11.7550
+vlimit exceeded for step   1010; vmax =    14.5090
+vlimit exceeded for step   1011; vmax =    14.0447
+vlimit exceeded for step   1012; vmax =    13.6945
+vlimit exceeded for step   1013; vmax =    13.8366
+vlimit exceeded for step   1014; vmax =    18.2505
+vlimit exceeded for step   1015; vmax =    12.9350
+vlimit exceeded for step   1016; vmax =    12.8254
+vlimit exceeded for step   1017; vmax =    12.7997
+vlimit exceeded for step   1018; vmax =    12.1537
+vlimit exceeded for step   1019; vmax =    11.1573
+vlimit exceeded for step   1020; vmax =    11.9328
+vlimit exceeded for step   1021; vmax =    11.9275
+vlimit exceeded for step   1022; vmax =    17.3017
+vlimit exceeded for step   1023; vmax =    16.4508
+vlimit exceeded for step   1024; vmax =    15.1986
+vlimit exceeded for step   1025; vmax =    13.5198
+vlimit exceeded for step   1026; vmax =    14.8709
+vlimit exceeded for step   1027; vmax =    11.7327
+vlimit exceeded for step   1028; vmax =    11.6587
+vlimit exceeded for step   1029; vmax =    11.5645
+vlimit exceeded for step   1030; vmax =    11.5026
+vlimit exceeded for step   1031; vmax =    11.8649
+vlimit exceeded for step   1032; vmax =    11.5557
+vlimit exceeded for step   1033; vmax =    11.9111
+vlimit exceeded for step   1034; vmax =    12.3848
+vlimit exceeded for step   1035; vmax =    12.1025
+vlimit exceeded for step   1036; vmax =    13.0703
+vlimit exceeded for step   1037; vmax =    13.6593
+vlimit exceeded for step   1038; vmax =    11.9546
+vlimit exceeded for step   1039; vmax =    11.9450
+vlimit exceeded for step   1040; vmax =    21.5230
+vlimit exceeded for step   1041; vmax =    73.4232
+vlimit exceeded for step   1042; vmax =    11.4299
+vlimit exceeded for step   1043; vmax =    24.6065
+vlimit exceeded for step   1044; vmax =    11.8624
+vlimit exceeded for step   1045; vmax =    11.3681
+vlimit exceeded for step   1046; vmax =    11.8182
+vlimit exceeded for step   1047; vmax =    12.7025
+vlimit exceeded for step   1048; vmax =    12.0638
+vlimit exceeded for step   1049; vmax =    12.6955
+vlimit exceeded for step   1050; vmax =    18.7151
+vlimit exceeded for step   1051; vmax =    12.8376
+vlimit exceeded for step   1052; vmax =    14.9757
+vlimit exceeded for step   1053; vmax =    13.2353
+vlimit exceeded for step   1054; vmax =    11.2941
+vlimit exceeded for step   1055; vmax =    12.8913
+vlimit exceeded for step   1056; vmax =    12.4439
+vlimit exceeded for step   1057; vmax =    12.7193
+vlimit exceeded for step   1058; vmax =    11.8362
+vlimit exceeded for step   1059; vmax =    12.6860
+vlimit exceeded for step   1060; vmax =    11.5268
+vlimit exceeded for step   1061; vmax =    12.5431
+vlimit exceeded for step   1062; vmax =    40.5776
+vlimit exceeded for step   1063; vmax =   640.2938
+vlimit exceeded for step   1064; vmax =    11.3221
+vlimit exceeded for step   1065; vmax =    11.2916
+vlimit exceeded for step   1066; vmax =    11.7580
+vlimit exceeded for step   1067; vmax =    12.4565
+vlimit exceeded for step   1068; vmax =    16.0297
+vlimit exceeded for step   1069; vmax =    15.5609
+vlimit exceeded for step   1070; vmax =    12.2116
+vlimit exceeded for step   1071; vmax =    15.0469
+vlimit exceeded for step   1072; vmax =    12.4744
+vlimit exceeded for step   1073; vmax =    12.0886
+vlimit exceeded for step   1074; vmax =    13.7070
+vlimit exceeded for step   1075; vmax =    15.8294
+vlimit exceeded for step   1076; vmax =    14.7227
+vlimit exceeded for step   1077; vmax =    13.4827
+vlimit exceeded for step   1078; vmax =    12.8947
+vlimit exceeded for step   1079; vmax =    12.4459
+vlimit exceeded for step   1080; vmax =    14.4764
+vlimit exceeded for step   1081; vmax =    12.7614
+vlimit exceeded for step   1082; vmax =    13.5758
+vlimit exceeded for step   1083; vmax =    11.3930
+vlimit exceeded for step   1084; vmax =    11.3664
+vlimit exceeded for step   1085; vmax =    12.6522
+vlimit exceeded for step   1086; vmax =    12.3524
+vlimit exceeded for step   1087; vmax =    16.4903
+vlimit exceeded for step   1088; vmax =   100.8752
+vlimit exceeded for step   1089; vmax =    13.6761
+vlimit exceeded for step   1090; vmax =    30.4316
+vlimit exceeded for step   1091; vmax =    70.3668
+vlimit exceeded for step   1092; vmax =    84.2205
+vlimit exceeded for step   1093; vmax =    59.9924
+vlimit exceeded for step   1094; vmax =   121.1094
+vlimit exceeded for step   1095; vmax =    12.2308
+vlimit exceeded for step   1096; vmax =    30.4360
+vlimit exceeded for step   1097; vmax =   111.8726
+vlimit exceeded for step   1098; vmax =    12.2596
+vlimit exceeded for step   1099; vmax =    18.7697
+vlimit exceeded for step   1100; vmax =   514.1131
+vlimit exceeded for step   1101; vmax =    12.4792
+vlimit exceeded for step   1102; vmax =    18.5251
+vlimit exceeded for step   1103; vmax =    16.1368
+vlimit exceeded for step   1104; vmax =    15.9039
+vlimit exceeded for step   1105; vmax =    16.7431
+vlimit exceeded for step   1106; vmax =    20.6093
+vlimit exceeded for step   1107; vmax =    17.6353
+vlimit exceeded for step   1108; vmax =    14.5955
+vlimit exceeded for step   1109; vmax =    12.5114
+vlimit exceeded for step   1110; vmax =    12.6822
+vlimit exceeded for step   1111; vmax =    12.4836
+vlimit exceeded for step   1112; vmax =    13.7441
+vlimit exceeded for step   1113; vmax =    11.7566
+vlimit exceeded for step   1114; vmax =    12.5531
+vlimit exceeded for step   1115; vmax =    12.8948
+vlimit exceeded for step   1116; vmax =    12.5387
+vlimit exceeded for step   1117; vmax =    12.6133
+vlimit exceeded for step   1118; vmax =    11.8765
+vlimit exceeded for step   1119; vmax =    11.8941
+vlimit exceeded for step   1120; vmax =    13.0590
+vlimit exceeded for step   1121; vmax =    11.6712
+vlimit exceeded for step   1122; vmax =    11.9439
+vlimit exceeded for step   1123; vmax =    11.9164
+vlimit exceeded for step   1124; vmax =    12.0654
+vlimit exceeded for step   1125; vmax =    14.2855
+vlimit exceeded for step   1126; vmax =    14.7163
+vlimit exceeded for step   1127; vmax =    13.0437
+vlimit exceeded for step   1128; vmax =    12.3565
+vlimit exceeded for step   1129; vmax =    11.9029
+vlimit exceeded for step   1130; vmax =    12.6746
+vlimit exceeded for step   1131; vmax =    11.4477
+vlimit exceeded for step   1132; vmax =    11.6219
+vlimit exceeded for step   1133; vmax =    15.5828
+vlimit exceeded for step   1134; vmax =    26.6582
+vlimit exceeded for step   1135; vmax =   949.5313
+vlimit exceeded for step   1136; vmax =    11.3712
+vlimit exceeded for step   1137; vmax =    11.9776
+vlimit exceeded for step   1138; vmax =    14.9932
+vlimit exceeded for step   1139; vmax =    14.9189
+vlimit exceeded for step   1140; vmax =    15.3595
+vlimit exceeded for step   1141; vmax =    14.3563
+vlimit exceeded for step   1142; vmax =    13.4560
+vlimit exceeded for step   1143; vmax =    14.9656
+vlimit exceeded for step   1144; vmax =    14.4910
+vlimit exceeded for step   1145; vmax =    21.0691
+vlimit exceeded for step   1146; vmax =    13.3053
+vlimit exceeded for step   1147; vmax =    12.5551
+vlimit exceeded for step   1148; vmax =    12.5124
+vlimit exceeded for step   1149; vmax =    13.4314
+vlimit exceeded for step   1150; vmax =    12.4986
+vlimit exceeded for step   1151; vmax =    12.5941
+vlimit exceeded for step   1152; vmax =    13.2416
+vlimit exceeded for step   1153; vmax =    13.2212
+vlimit exceeded for step   1154; vmax =    21.1107
+vlimit exceeded for step   1155; vmax =  1502.3317
+vlimit exceeded for step   1156; vmax =    12.1834
+vlimit exceeded for step   1157; vmax =    13.6849
+vlimit exceeded for step   1158; vmax =    13.7186
+vlimit exceeded for step   1159; vmax =    13.6834
+vlimit exceeded for step   1160; vmax =    16.8078
+vlimit exceeded for step   1161; vmax =    15.5411
+vlimit exceeded for step   1162; vmax =    13.9545
+vlimit exceeded for step   1163; vmax =    12.6683
+vlimit exceeded for step   1164; vmax =    13.0485
+vlimit exceeded for step   1165; vmax =    20.7778
+vlimit exceeded for step   1166; vmax =   248.5295
+vlimit exceeded for step   1167; vmax =    11.7619
+vlimit exceeded for step   1168; vmax =    11.7575
+vlimit exceeded for step   1169; vmax =    12.5474
+vlimit exceeded for step   1170; vmax =    18.6736
+vlimit exceeded for step   1171; vmax =    22.9187
+vlimit exceeded for step   1172; vmax =    16.9875
+vlimit exceeded for step   1173; vmax =    17.0467
+vlimit exceeded for step   1174; vmax =    13.8192
+vlimit exceeded for step   1175; vmax =    12.8317
+vlimit exceeded for step   1176; vmax =    12.4640
+vlimit exceeded for step   1177; vmax =    12.6467
+vlimit exceeded for step   1178; vmax =    12.3781
+vlimit exceeded for step   1179; vmax =    13.8107
+vlimit exceeded for step   1180; vmax =    15.1348
+vlimit exceeded for step   1181; vmax =    15.7098
+vlimit exceeded for step   1182; vmax =    14.9526
+vlimit exceeded for step   1183; vmax =    13.1432
+vlimit exceeded for step   1184; vmax =    12.6931
+vlimit exceeded for step   1185; vmax =    13.2220
+vlimit exceeded for step   1186; vmax =    11.6819
+vlimit exceeded for step   1187; vmax =    12.0566
+vlimit exceeded for step   1188; vmax =    12.6000
+vlimit exceeded for step   1189; vmax =    14.1356
+vlimit exceeded for step   1190; vmax =    13.2771
+vlimit exceeded for step   1191; vmax =    11.8471
+vlimit exceeded for step   1192; vmax =    11.6304
+vlimit exceeded for step   1193; vmax =    11.9587
+vlimit exceeded for step   1194; vmax =    11.6365
+vlimit exceeded for step   1195; vmax =    12.8214
+vlimit exceeded for step   1196; vmax =    12.8098
+vlimit exceeded for step   1197; vmax =    11.8274
+vlimit exceeded for step   1198; vmax =    12.1834
+vlimit exceeded for step   1199; vmax =    13.2031
+
+ NSTEP =     1200   TIME(PS) =       1.200  TEMP(K) = 12544.46  PRESS =     0.0
+ Etot   =    108256.9024  EKtot   =     45955.2083  EPtot      =     62301.6941
+ BOND   =     15055.4503  ANGLE   =     14654.7210  DIHED      =      3068.3980
+ 1-4 NB =      1267.8433  1-4 EEL =        99.3284  VDWAALS    =      2829.8712
+ EELEC  =     -1005.5124  EHBOND  =         0.0000  RESTRAINT  =     26331.5944
+ EAMBER (non-restraint)  =     35970.0997
+ ------------------------------------------------------------------------------
+
+ NMR restraints: Bond =26185.511   Angle =     0.000   Torsion =   146.083
+===============================================================================
+vlimit exceeded for step   1200; vmax =    14.4622
+vlimit exceeded for step   1201; vmax =    15.7394
+vlimit exceeded for step   1202; vmax =    14.8927
+vlimit exceeded for step   1203; vmax =    14.6888
+vlimit exceeded for step   1204; vmax =    14.1548
+vlimit exceeded for step   1205; vmax =    13.3835
+vlimit exceeded for step   1206; vmax =    13.4430
+vlimit exceeded for step   1207; vmax =    14.8017
+vlimit exceeded for step   1208; vmax =    14.2940
+vlimit exceeded for step   1209; vmax =    12.5305
+vlimit exceeded for step   1210; vmax =    11.9840
+vlimit exceeded for step   1211; vmax =    13.0190
+vlimit exceeded for step   1212; vmax =    17.4717
+vlimit exceeded for step   1213; vmax =   209.9042
+vlimit exceeded for step   1214; vmax =    12.8168
+vlimit exceeded for step   1215; vmax =    15.8758
+vlimit exceeded for step   1216; vmax =    14.5687
+vlimit exceeded for step   1217; vmax =    16.6016
+vlimit exceeded for step   1218; vmax =    28.9674
+vlimit exceeded for step   1219; vmax =   190.0499
+vlimit exceeded for step   1220; vmax =    11.3597
+vlimit exceeded for step   1221; vmax =    12.2922
+vlimit exceeded for step   1222; vmax =    12.1335
+vlimit exceeded for step   1223; vmax =    13.4522
+vlimit exceeded for step   1224; vmax =    12.0102
+vlimit exceeded for step   1225; vmax =    11.7401
+vlimit exceeded for step   1226; vmax =    12.3630
+vlimit exceeded for step   1227; vmax =    12.1729
+vlimit exceeded for step   1228; vmax =    14.7802
+vlimit exceeded for step   1229; vmax =    13.7031
+vlimit exceeded for step   1230; vmax =    12.4779
+vlimit exceeded for step   1231; vmax =    11.2910
+vlimit exceeded for step   1232; vmax =    12.0273
+vlimit exceeded for step   1233; vmax =    12.6157
+vlimit exceeded for step   1234; vmax =    18.3117
+vlimit exceeded for step   1235; vmax =    12.5313
+vlimit exceeded for step   1236; vmax =    11.2744
+vlimit exceeded for step   1237; vmax =    13.8143
+vlimit exceeded for step   1238; vmax =    13.7432
+vlimit exceeded for step   1239; vmax =    12.7840
+vlimit exceeded for step   1240; vmax =    11.7006
+vlimit exceeded for step   1241; vmax =    13.0719
+vlimit exceeded for step   1242; vmax =    14.3668
+vlimit exceeded for step   1243; vmax =    11.2837
+vlimit exceeded for step   1244; vmax =    13.3656
+vlimit exceeded for step   1245; vmax =    11.5464
+vlimit exceeded for step   1246; vmax =    12.9745
+vlimit exceeded for step   1247; vmax =    12.1445
+vlimit exceeded for step   1248; vmax =    12.5497
+vlimit exceeded for step   1249; vmax =    12.8388
+vlimit exceeded for step   1250; vmax =    12.9797
+vlimit exceeded for step   1251; vmax =    12.9617
+vlimit exceeded for step   1252; vmax =    12.7631
+vlimit exceeded for step   1253; vmax =    12.3646
+vlimit exceeded for step   1254; vmax =    12.7939
+vlimit exceeded for step   1255; vmax =    12.3789
+vlimit exceeded for step   1256; vmax =    13.3392
+vlimit exceeded for step   1257; vmax =    12.0680
+vlimit exceeded for step   1258; vmax =    13.9252
+vlimit exceeded for step   1259; vmax =   266.3784
+vlimit exceeded for step   1260; vmax =    12.7527
+vlimit exceeded for step   1261; vmax =    19.3890
+vlimit exceeded for step   1262; vmax =    14.9379
+vlimit exceeded for step   1263; vmax =    12.9441
+vlimit exceeded for step   1264; vmax =    11.9989
+vlimit exceeded for step   1265; vmax =    19.1564
+vlimit exceeded for step   1266; vmax =    15.6897
+vlimit exceeded for step   1267; vmax =    20.3589
+vlimit exceeded for step   1268; vmax =    28.0366
+vlimit exceeded for step   1269; vmax =    90.3815
+vlimit exceeded for step   1270; vmax =    45.2772
+vlimit exceeded for step   1271; vmax =    75.5493
+vlimit exceeded for step   1272; vmax =    48.1023
+vlimit exceeded for step   1273; vmax =   285.9634
+vlimit exceeded for step   1274; vmax =    12.6799
+vlimit exceeded for step   1275; vmax =    16.5113
+vlimit exceeded for step   1276; vmax =    16.9025
+vlimit exceeded for step   1277; vmax =    14.9483
+vlimit exceeded for step   1278; vmax =    14.1094
+vlimit exceeded for step   1279; vmax =    13.3065
+vlimit exceeded for step   1280; vmax =    12.9082
+vlimit exceeded for step   1281; vmax =    13.1720
+vlimit exceeded for step   1282; vmax =    12.4590
+vlimit exceeded for step   1283; vmax =    11.6537
+vlimit exceeded for step   1284; vmax =    11.0734
+vlimit exceeded for step   1285; vmax =    12.1356
+vlimit exceeded for step   1286; vmax =    12.6486
+vlimit exceeded for step   1287; vmax =    12.8259
+vlimit exceeded for step   1288; vmax =    12.2366
+vlimit exceeded for step   1289; vmax =    10.8231
+vlimit exceeded for step   1290; vmax =    11.3111
+vlimit exceeded for step   1291; vmax =    12.2311
+vlimit exceeded for step   1292; vmax =    11.5812
+vlimit exceeded for step   1293; vmax =    12.1076
+vlimit exceeded for step   1294; vmax =    11.2230
+vlimit exceeded for step   1295; vmax =    10.4485
+vlimit exceeded for step   1296; vmax =    12.7005
+vlimit exceeded for step   1297; vmax =    12.5217
+vlimit exceeded for step   1298; vmax =    11.6615
+vlimit exceeded for step   1299; vmax =    12.0230
+vlimit exceeded for step   1300; vmax =    23.8907
+vlimit exceeded for step   1301; vmax =   769.9909
+vlimit exceeded for step   1302; vmax =    22.0813
+vlimit exceeded for step   1303; vmax =    41.7152
+vlimit exceeded for step   1304; vmax =   869.0708
+vlimit exceeded for step   1305; vmax =    21.0823
+vlimit exceeded for step   1306; vmax =    33.5612
+vlimit exceeded for step   1307; vmax =    29.6729
+vlimit exceeded for step   1308; vmax =    25.6909
+vlimit exceeded for step   1309; vmax =    22.1078
+vlimit exceeded for step   1310; vmax =    18.6962
+vlimit exceeded for step   1311; vmax =    15.3267
+vlimit exceeded for step   1312; vmax =    12.2366
+vlimit exceeded for step   1313; vmax =    11.0443
+vlimit exceeded for step   1314; vmax =    18.1577
+vlimit exceeded for step   1315; vmax =   119.2004
+vlimit exceeded for step   1316; vmax =    13.3676
+vlimit exceeded for step   1317; vmax =    16.2101
+vlimit exceeded for step   1318; vmax =    13.4207
+vlimit exceeded for step   1319; vmax =    15.7177
+vlimit exceeded for step   1320; vmax =    14.5917
+vlimit exceeded for step   1321; vmax =    14.5661
+vlimit exceeded for step   1322; vmax =    13.6142
+vlimit exceeded for step   1323; vmax =    15.8747
+vlimit exceeded for step   1324; vmax =    21.6082
+vlimit exceeded for step   1325; vmax =    11.2032
+vlimit exceeded for step   1326; vmax =    15.0475
+vlimit exceeded for step   1327; vmax =    12.8038
+vlimit exceeded for step   1328; vmax =    23.4457
+vlimit exceeded for step   1329; vmax =    11.8051
+vlimit exceeded for step   1330; vmax =    11.8226
+vlimit exceeded for step   1331; vmax =    11.3475
+vlimit exceeded for step   1332; vmax =    11.3016
+vlimit exceeded for step   1333; vmax =    11.4845
+vlimit exceeded for step   1334; vmax =    11.6023
+vlimit exceeded for step   1335; vmax =    11.3668
+vlimit exceeded for step   1336; vmax =    11.1078
+vlimit exceeded for step   1337; vmax =    11.6731
+vlimit exceeded for step   1338; vmax =    12.8532
+vlimit exceeded for step   1339; vmax =    12.2134
+vlimit exceeded for step   1340; vmax =    45.5644
+vlimit exceeded for step   1341; vmax =    12.7031
+vlimit exceeded for step   1342; vmax =    12.2418
+vlimit exceeded for step   1343; vmax =    11.3392
+vlimit exceeded for step   1344; vmax =    11.7906
+vlimit exceeded for step   1345; vmax =    12.2305
+vlimit exceeded for step   1346; vmax =    10.6456
+vlimit exceeded for step   1347; vmax =    11.4200
+vlimit exceeded for step   1348; vmax =    12.2436
+vlimit exceeded for step   1349; vmax =    11.5952
+vlimit exceeded for step   1350; vmax =    10.8301
+vlimit exceeded for step   1351; vmax =    10.6521
+vlimit exceeded for step   1352; vmax =    12.4199
+vlimit exceeded for step   1353; vmax =    11.4256
+vlimit exceeded for step   1354; vmax =    10.8582
+vlimit exceeded for step   1355; vmax =    11.9014
+vlimit exceeded for step   1356; vmax =    11.9686
+vlimit exceeded for step   1357; vmax =    12.3711
+vlimit exceeded for step   1358; vmax =    11.8997
+vlimit exceeded for step   1359; vmax =    10.9235
+vlimit exceeded for step   1360; vmax =    12.5140
+vlimit exceeded for step   1361; vmax =    11.2400
+vlimit exceeded for step   1362; vmax =    11.7421
+vlimit exceeded for step   1363; vmax =    11.3982
+vlimit exceeded for step   1364; vmax =    15.3258
+vlimit exceeded for step   1365; vmax =    81.3383
+vlimit exceeded for step   1366; vmax =    11.8089
+vlimit exceeded for step   1367; vmax =    55.9481
+vlimit exceeded for step   1368; vmax =   186.3418
+vlimit exceeded for step   1369; vmax =    37.2101
+vlimit exceeded for step   1370; vmax =    95.6404
+vlimit exceeded for step   1371; vmax =    46.2769
+vlimit exceeded for step   1372; vmax =   253.4558
+vlimit exceeded for step   1373; vmax =    11.7111
+vlimit exceeded for step   1374; vmax =    11.4761
+vlimit exceeded for step   1375; vmax =    11.4803
+vlimit exceeded for step   1376; vmax =    12.0253
+vlimit exceeded for step   1377; vmax =    12.2745
+vlimit exceeded for step   1378; vmax =    12.3970
+vlimit exceeded for step   1379; vmax =    13.1316
+vlimit exceeded for step   1380; vmax =    11.8087
+vlimit exceeded for step   1381; vmax =    43.9991
+vlimit exceeded for step   1382; vmax =   126.8774
+vlimit exceeded for step   1383; vmax =    12.8171
+vlimit exceeded for step   1384; vmax =    79.0438
+vlimit exceeded for step   1385; vmax =   331.3239
+vlimit exceeded for step   1386; vmax =    13.1556
+vlimit exceeded for step   1387; vmax =    11.7139
+vlimit exceeded for step   1388; vmax =    13.6220
+vlimit exceeded for step   1389; vmax =    12.7093
+vlimit exceeded for step   1390; vmax =    13.7103
+vlimit exceeded for step   1391; vmax =    13.2113
+vlimit exceeded for step   1392; vmax =    13.0437
+vlimit exceeded for step   1393; vmax =    28.5766
+vlimit exceeded for step   1394; vmax =    12.6878
+vlimit exceeded for step   1395; vmax =    12.1081
+vlimit exceeded for step   1396; vmax =    12.0676
+vlimit exceeded for step   1397; vmax =    11.9738
+vlimit exceeded for step   1398; vmax =    11.6057
+vlimit exceeded for step   1399; vmax =    11.0082
+
+ NSTEP =     1400   TIME(PS) =       1.400  TEMP(K) =  9338.36  PRESS =     0.0
+ Etot   =     79498.6718  EKtot   =     34210.0235  EPtot      =     45288.6483
+ BOND   =     12102.7894  ANGLE   =     13748.6175  DIHED      =      3220.4447
+ 1-4 NB =      1276.3851  1-4 EEL =       403.8039  VDWAALS    =      1600.0742
+ EELEC  =     -1044.6662  EHBOND  =         0.0000  RESTRAINT  =     13981.1996
+ EAMBER (non-restraint)  =     31307.4487
+ ------------------------------------------------------------------------------
+
+ NMR restraints: Bond =13824.162   Angle =     0.000   Torsion =   157.038
+===============================================================================
+vlimit exceeded for step   1400; vmax =    11.5117
+vlimit exceeded for step   1401; vmax =    12.0536
+vlimit exceeded for step   1402; vmax =    12.2150
+vlimit exceeded for step   1403; vmax =    11.4330
+vlimit exceeded for step   1404; vmax =    11.5508
+vlimit exceeded for step   1405; vmax =    11.7578
+vlimit exceeded for step   1406; vmax =    11.7044
+vlimit exceeded for step   1407; vmax =    12.4661
+vlimit exceeded for step   1408; vmax =    11.6248
+vlimit exceeded for step   1409; vmax =    13.1268
+vlimit exceeded for step   1410; vmax =    12.0226
+vlimit exceeded for step   1411; vmax =    12.0760
+vlimit exceeded for step   1412; vmax =    11.0851
+vlimit exceeded for step   1413; vmax =    12.3206
+vlimit exceeded for step   1414; vmax =    14.0014
+vlimit exceeded for step   1415; vmax =    12.4155
+vlimit exceeded for step   1416; vmax =    12.0329
+vlimit exceeded for step   1417; vmax =    11.5987
+vlimit exceeded for step   1418; vmax =    11.7181
+vlimit exceeded for step   1419; vmax =    11.6032
+vlimit exceeded for step   1420; vmax =    12.9155
+vlimit exceeded for step   1421; vmax =    12.1564
+vlimit exceeded for step   1422; vmax =    11.8092
+vlimit exceeded for step   1423; vmax =    11.0707
+vlimit exceeded for step   1424; vmax =    12.0013
+vlimit exceeded for step   1425; vmax =    11.8490
+vlimit exceeded for step   1426; vmax =    11.7222
+vlimit exceeded for step   1427; vmax =    11.8764
+vlimit exceeded for step   1428; vmax =    12.2250
+vlimit exceeded for step   1429; vmax =    11.7982
+vlimit exceeded for step   1430; vmax =    12.9937
+vlimit exceeded for step   1431; vmax =    12.2649
+vlimit exceeded for step   1432; vmax =    11.8814
+vlimit exceeded for step   1433; vmax =    12.6224
+vlimit exceeded for step   1434; vmax =    11.8897
+vlimit exceeded for step   1435; vmax =    12.0893
+vlimit exceeded for step   1436; vmax =    12.3370
+vlimit exceeded for step   1437; vmax =    11.5285
+vlimit exceeded for step   1438; vmax =    11.9856
+vlimit exceeded for step   1439; vmax =    11.8427
+vlimit exceeded for step   1440; vmax =    11.8307
+vlimit exceeded for step   1441; vmax =    11.3265
+vlimit exceeded for step   1442; vmax =    11.3761
+vlimit exceeded for step   1443; vmax =    11.7839
+vlimit exceeded for step   1444; vmax =    12.8808
+vlimit exceeded for step   1445; vmax =    12.3894
+vlimit exceeded for step   1446; vmax =    16.8234
+vlimit exceeded for step   1447; vmax =    12.3393
+vlimit exceeded for step   1448; vmax =    11.7286
+vlimit exceeded for step   1449; vmax =    13.0316
+vlimit exceeded for step   1450; vmax =    12.9223
+vlimit exceeded for step   1451; vmax =    11.6957
+vlimit exceeded for step   1452; vmax =    12.9932
+vlimit exceeded for step   1453; vmax =    11.8355
+vlimit exceeded for step   1454; vmax =    11.8500
+vlimit exceeded for step   1455; vmax =    11.3670
+vlimit exceeded for step   1456; vmax =    11.8210
+vlimit exceeded for step   1457; vmax =    11.7184
+vlimit exceeded for step   1458; vmax =    13.4789
+vlimit exceeded for step   1459; vmax =    11.9477
+vlimit exceeded for step   1460; vmax =    10.9433
+vlimit exceeded for step   1461; vmax =    11.5495
+vlimit exceeded for step   1462; vmax =    13.0299
+vlimit exceeded for step   1463; vmax =    11.6596
+vlimit exceeded for step   1464; vmax =    12.0244
+vlimit exceeded for step   1465; vmax =    10.6534
+vlimit exceeded for step   1466; vmax =    11.1017
+vlimit exceeded for step   1467; vmax =    10.9397
+vlimit exceeded for step   1468; vmax =    10.9791
+vlimit exceeded for step   1469; vmax =    11.4425
+vlimit exceeded for step   1470; vmax =    11.9945
+vlimit exceeded for step   1471; vmax =    13.0016
+vlimit exceeded for step   1472; vmax =    11.3098
+vlimit exceeded for step   1473; vmax =    12.5996
+vlimit exceeded for step   1474; vmax =    12.1778
+vlimit exceeded for step   1475; vmax =    11.4980
+vlimit exceeded for step   1476; vmax =    10.6909
+vlimit exceeded for step   1477; vmax =    11.4247
+vlimit exceeded for step   1478; vmax =    11.3912
+vlimit exceeded for step   1479; vmax =    12.0800
+vlimit exceeded for step   1480; vmax =    11.5117
+vlimit exceeded for step   1481; vmax =    10.9988
+vlimit exceeded for step   1482; vmax =    10.7818
+vlimit exceeded for step   1483; vmax =    11.0875
+vlimit exceeded for step   1484; vmax =    10.9441
+vlimit exceeded for step   1485; vmax =    12.0838
+vlimit exceeded for step   1486; vmax =    11.1782
+vlimit exceeded for step   1487; vmax =    11.7565
+vlimit exceeded for step   1488; vmax =    10.7772
+vlimit exceeded for step   1489; vmax =    10.9818
+vlimit exceeded for step   1490; vmax =    11.3034
+vlimit exceeded for step   1491; vmax =    12.3572
+vlimit exceeded for step   1492; vmax =    12.0749
+vlimit exceeded for step   1493; vmax =    12.1764
+vlimit exceeded for step   1494; vmax =    11.0608
+vlimit exceeded for step   1495; vmax =    11.4464
+vlimit exceeded for step   1496; vmax =    10.7230
+vlimit exceeded for step   1497; vmax =    11.3801
+vlimit exceeded for step   1498; vmax =    12.5195
+vlimit exceeded for step   1499; vmax =    10.8875
+vlimit exceeded for step   1500; vmax =    12.0167
+vlimit exceeded for step   1501; vmax =    11.7148
+vlimit exceeded for step   1502; vmax =    11.3944
