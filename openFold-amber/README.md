@@ -1,5 +1,5 @@
 # openFoldTools
-Open source protein structure modeling tools:
+
 Protein folding using only simulated annealing, distance and torsion restraints; works from an amino acid sequence; AmberTools18 wrapped in Python
 
 **Pre-Reqs:**
