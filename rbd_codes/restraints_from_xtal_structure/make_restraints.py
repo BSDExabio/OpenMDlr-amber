@@ -12,6 +12,7 @@ summary = importlib.import_module(functions_file.split('.py')[0],package=None).m
 distance_calc = importlib.import_module(functions_file.split('.py')[0],package=None).dist_numpy
 #distance_calc = importlib.import_module(functions_file.split('.py')[0],package=None).dist_dask
 make_selection_pairs = importlib.import_module(functions_file.split('.py')[0],package=None).make_selection_pairs
+tri_to_single = importlib.import_module(functions_file.split('.py')[0],package=None).tri_to_single
 
 # ----------------------------------------
 # DEFINE MAIN: 
@@ -67,6 +68,18 @@ def main():
                     temp = psi.dihedral.value()
                     rst_out.write('%5d   %5s   %5s   %7.2f   %7.2f   # %10.5f\n'%(psi.resids[1],psi.resnames[1],'PSI',temp-angl_plus_minus,temp+angl_plus_minus,temp))   # creates 5 column angl restraint file...
         
+        # ----------------------------------------
+        # Create a fasta file of the pdb structure
+        # ----------------------------------------
+        if parameters['create_fasta_file']:
+            fasta_file_name = pdb.split('/')[-1][:-4]+parameters['fasta_file_name']
+            with open(fasta_file_name,'w') as f:
+                for seg in sel.segments:
+                    f.write('>%s:%s\n'%(pdb.split('/')[-1][:-4],seg.segid))
+                    for res in seg.residues.resnames:
+                        f.write('%s'%(tri_to_single(res)))
+                    f.write('\n')
+
         print('Finished handling %s'%(pdb))
 
     if parameters['summary_boolean']:

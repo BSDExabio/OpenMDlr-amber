@@ -111,5 +111,53 @@ def make_selection_pairs(selection_object, list_of_pair_types, residue_offset):
                 selection_pair_list.append([i,j])
     return selection_pair_list
 
+def single_to_tri(x):
+        return {
+                'A': 'ALA',
+                'R': 'ARG',
+                'N': 'ASN',
+                'D': 'ASP',
+                'C': 'CYS',
+                'Q': 'GLN',
+                'E': 'GLU',
+                'G': 'GLY',
+                'H': 'HIS',
+                'I': 'ILE',
+                'L': 'LEU',
+                'K': 'LYS',
+                'M': 'MET',
+                'F': 'PHE',
+                'P': 'PRO',
+                'S': 'SER',
+                'T': 'THR',
+                'W': 'TRP',
+                'Y': 'TYR',
+                'V': 'VAL'
+        }.get(x, '')
+
+def tri_to_single(x):
+        return {
+                'ALA': 'A',
+                'ARG': 'R',
+                'ASN': 'N',
+                'ASP': 'D',
+                'CYS': 'C',
+                'GLN': 'Q',
+                'GLU': 'E',
+                'GLY': 'G',
+                'HIS': 'H',
+                'ILE': 'I',
+                'LEU': 'L',
+                'LYS': 'K',
+                'MET': 'M',
+                'PHE': 'F',
+                'PRO': 'P',
+                'SER': 'S',
+                'THR': 'T',
+                'TRP': 'W',
+                'TYR': 'Y',
+                'VAL': 'V'
+        }.get(x, '')
+
 
 
