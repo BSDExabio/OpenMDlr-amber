@@ -1,13 +1,13 @@
 # OpenFold-amber
 
-Protein folding using only simulated annealing, distance and torsion restraints; works from an amino acid sequence and user-defined restraints; AmberTools20 wrapped in Python
+An open source Protein folding using only simulated annealing, distance and torsion restraints; works from an amino acid sequence and user-defined restraints; AmberTools20 wrapped in Python
 
-**Pre-Reqs:**
-1. Python3: (https://www.python.org)
-2. AmberTools20: http://ambermd.org/GetAmber.php. <br/>
+### Pre-Reqs:
+1. [Python3] (https://www.python.org)
+2. [AmberTools20] (http://ambermd.org/GetAmber.php) <br/>
 
-For a simple-to-install, non parallelized version, you can used conda (Miniconda: https://docs.conda.io/en/latest/miniconda.html):
-```
+For a simple-to-install, non-parallelized version of AmberTools, you can use conda ([Miniconda] (https://docs.conda.io/en/latest/miniconda.html)):
+```bash
 # Download miniconda if you don't already have installed.
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 # Install miniconda; initialize the miniconda install within your shell during installation
@@ -29,18 +29,16 @@ conda install biopython
 
 3. Clone or download this git repository to a single position. 
 
-
-**To Run:**
+### To Run:
 1. Prepare a FASTA/txt file with the amino acid sequence in single letter formatting. 
 2. Prepare the 8 column distance restraints file (format below) and 5 column torsion restraints file (format below).
 3. Copy the fold_parameters.json from the git repository and edit with your parameters (explaination below).
 4. Run fold_protein.py:
-```
-conda activate OpenFold-amber
+
+```bash
 export OpenFoldHome=~/Apps/OpenFold-amber	# edit this line with the global location for your git repository
 python3 $OpenFoldHome/fold_protein.py
 ```
-
 
 
 
