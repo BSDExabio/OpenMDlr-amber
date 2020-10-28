@@ -3,10 +3,10 @@
 An open source Protein folding using only simulated annealing, distance and torsion restraints; works from an amino acid sequence and user-defined restraints; AmberTools20 wrapped in Python
 
 ### Pre-Reqs:
-1. [`Python3`] (https://www.python.org)
-2. [`AmberTools20`] (http://ambermd.org/GetAmber.php) <br/>
+1. [Python3](https://www.python.org)
+2. [AmberTools20](http://ambermd.org/GetAmber.php) <br/>
 
-For a simple-to-install, non-parallelized version of AmberTools, you can use conda ([`Miniconda`] (https://docs.conda.io/en/latest/miniconda.html)):
+For a simple-to-install, non-parallelized version of AmberTools, you can use conda ([Miniconda](https://docs.conda.io/en/latest/miniconda.html)):
 ```bash
 # Download miniconda if you don't already have installed.
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
