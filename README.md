@@ -1,4 +1,4 @@
-# openFoldTools
+# OpenFold-amber
 
 Protein folding using only simulated annealing, distance and torsion restraints; works from an amino acid sequence and user-defined restraints; AmberTools20 wrapped in Python
 
@@ -16,10 +16,10 @@ bash Miniconda3-latest-Linux-x86_64.sh
 conda config --add channels conda-forge
 # Update to conda-forge versions of packages
 conda update --yes --all
-# Create a new conda environment named OpenFoldAmber
-conda create -n OpenFoldAmber python==3.8
-# Activate the OpenFoldAmber environment
-conda activate OpenFoldAmber
+# Create a new conda environment named OpenFold-amber
+conda create -n OpenFold-amber python==3.8
+# Activate the OpenFold-amber environment
+conda activate OpenFold-amber
 # Install AmberTools20 within the environment
 conda install -c conda-forge ambertools=20
 # Check that Numpy and Biopython
@@ -36,8 +36,13 @@ conda install biopython
 3. Copy the fold_parameters.json from the git repository and edit with your parameters (explaination below).
 4. Run fold_protein.py:
 ```
-python3 fold_protein.py
+conda activate OpenFold-amber
+export OpenFoldHome=~/Apps/OpenFold-amber	# edit this line with the global location for your git repository
+python3 $OpenFoldHome/fold_protein.py
 ```
+
+
+
 
 **Input to the Program:  fold_parameters.json**
 1. name of the protein (or run) as a string; this is just to identify output files, so you can really use any string you want
