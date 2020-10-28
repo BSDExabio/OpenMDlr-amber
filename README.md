@@ -43,7 +43,7 @@ python3 $OpenFoldHome/fold_protein.py
 
 
 
-**Input to the Program:  fold_parameters.json**
+### Input to the Program:  fold_parameters.json 
 1. name of the protein (or run) as a string; this is just to identify output files, so you can really use any string you want
 2. FASTA file (or txt file) with the sequence in single letters (i.e., "NLYIQWLKDGGPSSGRPPPS")
 3. Distance Restraints list in 8 col file
