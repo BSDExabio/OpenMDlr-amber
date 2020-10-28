@@ -1,6 +1,6 @@
 # OpenFold-amber
 
-An open source Protein folding using only simulated annealing, distance and torsion restraints; works from an amino acid sequence and user-defined restraints; AmberTools20 wrapped in Python
+A set of scripts using open source softwares that can convert an amino acid sequence into a folded 3D structure using simplistic simulated annealing molecular dynamics simulations and user-defined distance and torsion restraints. Really just a python wrapper script that calls AmberTools20 sander to run MD simulations.
 
 ### Pre-Reqs:
 1. [Python3](https://www.python.org)
@@ -22,9 +22,10 @@ conda create -n OpenFold-amber python==3.8
 conda activate OpenFold-amber
 # Install AmberTools20 within the environment
 conda install -c conda-forge ambertools=20
-# Check that Numpy and Biopython
+# Check that Numpy and Biopython are installed
 conda install numpy
 conda install biopython
+conda install MDAnalysis
 ```
 
 3. Clone or download this git repository to a single position. 
