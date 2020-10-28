@@ -38,7 +38,7 @@ conda install MDAnalysis
 
 ```bash
 export OpenFoldHome=~/Apps/OpenFold-amber	# edit this line with the global location for your git repository
-python3 $OpenFoldHome/fold_protein.py
+python3 $OpenFoldHome/fold_protein.py fold_protein.config
 ```
 
 
