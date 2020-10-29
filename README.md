@@ -22,9 +22,7 @@ conda create -n OpenFold-amber python==3.8
 conda activate OpenFold-amber
 # Install AmberTools20 within the environment
 conda install -c conda-forge ambertools=20
-# Check that Numpy and Biopython are installed
-conda install numpy
-conda install biopython
+# Install MDAnalysis 
 conda install MDAnalysis
 ```
 
