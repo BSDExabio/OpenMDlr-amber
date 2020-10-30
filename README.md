@@ -1,6 +1,6 @@
 # OpenFold-amber
 
-A set of scripts using open source softwares that can convert an amino acid sequence into a folded 3D structure using simplistic simulated annealing molecular dynamics simulations and user-defined distance and torsion restraints. Really just a python wrapper script that calls AmberTools20 sander to run MD simulations.
+A set of scripts using open source softwares that can convert an amino acid sequence into a folded 3D structure using simplistic simulated annealing molecular dynamics simulations and user-defined distance and torsion restraints. Mainly just a python wrapper script that calls AmberTools20 sander to run MD simulations.
 
 ### Pre-Reqs:
 1. [Python3](https://www.python.org)
@@ -31,34 +31,35 @@ conda install MDAnalysis
 ### To Run:
 1. Prepare a FASTA/txt file with the amino acid sequence in single letter formatting. 
 2. Prepare the 8 column distance restraints file (format below) and 5 column torsion restraints file (format below).
-3. Copy the fold_parameters.json from the git repository and edit with your parameters (explaination below).
+3. Copy the fold_protein.json from the git repository and edit with your parameters (explaination below).
 4. Run fold_protein.py:
 
 ```bash
-export OpenFoldHome=~/Apps/OpenFold-amber	# edit this line with the global location for your git repository
-python3 $OpenFoldHome/fold_protein.py fold_protein.config
+export OpenFoldHome=~/Apps/OpenFold-amber	# edit this line with the global location for this cloned git repository
+python3 $OpenFoldHome/fold_protein.py fold_protein.json
 ```
 
 
 
-### Input to the Program:  fold_parameters.json 
+
+### Input to the Program: fold_protein.json 
 1. name of the protein (or run) as a string; this is just to identify output files, so you can really use any string you want
 2. FASTA file (or txt file) with the sequence in single letters (i.e., "NLYIQWLKDGGPSSGRPPPS")
 3. Distance Restraints list in 8 col file
 4. Torsion Restraints list in 5 col file
 5. List of Force Constants for the distance restraints as floats (in kcal/mol·Angstroms)
-6. List of Force Constants for the torsion restraints as floats (in in 70 kcal/mol·rad)
-7. List of (highest) Temperatures for the simulated annealing cycles as floats (in K)
+6. List of Force Constants for the torsion restraints as floats (in in kcal/mol·rad)
+7. List of Maximum Temperatures for the simulated annealing cycles as floats (in K)
 
->If the length of these Lists (#5-7) is 1, then that single value is used for all of the simulated annealing cycles.<br/>
+>If the length of these Lists (#5-7) is 1, then the single value is used across all simulated annealing cycles.<br/>
 >If the length of these lists is = number of cycles, then the first value is used for the first cycle, the second value for the second cycle, and so on.<br/>
 >If the length is > cycles, the extra values are ignored.<br/>
 >If the length is < cycles, the first value is used for all cycles.<br/>
 >Any of the values may be 0.0, but it is reccomended the temperature is >= 100.0K.<br/>
 
-7. Number of simulated annealing cycles to run (int)
-8. The mpi "prefix" (for example, "mpirun -np 4 "), if you would like to call sander (AmberTools minimization and simulated anealing program) with mpi threading (https://www.open-mpi.org/). This is completely optional and can take an empty string instead ("").
-9. The path to the Amber forcefield, if you would like to change the forcefield; will vary depending on where your AmberTools package is
+8. Number of simulated annealing cycles to run (int)
+9. The mpi "prefix" (for example, "mpirun -np 4 "), if you would like to call sander (AmberTools minimization and simulated anealing program) with mpi threading (https://www.open-mpi.org/). This is completely optional and can take an empty string instead ("").
+10. The path to the Amber forcefield, if you would like to change the forcefield; will vary depending on where your AmberTools package is
 
 >The given example file has what I have found to be good defaults.
 
