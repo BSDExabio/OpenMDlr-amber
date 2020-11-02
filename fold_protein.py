@@ -70,6 +70,7 @@ with open(parameter_file) as json_file:
     torsion_rst_file_path   = data['torsion_restraints_file_path']
     minimization_input_file_path        = data["minimization_input_file_path"]
     simulated_annealing_input_file_path = data["simulated_annealing_input_file_path"]
+    tordef_file_path        = data["tordef_file_path"]
     distance_force_constants            = data['distance_force_constants']
     torsion_force_constants = data['torsion_force_constants']
     temperatures            = data['temperatures']
@@ -122,7 +123,8 @@ with open('tleap.in','w') as f:
     f.write('source ' + forcefield_file_path + '\n' + name + ' = sequence { ' + triseq + '}\nsaveoff ' + name + ' linear.lib\nsavepdb ' + name + ' linear.pdb\nsaveamberparm ' + name + ' linear.prmtop linear.rst7\nquit') # NOTE: assumes the forcefield_file is readable/source-able by AmberTools tleap; best if user just uses leaprc files provided in AmberTools directories.
 
 #call Amber Tools tleap
-subprocess.call('tleap -s -f tleap.in', shell=True)
+with open('tleap.out','w') as outfile:
+    subprocess.run('tleap -s -f tleap.in', shell=True, stdout=outfile)
 
 ###############
 # PREPARE THE DISTANCE RESTRAINT FILE
@@ -131,8 +133,10 @@ subprocess.call('tleap -s -f tleap.in', shell=True)
 print("\n\n===== READING USER RESTRAINTS AND MATCHING WITH LINEAR PDB ====")
 linear = MDAnalysis.Universe('linear.pdb')
 first = 1
-with open(distance_rst_file_path,'r') as input_file, with open('RST.dist','w') as output_file:
+with open(distance_rst_file_path,'r') as input_file, open('RST.dist','w') as output_file:
     for i, line in enumerate(input_file):
+        if line[0] == '#':
+            continue
         columns = line.split()
         r2 = float(columns[6])
         r3 = float(columns[7])
@@ -157,46 +161,52 @@ print("DISTANCE RESTRAINTS CORRECTLY GENERATED")
 ###############
 print("\n\n=================== MAKING ANGLE RESTRAINTS ===================")
 print("Make sure the AmberTools makeANG_RST finds all its libraries and runs correctly")   #angle restraints - we use AmberTools built in makeANG_RST program
-subprocess.call('makeANG_RST -pdb linear.pdb -con '+torsion_rst+' > RST.angles', shell=True)    # NOTE: -lib tordef.lib; assumes the makeANG_RST code is in the user's path; they need to export $AMBERHOME...
+with open('RST.angles','w') as outfile:
+    subprocess.run('makeANG_RST -pdb linear.pdb -con %s -lib %s'%(torsion_rst_file_path,tordef_file_path), shell=True, stdout=outfile)
 # replace force constant
-subprocess.call("sed -i 's/rk2 =   2.0, rk3 =   2.0/rk2 =   %.2f, rk3 =   %.2f/g' RST.angles"%(torsion_force_constants[0],torsion_force_constants[0]), shell=True)
+subprocess.run("sed -i 's/rk2 =   2.0, rk3 =   2.0/rk2 =   %.2f, rk3 =   %.2f/g' RST.angles"%(torsion_force_constants[0],torsion_force_constants[0]), shell=True)
 print("TORSION RESTRAINTS CORRECTLY GENERATED")
 
 ###############
 # PREPARE FOR MOLECULAR DYNAMICS SIMULATIONS
 ###############
-subprocess.call("cat RST.dist RST.angles > RST", shell=True)    # merge restraint files
+with open('RST','w') as outfile:
+    subprocess.run("cat RST.dist RST.angles", shell=True, stdout=outfile)    # merge restraint files
 
 # prepare simulation input files
-subprocess.call('cp %s min.in'%(minimization_input_file_path), shell=True)
-subprocess.call('sed -e "s/USER_TEMP/%s/g" %s > siman.in'%(temperatures[0],simulated_annealing_input_file_path), shell=True)
+subprocess.run('cp %s min.in'%(minimization_input_file_path), shell=True)
+with open('siman.in','w') as outfile:
+    subprocess.run('sed -e "s/USER_TEMP/%s/g" %s'%(temperatures[0],simulated_annealing_input_file_path), shell=True, stdout=outfile)
 
 print("\n\n===================== RUNNING MINIMIZATION ====================")
-subprocess.call(mpi_prefix+"sander -O -i min.in -o min.out -p linear.prmtop -c linear.rst7 -r min.rst7 -x min.nc", shell=True)
+subprocess.run(mpi_prefix+"sander -O -i min.in -o min.out -p linear.prmtop -c linear.rst7 -r min.rst7 -x min.nc", shell=True)
 
 print("\n\n================= RUNNING SIMULATED ANNEALING =================")
 # NOTE: force constants read into AmberTools need to be scaled by some multiplicative factor... Need to look this up again... need to report units of force constants and so on...
 print('SIMULATED ANNEALING CYCLE #1, DISTANCE FORCE CONSTANT = %.2f, ANGLE FORCE CONSTANT = %.2f, TEMPERATURE = %.2f K' %(distance_force_constants[0],torsion_force_constants[0],temperatures[0]))
-subprocess.call(mpi_prefix+"sander -O -i siman.in -p linear.prmtop -c min.rst7 -r siman1.rst7 -o siman1.out -x siman1.nc", shell=True)
+subprocess.run(mpi_prefix+"sander -O -i siman.in -p linear.prmtop -c min.rst7 -r siman1.rst7 -o siman1.out -x siman1.nc", shell=True)
 
 # further running of annealing cycles if requested
 for i in range(1, annealing_runs):
-    subprocess.call("mv RST RST%s"%(i-1))
+    subprocess.run("cp RST RST%s"%(i-1))
     
-    subprocess.call("sed -i 's/rk2=%.1f, rk3=%.1f/rk2=%.1f, rk3=%.1f/g' RST.dist"%(distance_force_constants[i-1],distance_force_constants[i-1],distance_force_constants[i],distance_force_constants[i]), shell=True)    # re-up'ing distance restraint force constants
+    subprocess.run("sed -i 's/rk2=%.1f, rk3=%.1f/rk2=%.1f, rk3=%.1f/g' RST.dist"%(distance_force_constants[i-1],distance_force_constants[i-1],distance_force_constants[i],distance_force_constants[i]), shell=True)    # re-up'ing distance restraint force constants
 
-    subprocess.call("sed -i 's/rk2 =   %.2f, rk3 =   %.2f/rk2 =   %.2f, rk3 =   %.2f/g' RST.angles"%(torsion_force_constants[i-1],torsion_force_constants[i-1],torsion_force_constants[i],torsion_force_constants[i]), shell=True)  # re-up'ing torsion restraint force constants
+    subprocess.run("sed -i 's/rk2 =   %.2f, rk3 =   %.2f/rk2 =   %.2f, rk3 =   %.2f/g' RST.angles"%(torsion_force_constants[i-1],torsion_force_constants[i-1],torsion_force_constants[i],torsion_force_constants[i]), shell=True)  # re-up'ing torsion restraint force constants
+    
+    with open('RST','w') as outfile:
+        subprocess.run("cat RST.dist RST.angles", shell=True, stdout=outfile)
 
-    subprocess.call("cat RST.dist RST.angles > RST", shell=True)
-
-    subprocess.call('sed -e "s/USER_TEMP/%s/g" %s > siman.in'%(temperatures[i],simulated_annealing_input_file_path,shell=True)) # re-up'ing maximum temperature of the simulated annealing run
+    with open('siman.in','w') as outfile:
+        subprocess.run('sed -e "s/USER_TEMP/%s/g" %s'%(temperatures[i],simulated_annealing_input_file_path), shell=True, stdout=outfile) # re-up'ing maximum temperature of the simulated annealing run
 
     j = i+1
     # NOTE: force constants read into AmberTools need to be scaled by some multiplicative factor... Need to look this up again... need to report units of force constants and so on...
     print('SIMULATED ANNEALING CYCLE #%d, DISTANCE FORCE CONSTANT = %.2f, ANGLE FORCE CONSTANT = %.2f, TEMPERATURE = %.2f K'%(j,distance_force_constants[i],torsion_force_constants[i],temperatures[i]))
-    subprocess.call(mpi_prefix+"sander -O -i siman.in -p linear.prmtop -c siman%d.rst7 -r siman%d.rst7 -o siman%d.out -x siman%d.nc"%(i,j,j,j), shell=True)
+    subprocess.run(mpi_prefix+"sander -O -i siman.in -p linear.prmtop -c siman%d.rst7 -r siman%d.rst7 -o siman%d.out -x siman%d.nc"%(i,j,j,j), shell=True)
 
 print("\n\n====================== WRITING FINAL PDB ======================")
-subprocess.call("ambpdb -p prmtop -c siman"+str(j)+".ncrst > "+name+"_final.pdb", shell=True)
+subprocess.run("ambpdb -p prmtop -c siman%s.rst7 > %s_final.pdb"%(annealing_runs,name), shell=True)
 
-print("\n\n=========================== COMPLETE ==========================")           
+print("\n\n=========================== COMPLETE ==========================")
+

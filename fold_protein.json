@@ -1,16 +1,17 @@
 {
 	"name": "1ubq",
 	"output_directory_path": "1ubq_output",
-	"fasta_file_path": "1ubq_example/1ubq.fasta",
-	"distance_restraints_file_path": "1ubq_example/1ubq_distance",
-	"torsion_restraints_file_path": "1ubq_example/1ubq_torsion",
-	"minimization_input_file_path": "min.in",
-	"simulated_annealing_input_file_path": "siman.in",
+	"fasta_file_path": "/home/rbdavid/Projects/ornl_OpenFold/ubiquitin/structures/testing_codes/1UBQ.fasta",
+	"distance_restraints_file_path": "/home/rbdavid/Projects/ornl_OpenFold/ubiquitin/structures/testing_codes/1UBQ_aligned_to_1UBQ_8col.dist",
+	"torsion_restraints_file_path": "/home/rbdavid/Projects/ornl_OpenFold/ubiquitin/structures/testing_codes/1UBQ_aligned_to_1UBQ_5col.angl",
+	"minimization_input_file_path": "/home/rbdavid/Projects/ornl_OpenFold/ubiquitin/rbd_code/min.in",
+	"simulated_annealing_input_file_path": "/home/rbdavid/Projects/ornl_OpenFold/ubiquitin/rbd_code/siman.in",
+	"tordef_file_path": "/home/rbdavid/Scripts/git/OpenFold-amber/tordef.lib",
 	"forcefield_file_path": "leaprc.protein.ff14SB",
 	"distance_force_constants": [70.0, 70.0],
 	"torsion_force_constants": [40.0, 40.0],
 	"temperatures": [600.0, 600.0],
-    	"annealing_runs": 2,
+    	"annealing_runs": 1,
 	"mpi_prefix": "",
         "solvate": ""
 }
