@@ -7,7 +7,7 @@
 	"minimization_input_file_path": "/home/rbdavid/Projects/ornl_OpenFold/ubiquitin/rbd_code/min.in",
 	"simulated_annealing_input_file_path": "/home/rbdavid/Projects/ornl_OpenFold/ubiquitin/rbd_code/siman.in",
 	"tordef_file_path": "/home/rbdavid/Scripts/git/OpenFold-amber/tordef.lib",
-	"forcefield_file_path": "leaprc.protein.ff14SB",
+	"forcefield": "leaprc.protein.ff14SB",
 	"distance_force_constants": [70.0, 70.0],
 	"torsion_force_constants": [40.0, 40.0],
 	"temperatures": [600.0, 600.0],
