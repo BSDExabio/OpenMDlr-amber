@@ -1,11 +1,17 @@
-Minimization
+Minimization; generalized born implicit solvent models (igb and rgbmax)
  &cntrl
   imin=1, 
-  maxcyc=1000, 
-  ncyc=500,
-  cut=999., 
-  rgbmax=999.,
-  igb=1, 
+  ntx=1,
+  irest=0,
+  ntpr=100,
+  ntwx=100,
+  ioutfm=1,
   ntb=0,
-  ntpr=100
+  iwrap=0,
+  ntmin=1,
+  maxcyc=500, 
+  ncyc=250,
+  cut=9999., 
+  igb=1, 
+  rgbmax=999.
  /
