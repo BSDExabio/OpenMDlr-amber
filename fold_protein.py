@@ -63,7 +63,6 @@ def tri(x):
 with open(parameter_file) as json_file:
     data = json.load(json_file)
     name                    = data['name']
-    output_directory_path   = data['output_directory_path'] 
     fasta_file_path         = data['fasta_file_path']
     forcefield              = data["forcefield"]
     distance_rst_file_path  = data['distance_restraints_file_path']
@@ -90,8 +89,8 @@ if len(temperatures) < annealing_runs:
 # MAKE AND MOVE INTO THE OUTPUT DIRECTORY
 ###############
 
-os.mkdir(output_directory_path) # makes the output directory w/in the working directory  
-os.chdir(output_directory_path) # moves into the output directory
+os.mkdir(name+'_output') # makes the output directory w/in the working directory  
+os.chdir(name+'_output') # moves into the output directory
 
 ###############
 # COPY IMPORTANT FILES INTO THE OUTPUT DIRECTORY

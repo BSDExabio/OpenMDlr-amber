@@ -3,7 +3,9 @@
 A set of scripts using open source softwares that can convert an amino acid sequence into a folded 3D structure using simplistic simulated annealing molecular dynamics simulations and user-defined distance and torsion restraints. Mainly just a python wrapper script that calls AmberTools20 sander to run MD simulations.
 
 ### Pre-Reqs:
-1. [Python3](https://www.python.org)
+1. [Python3](https://www.python.org) <br/>
+Required non-standard packages: MDAnalysis (version 1.0.0)
+
 2. [AmberTools20](http://ambermd.org/GetAmber.php) <br/>
 
 For a simple-to-install, non-parallelized version of AmberTools, you can use conda ([Miniconda](https://docs.conda.io/en/latest/miniconda.html)):
@@ -26,7 +28,7 @@ conda install -c conda-forge ambertools=20
 conda install MDAnalysis
 ```
 
-3. Clone or download this git repository to a single position. 
+3. Clone or download this git repository to a single location. 
 
 ### To Run:
 1. Prepare a FASTA/txt file with the amino acid sequence in single letter formatting. 
@@ -39,14 +41,11 @@ export OpenFoldHome=~/Apps/OpenFold-amber	# edit this line with the global locat
 python3 $OpenFoldHome/fold_protein.py fold_protein.json
 ```
 
-
-
-
 ### Input to the Program: fold_protein.json 
-1. name of the protein (or run) as a string; this is just to identify output files, so you can really use any string you want
-2. FASTA file (or txt file) with the sequence in single letters (i.e., "NLYIQWLKDGGPSSGRPPPS")
-3. Distance Restraints list in 8 col file
-4. Torsion Restraints list in 5 col file
+1. name: string; an identifier string used in naming of output directory and files, so you can really use any string you want. 
+2. fasta_file_path: string; directory path that points to the FASTA file with the to-be folded sequence in single letter format (i.e., "NLYIQWLKDGGPSSGRPPPS").
+3. distance_restraints_file_path: string; directory path that points to the distance restraints file in 8 column format.
+4. torsion_restraints_file_path: string; directory path that points to the torsion restraints file in 5 column format.
 5. List of Force Constants for the distance restraints as floats (in kcal/mol·Angstroms)
 6. List of Force Constants for the torsion restraints as floats (in in kcal/mol·rad)
 7. List of Maximum Temperatures for the simulated annealing cycles as floats (in K)

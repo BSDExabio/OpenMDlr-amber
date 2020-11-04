@@ -1,6 +1,5 @@
 {
 	"name": "1ubq",
-	"output_directory_path": "1ubq_output",
 	"fasta_file_path": "/home/rbdavid/Projects/ornl_OpenFold/ubiquitin/structures/testing_codes/1UBQ.fasta",
 	"distance_restraints_file_path": "/home/rbdavid/Projects/ornl_OpenFold/ubiquitin/structures/testing_codes/1UBQ_aligned_to_1UBQ_8col.dist",
 	"torsion_restraints_file_path": "/home/rbdavid/Projects/ornl_OpenFold/ubiquitin/structures/testing_codes/1UBQ_aligned_to_1UBQ_5col.angl",
