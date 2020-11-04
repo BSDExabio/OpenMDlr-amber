@@ -55,7 +55,7 @@ python3 $OpenFoldHome/fold_protein.py fold_protein.json
 11. temperatures: python list of floats; contains the maximum temperatures for simulated annealing cycles. Units: K
 12. annealing_runs: integer; number of simulated annealing simulations that will be performed. 
 
->If the length of the force_constants and temperature lists (parameters #9-11) is 1, then the single value is used across all simulated annealing cycles.<br/>
+>If the length of the force constants and temperatures lists (parameters #9-11) is 1, then the single value is used across all simulated annealing cycles.<br/>
 >If the length of these lists is = number of cycles, then the first value is used for the first cycle, the second value for the second cycle, and so on.<br/>
 >If the length is > cycles, the extra values are ignored.<br/>
 >If the length is < cycles, the first value is used for all cycles.<br/>
