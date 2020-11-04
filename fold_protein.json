@@ -10,7 +10,5 @@
 	"distance_force_constants": [70.0, 70.0],
 	"torsion_force_constants": [40.0, 40.0],
 	"temperatures": [600.0, 600.0],
-    	"annealing_runs": 1,
-	"mpi_prefix": "",
-        "solvate": ""
+    	"annealing_runs": 1
 }

@@ -46,19 +46,24 @@ python3 $OpenFoldHome/fold_protein.py fold_protein.json
 2. fasta_file_path: string; directory path that points to the FASTA file with the to-be folded sequence in single letter format (i.e., "NLYIQWLKDGGPSSGRPPPS").
 3. distance_restraints_file_path: string; directory path that points to the distance restraints file in 8 column format.
 4. torsion_restraints_file_path: string; directory path that points to the torsion restraints file in 5 column format.
-5. List of Force Constants for the distance restraints as floats (in kcal/mol·Angstroms)
-6. List of Force Constants for the torsion restraints as floats (in in kcal/mol·rad)
-7. List of Maximum Temperatures for the simulated annealing cycles as floats (in K)
+5. minimization_input_file_path: string; directory path that points to the input file to perform basic minimization of the linear starting 3D structure. General users shouldn't need to change this parameter's value. 
+6. simulated_annealing_input_file_path: string; directory path that points to the input file to perform basic the simulated annealing MD sims. with the user defined restraints. General users shouldn't need to change this parameter's value. 
+7. tordef_file_path: string; directory path that points to the tordef.lib file needed for AmberTools' makeANG_RST script to work. Users shouldn't need to change this paramter's value. 
+8. forcefield: string; file name associated with the leaprc file to be used in AmberTools' tleap to generate the linear 3D structure and respective parameters. Only tested with "leaprc.protein.ff14SB".
+9. distance_force_constants: python list of floats; contains the harmonic force constant applied to pairwise atom-atom distance restraints. Units: kcal/(mol·Angstrom)
+10. torsion_force_constants: python list of floats; contains the harmonic force constant applied to dihedral atom groups. Units: kcal/(mol·rad)
+11. temperatures: python list of floats; contains the maximum temperatures for simulated annealing cycles. Units: K
+12. annealing_runs: integer; number of simulated annealing simulations that will be performed. 
 
->If the length of these Lists (#5-7) is 1, then the single value is used across all simulated annealing cycles.<br/>
+>If the length of the force_constants and temperature lists (parameters #9-11) is 1, then the single value is used across all simulated annealing cycles.<br/>
 >If the length of these lists is = number of cycles, then the first value is used for the first cycle, the second value for the second cycle, and so on.<br/>
 >If the length is > cycles, the extra values are ignored.<br/>
 >If the length is < cycles, the first value is used for all cycles.<br/>
->Any of the values may be 0.0, but it is reccomended the temperature is >= 100.0K.<br/>
+>Any of the values in these lists may be 0.0, but it is recommended that temperature values >= 100.0 K.<br/>
 
-8. Number of simulated annealing cycles to run (int)
-9. The mpi "prefix" (for example, "mpirun -np 4 "), if you would like to call sander (AmberTools minimization and simulated anealing program) with mpi threading (https://www.open-mpi.org/). This is completely optional and can take an empty string instead ("").
-10. The path to the Amber forcefield, if you would like to change the forcefield; will vary depending on where your AmberTools package is
+
+
+
 
 >The given example file has what I have found to be good defaults.
 

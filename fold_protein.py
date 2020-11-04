@@ -74,7 +74,6 @@ with open(parameter_file) as json_file:
     torsion_force_constants = data['torsion_force_constants']
     temperatures            = data['temperatures']
     annealing_runs          = int(data['annealing_runs'])
-    mpi_prefix              = data["mpi_prefix"]
 
 if len(distance_force_constants) < annealing_runs: 
     distance_force_constants = [distance_force_constants[0] for i in range(annealing_runs)]
@@ -201,7 +200,7 @@ with open('RST','w') as outfile:
 ###############
 
 print("\n\n===================== RUNNING MINIMIZATION ====================")
-retcode = subprocess.run(mpi_prefix+'sander -O -i %s -o min.out -p linear.prmtop -c linear.rst7 -r min.rst7 -x min.nc'%(minimization_input_file), shell=True)
+retcode = subprocess.run('sander -O -i %s -o min.out -p linear.prmtop -c linear.rst7 -r min.rst7 -x min.nc'%(minimization_input_file), shell=True)
 print(retcode)
 
 ###############
@@ -216,7 +215,7 @@ with open('siman1.in','w') as outfile:
 print("\n\n================= RUNNING SIMULATED ANNEALING =================")
 # NOTE: force constants read into AmberTools need to be scaled by some multiplicative factor... Need to look this up again... need to report units of force constants and so on...
 print('SIMULATED ANNEALING CYCLE #1, DISTANCE FORCE CONSTANT = %.2f, ANGLE FORCE CONSTANT = %.2f, TEMPERATURE = %.2f K' %(distance_force_constants[0],torsion_force_constants[0],temperatures[0]))
-retcode = subprocess.run(mpi_prefix+'sander -O -i siman1.in -p linear.prmtop -c min.rst7 -r siman1.rst7 -o siman1.out -x siman1.nc', shell=True)
+retcode = subprocess.run('sander -O -i siman1.in -p linear.prmtop -c min.rst7 -r siman1.rst7 -o siman1.out -x siman1.nc', shell=True)
 print(retcode)
 
 # further running of annealing cycles if requested
@@ -243,7 +242,7 @@ for i in range(1, annealing_runs):
 
     # NOTE: force constants read into AmberTools need to be scaled by some multiplicative factor... Need to look this up again... need to report units of force constants and so on...
     print('SIMULATED ANNEALING CYCLE #%d, DISTANCE FORCE CONSTANT = %.2f, ANGLE FORCE CONSTANT = %.2f, TEMPERATURE = %.2f K'%(j,distance_force_constants[i],torsion_force_constants[i],temperatures[i]))
-    retcode = subprocess.run(mpi_prefix+"sander -O -i siman%d.in -p linear.prmtop -c siman%d.rst7 -r siman%d.rst7 -o siman%d.out -x siman%d.nc"%(j,i,j,j,j), shell=True)
+    retcode = subprocess.run("sander -O -i siman%d.in -p linear.prmtop -c siman%d.rst7 -r siman%d.rst7 -o siman%d.out -x siman%d.nc"%(j,i,j,j,j), shell=True)
     print(retcode)
 
 print("\n\n====================== WRITING FINAL PDB ======================")
