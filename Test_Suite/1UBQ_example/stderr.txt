@@ -1,2 +1,0 @@
-/home/rbdavid/Apps/Python-3.8.2/lib/python3.8/site-packages/MDAnalysis/topology/PDBParser.py:330: UserWarning: Element information is absent or missing for a few atoms. Elements attributes will not be populated.
-  warnings.warn("Element information is absent or missing for a few "
