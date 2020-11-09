@@ -260,7 +260,7 @@ for i in range(1, annealing_runs):
         for line in list_of_lines:
             out_file.write(line)
 
-    search_string = 'USER_TEMP' %(torsion_force_constants[i-1],torsion_force_constants[i-1])
+    search_string = 'USER_TEMP'
     replace_string = '%s'%(temperatures[i])
     sed(search_string,replace_string,simulated_annealing_input_file,'siman%s.in'%(j))     # re-up'ing torsion restraint force constants
     
