@@ -236,8 +236,9 @@ print('SIMULATED ANNEALING CYCLE #1, DISTANCE FORCE CONSTANT = %.2f, ANGLE FORCE
 retcode = subprocess.run('sander -O -i siman1.in -p linear.prmtop -c min.rst7 -r siman1.rst7 -o siman1.out -x siman1.nc', shell=True)
 print(retcode)
 
-retcode = subprocess.run('mv RST RST1',shell=True)
-print(retcode)
+os.rename('RST','RST1')
+#retcode = subprocess.run('mv RST RST1',shell=True)
+#print(retcode)
 
 # further running of annealing cycles if requested
 for i in range(1, annealing_runs):
@@ -269,12 +270,17 @@ for i in range(1, annealing_runs):
     retcode = subprocess.run('sander -O -i siman%d.in -p linear.prmtop -c siman%d.rst7 -r siman%d.rst7 -o siman%d.out -x siman%d.nc'%(j,i,j,j,j), shell=True)
     print(retcode)
 
-    retcode = subprocess.run('mv RST RST%s'%(j), shell=True)
-    print(retcode)
+    os.rename('RST','RST%s'%(j))
+    #retcode = subprocess.run('mv RST RST%s'%(j), shell=True)
+    #print(retcode)
     
 print('\n\n====================== WRITING FINAL PDB ======================')
-retcode = subprocess.run('ambpdb -p linear.prmtop -c siman%s.rst7 > %s_final.pdb'%(annealing_runs,name), shell=True)
-print(retcode)
+#retcode = subprocess.run('ambpdb -p linear.prmtop -c siman%s.rst7 > %s_final.pdb'%(annealing_runs,name), shell=True)
+#print(retcode)
+
+u = MDAnalysis.Universe('linear.prmtop','siman%s.nc'%(j))
+u.trajectory[-1]
+u.select_atoms('all').write('%s_final.pdb'%(name))
 
 print('\n\n=========================== COMPLETE ==========================')
 
