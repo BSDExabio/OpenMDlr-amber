@@ -23,8 +23,8 @@ def make_restraints_config_parser(config_file,parameters):	# Function to take co
             parameters: empty dictionary to be filled within this function.
 
         """
-        necessary_parameters = ['file_location','dist_selection','dist_plus_minus','pair_type_list','dist_restraint_file_name','angl_selection','angl_plus_minus','angl_restraint_file_name']
-        all_parameters = ['file_location','selection','dist_plus_minus','pair_type_list','dist_restraint_file_name','angl_selection','angl_plus_minus','angl_restraint_file_name','nearest_neighbors_ignored','summary_boolean']
+        necessary_parameters = ['file_location','dist_selection','dist_plus_minus','dist_cutoff','pair_type_list','dist_restraint_file_name','angl_selection','angl_plus_minus','angl_restraint_file_name']
+        all_parameters = ['file_location','selection','dist_plus_minus','dist_cutoff','pair_type_list','dist_restraint_file_name','angl_selection','angl_plus_minus','angl_restraint_file_name','nearest_neighbors_ignored','summary_boolean']
         for i in range(len(necessary_parameters)):
             parameters[necessary_parameters[i]] = ''
 	
