@@ -23,6 +23,7 @@ def main():
     pdb_files = glob.glob(pdb_files_location)
     
     dist_plus_minus = float(parameters['dist_plus_minus'])
+    dist_cutoff = float(parameters['dist_cutoff'])
     nearest_neighbors_ignored = int(parameters['nearest_neighbors_ignored'])
     angl_plus_minus = float(parameters['angl_plus_minus'])
 
@@ -48,7 +49,8 @@ def main():
             for pair in selection_pairs:
                 i = pair[0]
                 j = pair[1]
-                rst_out.write('%5d   %5s   %5s   %5d   %5s   %5s   %5.2f   %5.2f   # %.5f\n'%(sel.atoms[i].resid,sel.atoms[i].resname,sel.atoms[i].name,sel.atoms[j].resid,sel.atoms[j].resname,sel.atoms[j].name,distance_matrix[i,j]-dist_plus_minus,distance_matrix[i,j]+dist_plus_minus,distance_matrix[i,j]))   # creates 8 column distance restraint file...
+                if distance_matrix[i,j] < dist_cutoff:
+                    rst_out.write('%5d   %5s   %5s   %5d   %5s   %5s   %5.2f   %5.2f   # %.5f\n'%(sel.atoms[i].resid,sel.atoms[i].resname,sel.atoms[i].name,sel.atoms[j].resid,sel.atoms[j].resname,sel.atoms[j].name,distance_matrix[i,j]-dist_plus_minus,distance_matrix[i,j]+dist_plus_minus,distance_matrix[i,j]))   # creates 8 column distance restraint file...
    
         # ----------------------------------------
         # Calc dihedrals and prep dihedrals restraint file
