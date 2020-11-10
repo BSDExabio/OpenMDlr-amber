@@ -56,7 +56,7 @@ def tri(x):
             'Y': 'TYR',
             'V': 'VAL'}.get(x.upper(), '')
 
-def sed(search_string,replace_string,in_file,out_file):
+def find_replace(search_string,replace_string,in_file,out_file):
     '''
     '''
     with open(in_file,'r') as w:
@@ -204,7 +204,7 @@ with open('RST.angles','w') as stdout_file, open('makeANG_RST.output','w') as st
     
 search_string = 'rk2 =   2.0, rk3 =   2.0'
 replace_string = 'rk2 =   %.2f, rk3 =   %.2f'%(torsion_force_constants[0],torsion_force_constants[0])
-sed(search_string,replace_string,'RST.angles','RST.angles')
+find_replace(search_string,replace_string,'RST.angles','RST.angles')
 
 with open('RST.angles','r') as in_file, open('RST','a') as out_file:
     list_of_lines = in_file.readlines()
@@ -228,7 +228,7 @@ print(retcode)
 # prepare simulation input files
 search_string = 'USER_TEMP'
 replace_string = '%s'%(temperatures[0])
-sed(search_string,replace_string,simulated_annealing_input_file,'siman1.in')
+find_replace(search_string,replace_string,simulated_annealing_input_file,'siman1.in')
 
 print('\n\n================= RUNNING SIMULATED ANNEALING =================')
 # NOTE: force constants read into AmberTools need to be scaled by some multiplicative factor... Need to look this up again... need to report units of force constants and so on...
@@ -237,21 +237,20 @@ retcode = subprocess.run('sander -O -i siman1.in -p linear.prmtop -c min.rst7 -r
 print(retcode)
 
 os.rename('RST','RST1')
-#retcode = subprocess.run('mv RST RST1',shell=True)
-#print(retcode)
 
 # further running of annealing cycles if requested
 for i in range(1, annealing_runs):
     # one-indexed run count
+    h = i-1
     j = i+1
     
-    search_string = 'rk2=%.1f, rk3=%.1f' %(distance_force_constants[i-1],distance_force_constants[i-1])
+    search_string = 'rk2=%.1f, rk3=%.1f' %(distance_force_constants[h],distance_force_constants[h])
     replace_string = 'rk2=%.1f, rk3=%.1f'%(distance_force_constants[i],distance_force_constants[i])
-    sed(search_string,replace_string,'RST.dist','RST.dist')     # re-up'ing distance restraint force constants
+    find_replace(search_string,replace_string,'RST.dist','RST.dist')     # re-up'ing distance restraint force constants
     
-    search_string = 'rk2 =   %.2f, rk3 =   %.2f' %(torsion_force_constants[i-1],torsion_force_constants[i-1])
+    search_string = 'rk2 =   %.2f, rk3 =   %.2f' %(torsion_force_constants[h],torsion_force_constants[h])
     replace_string = 'rk2 =   %.2f, rk3 =   %.2f'%(torsion_force_constants[i],torsion_force_constants[i])
-    sed(search_string,replace_string,'RST.angles','RST.angles')     # re-up'ing torsion restraint force constants
+    find_replace(search_string,replace_string,'RST.angles','RST.angles')     # re-up'ing torsion restraint force constants
     
     with open('RST.dist','r') as dist_file, open('RST.angles','r') as angl_file, open('RST','w') as out_file:
         list_of_lines = dist_file.readlines()
@@ -263,7 +262,7 @@ for i in range(1, annealing_runs):
 
     search_string = 'USER_TEMP'
     replace_string = '%s'%(temperatures[i])
-    sed(search_string,replace_string,simulated_annealing_input_file,'siman%s.in'%(j))     # re-up'ing torsion restraint force constants
+    find_replace(search_string,replace_string,simulated_annealing_input_file,'siman%s.in'%(j))     # re-up'ing torsion restraint force constants
     
     # NOTE: force constants read into AmberTools need to be scaled by some multiplicative factor... Need to look this up again... need to report units of force constants and so on...
     print('SIMULATED ANNEALING CYCLE #%d, DISTANCE FORCE CONSTANT = %.2f, ANGLE FORCE CONSTANT = %.2f, TEMPERATURE = %.2f K'%(j,distance_force_constants[i],torsion_force_constants[i],temperatures[i]))
@@ -271,16 +270,13 @@ for i in range(1, annealing_runs):
     print(retcode)
 
     os.rename('RST','RST%s'%(j))
-    #retcode = subprocess.run('mv RST RST%s'%(j), shell=True)
-    #print(retcode)
     
 print('\n\n====================== WRITING FINAL PDB ======================')
-#retcode = subprocess.run('ambpdb -p linear.prmtop -c siman%s.rst7 > %s_final.pdb'%(annealing_runs,name), shell=True)
-#print(retcode)
 
 u = MDAnalysis.Universe('linear.prmtop','siman%s.nc'%(j))
 u.trajectory[-1]
-u.select_atoms('all').write('%s_final.pdb'%(name))
+u_all = u.select_atoms('all')
+u_all.write('%s_final.pdb'%(name))
 
 print('\n\n=========================== COMPLETE ==========================')
 
