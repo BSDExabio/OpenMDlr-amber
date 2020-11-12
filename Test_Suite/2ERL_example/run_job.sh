@@ -6,5 +6,5 @@ python3 $OpenFoldHome/helper_codes/restraints_from_xtal_structure/make_restraint
 
 time python3 $OpenFoldHome/fold_protein.py example_fold_protein.json > stdout.txt 2> stderr.txt
 
-TMscore 1ubq_output/1ubq_final.pdb 1UBQ.pdb > tmscore_results.out
+TMscore 2erl_output/2erl_final.pdb 2ERL.pdb > tmscore_results.out
 

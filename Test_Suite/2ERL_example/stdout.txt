@@ -1,0 +1,34 @@
+
+
+======================== READING FASTA ========================
+PROTEIN SEQUENCE: NASP ALA CYS GLU GLN ALA ALA ILE GLN CYS VAL GLU SER ALA CYS GLU SER LEU CYS THR GLU GLY GLU ASP ARG THR GLY CYS TYR MET TYR ILE TYR SER ASN CYS PRO PRO TYR CVAL 
+
+
+=============== GENERATING LINEAR PDB WITH TLEAP ==============
+CompletedProcess(args='tleap -s -f tleap.in', returncode=0)
+
+
+===== READING USER RESTRAINTS AND MATCHING WITH LINEAR PDB ====
+DISTANCE RESTRAINTS GENERATED
+
+
+=================== MAKING ANGLE RESTRAINTS ===================
+CompletedProcess(args='makeANG_RST -pdb linear.pdb -con 2ERL_5col.angl -lib tordef.lib', returncode=0)
+TORSION RESTRAINTS GENERATED
+
+
+===================== RUNNING MINIMIZATION ====================
+CompletedProcess(args='sander -O -i min.in -o min.out -p linear.prmtop -c linear.rst7 -r min.rst7 -x min.nc', returncode=0)
+
+
+================= RUNNING SIMULATED ANNEALING =================
+SIMULATED ANNEALING CYCLE #1, DISTANCE FORCE CONSTANT = 70.00, ANGLE FORCE CONSTANT = 40.00, TEMPERATURE = 600.00 K
+CompletedProcess(args='sander -O -i siman1.in -p linear.prmtop -c min.rst7 -r siman1.rst7 -o siman1.out -x siman1.nc', returncode=0)
+SIMULATED ANNEALING CYCLE #2, DISTANCE FORCE CONSTANT = 70.00, ANGLE FORCE CONSTANT = 40.00, TEMPERATURE = 600.00 K
+CompletedProcess(args='sander -O -i siman2.in -p linear.prmtop -c siman1.rst7 -r siman2.rst7 -o siman2.out -x siman2.nc', returncode=0)
+
+
+====================== WRITING FINAL PDB ======================
+
+
+=========================== COMPLETE ==========================

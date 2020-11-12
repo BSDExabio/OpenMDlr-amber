@@ -1,0 +1,6 @@
+source leaprc.protein.ff14SB
+2erl = sequence { NASP ALA CYS GLU GLN ALA ALA ILE GLN CYS VAL GLU SER ALA CYS GLU SER LEU CYS THR GLU GLY GLU ASP ARG THR GLY CYS TYR MET TYR ILE TYR SER ASN CYS PRO PRO TYR CVAL }
+saveoff 2erl linear.lib
+savepdb 2erl linear.pdb
+saveamberparm 2erl linear.prmtop linear.rst7
+quit

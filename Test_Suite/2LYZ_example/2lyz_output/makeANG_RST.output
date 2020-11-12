@@ -1,0 +1,14 @@
+
+******************************************************
+makeANG_RST v 2.0, jsmith@scripps.edu
+Trouble reading line 1 from torsion library.
+Trouble reading line 322 from torsion library.
+Read 310 torsion definitions from library file tordef.lib
+Read 1968 atoms from linear.pdb for RST atom numbers:
+Be sure that the atom numbers are the same as in the prmtop file that you will use.
+Reading constraints from 2LYZ_5col.angl
+******************************************************
+
+
+256 constraints (256 torsion + 0 pseudorotation) converted to RST format.
+
