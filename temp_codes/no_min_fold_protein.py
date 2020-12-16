@@ -217,9 +217,9 @@ print('TORSION RESTRAINTS GENERATED')
 # RUNNING MINIMIZATION CALCULATION
 ###############
 
-print('\n\n===================== RUNNING MINIMIZATION ====================')
-retcode = subprocess.run('sander -O -i %s -o min.out -p linear.prmtop -c linear.rst7 -r min.rst7 -x min.nc'%(minimization_input_file), shell=True)
-print(retcode)
+#print('\n\n===================== RUNNING MINIMIZATION ====================')
+#retcode = subprocess.run('sander -O -i %s -o min.out -p linear.prmtop -c linear.rst7 -r min.rst7 -x min.nc'%(minimization_input_file), shell=True)
+#print(retcode)
 
 ###############
 # RUNNING SIMULATED ANNEALING MOLECULAR DYNAMICS SIMULATIONS
@@ -233,7 +233,7 @@ find_replace(search_string,replace_string,simulated_annealing_input_file,'siman1
 print('\n\n================= RUNNING SIMULATED ANNEALING =================')
 # NOTE: force constants read into AmberTools need to be scaled by some multiplicative factor... Need to look this up again... need to report units of force constants and so on...
 print('SIMULATED ANNEALING CYCLE #1, DISTANCE FORCE CONSTANT = %.2f, ANGLE FORCE CONSTANT = %.2f, TEMPERATURE = %.2f K' %(distance_force_constants[0],torsion_force_constants[0],temperatures[0]))
-retcode = subprocess.run('sander -O -i siman1.in -p linear.prmtop -c min.rst7 -r siman1.rst7 -o siman1.out -x siman1.nc', shell=True)
+retcode = subprocess.run('sander -O -i siman1.in -p linear.prmtop -c linear.rst7 -r siman1.rst7 -o siman1.out -x siman1.nc', shell=True)
 print(retcode)
 
 os.rename('RST','RST1')
