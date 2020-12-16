@@ -140,8 +140,11 @@ triseq_list = [tri(res) for res in sequence]    # create a list of three letter 
 triseq_list[0]  = 'N'+triseq_list[0]    # label first residue as N-terminal; necessary for tleap
 triseq_list[-1] = 'C'+triseq_list[-1]   # label first residue as C-terminal; necessary for tleap
 triseq = ''
-for res in triseq_list:
-    triseq += res + ' '
+for i, res in enumerate(triseq_list):
+    if i%50 == 0:
+        triseq += res + '\n '
+    else:
+        triseq += res + ' '
 
 print('PROTEIN SEQUENCE: '+ str(triseq))
 
