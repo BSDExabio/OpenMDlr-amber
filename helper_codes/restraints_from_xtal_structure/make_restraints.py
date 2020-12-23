@@ -37,6 +37,7 @@ def main():
         # Calc distances and prep distance restraint file
         # ----------------------------------------
         sel = u.select_atoms(parameters['dist_selection'])
+        first_res_index = sel.atoms[0].resid-1  # make distance restraint file use one-indexed residue IDs because tleap will force that indexing 
         sel_pos = sel.positions
         
         distance_matrix = distance_calc(sel_pos)  # calculate the distance_matrix between all atoms in selection; likely a bunch of unnecessary calcs but still faster than parsing the pairs and calculating individual distances by hand.
@@ -50,7 +51,7 @@ def main():
                 i = pair[0]
                 j = pair[1]
                 if distance_matrix[i,j] < dist_cutoff:
-                    rst_out.write('%5d   %5s   %5s   %5d   %5s   %5s   %5.2f   %5.2f   # %.5f\n'%(sel.atoms[i].resid,sel.atoms[i].resname,sel.atoms[i].name,sel.atoms[j].resid,sel.atoms[j].resname,sel.atoms[j].name,distance_matrix[i,j]-dist_plus_minus,distance_matrix[i,j]+dist_plus_minus,distance_matrix[i,j]))   # creates 8 column distance restraint file...
+                    rst_out.write('%5d   %5s   %5s   %5d   %5s   %5s   %5.2f   %5.2f   # %.5f\n'%(sel.atoms[i].resid - first_res_index,sel.atoms[i].resname,sel.atoms[i].name,sel.atoms[j].resid - first_res_index,sel.atoms[j].resname,sel.atoms[j].name,distance_matrix[i,j]-dist_plus_minus,distance_matrix[i,j]+dist_plus_minus,distance_matrix[i,j]))   # creates 8 column distance restraint file...
    
         # ----------------------------------------
         # Calc dihedrals and prep dihedrals restraint file
@@ -64,11 +65,11 @@ def main():
             for phi in phis:
                 if type(phi) != type(None):
                     temp = phi.dihedral.value()
-                    rst_out.write('%5d   %5s   %5s   %7.2f   %7.2f   # %10.5f\n'%(phi.resids[1],phi.resnames[1],'PHI',temp-angl_plus_minus,temp+angl_plus_minus,temp))   # creates 5 column angl restraint file...
+                    rst_out.write('%5d   %5s   %5s   %7.2f   %7.2f   # %10.5f\n'%(phi.resids[1] - first_res_index,phi.resnames[1],'PHI',temp-angl_plus_minus,temp+angl_plus_minus,temp))   # creates 5 column angl restraint file...
             for psi in psis:
                 if type(psi) != type(None):
                     temp = psi.dihedral.value()
-                    rst_out.write('%5d   %5s   %5s   %7.2f   %7.2f   # %10.5f\n'%(psi.resids[1],psi.resnames[1],'PSI',temp-angl_plus_minus,temp+angl_plus_minus,temp))   # creates 5 column angl restraint file...
+                    rst_out.write('%5d   %5s   %5s   %7.2f   %7.2f   # %10.5f\n'%(psi.resids[1] - first_res_index,psi.resnames[1],'PSI',temp-angl_plus_minus,temp+angl_plus_minus,temp))   # creates 5 column angl restraint file...
         
         # ----------------------------------------
         # Create a fasta file of the pdb structure
