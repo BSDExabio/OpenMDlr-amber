@@ -7,8 +7,8 @@
 	"simulated_annealing_input_file_path": "~/Scripts/git/OpenFold-amber/siman.in",
 	"tordef_file_path": "~/Scripts/git/OpenFold-amber/tordef.lib",
 	"forcefield": "leaprc.protein.ff14SB",
-	"distance_force_constants": [70.0, 70.0],
-	"torsion_force_constants": [40.0, 40.0],
-	"temperatures": [600.0, 600.0],
-    	"annealing_runs": 2
+	"distance_force_constants": [70.0],
+	"torsion_force_constants": [40.0],
+	"temperatures": [600.0],
+    	"annealing_runs": 1
 }
