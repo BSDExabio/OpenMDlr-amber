@@ -272,6 +272,9 @@ print('\n\n====================== WRITING FINAL PDB ======================')
 u = MDAnalysis.Universe('linear.prmtop','siman%s.nc'%(j))
 u.trajectory[-1]
 u_all = u.select_atoms('all')
+for res in u_all.residues:
+    if res.resname in ['HIE','HIP']:
+        res.resname = 'HIS'
 u_all.write('%s_final.pdb'%(name))
 
 print('\n\n=========================== COMPLETE ==========================')
