@@ -1,0 +1,48 @@
+normal MD with cooling at end of simulation; no velocities read in; Langevin dynamics thermostat
+
+ &cntrl
+    imin=0,
+    ntx=1,
+    irest=0,
+    ntxo=2,
+    ntpr=200, 
+    ntwx=200, 
+    ioutfm=1,
+    nstlim=20000, 
+    dt=0.001,
+    ntt=1,
+    ig=-1,
+    ntc=2,
+    ntf=2,
+    ntb=0,
+    cut=15.0, 
+    pencut=-0.001, 
+    vlimit=10, 
+    nmropt=1
+ /
+ &ewald
+    eedmeth=5,
+ /
+#
+#from steps 0-18000: maintain temp at USER_TEMP K
+#from steps 18001-20000: final cooling from USER_TEMP K to 0 K 
+#
+ &wt type='TEMP0',istep1=0,istep2=18000,value1=USER_TEMP,value2=USER_TEMP, /
+ &wt type='TEMP0',istep1=18001,istep2=20000,value1=USER_TEMP,value2=0.0, /
+
+#
+#from steps 0-18000: default temperature coupling strength
+#from steps 18001-20000: fast cooling with strong temperature coupling 
+#
+ &wt type='TAUTP', istep1=0,istep2=18000,value1=1.0,value2=1.0, /
+ &wt type='TAUTP', istep1=18000,istep2=20000,value1=0.1,value2=0.1, /
+
+#
+# "Ramp up" the restraints over the first 3000 steps:
+#
+ &wt type='REST', istep1=0,istep2=3000,value1=0.1,value2=1.0, /
+ &wt type='REST', istep1=3001,istep2=20000,value1=1.0,value2=1.0, /
+
+ &wt type='END'  /
+LISTOUT=POUT
+DISANG=RST
