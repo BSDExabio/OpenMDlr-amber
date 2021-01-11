@@ -7,7 +7,7 @@
 #                                                                                                                       #
 #       Main output: final pdb file with folded protein                                                                 #
 #                                                                                                                       #
-#       Other output: Linear structure and parameters files, sander minimization/simulated annealing results            #
+#       Other output: Linear structure and parameters files, sander simulated annealing results                         #
 #                                                                                                                       #
 #       Usage example: python3 $OpenFoldAmberHOME/fold_protein.py fold_protein.json                                     #
 #                                                                                                                       #
@@ -78,7 +78,6 @@ with open(parameter_file) as json_file:
     forcefield              = data['forcefield']
     distance_rst_file_path  = data['distance_restraints_file_path']
     torsion_rst_file_path   = data['torsion_restraints_file_path']
-    minimization_input_file_path        = data['minimization_input_file_path']
     simulated_annealing_input_file_path = data['simulated_annealing_input_file_path']
     tordef_file_path        = data['tordef_file_path']
     distance_force_constants            = data['distance_force_constants']
@@ -114,9 +113,6 @@ dist_rst_file = distance_rst_file_path.split('/')[-1]
 
 subprocess.run('cp %s .'%(torsion_rst_file_path), shell=True)
 tors_rst_file = torsion_rst_file_path.split('/')[-1]
-
-subprocess.run('cp %s .'%(minimization_input_file_path), shell=True)
-minimization_input_file = minimization_input_file_path.split('/')[-1]
 
 subprocess.run('cp %s .'%(simulated_annealing_input_file_path), shell=True)
 simulated_annealing_input_file = simulated_annealing_input_file_path.split('/')[-1]
