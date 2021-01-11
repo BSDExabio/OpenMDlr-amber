@@ -46,7 +46,6 @@ python3 $OpenFoldHome/fold_protein.py fold_protein.json
 2. fasta_file_path: string; directory path that points to the FASTA file with the to-be folded sequence in single letter format (i.e., "NLYIQWLKDGGPSSGRPPPS").
 3. distance_restraints_file_path: string; directory path that points to the distance restraints file in 8 column format.
 4. torsion_restraints_file_path: string; directory path that points to the torsion restraints file in 5 column format.
-5. minimization_input_file_path: string; directory path that points to the input file to perform basic minimization of the linear starting 3D structure. General users shouldn't need to change this parameter's value. 
 6. simulated_annealing_input_file_path: string; directory path that points to the input file to perform basic the simulated annealing MD sims. with the user defined restraints. General users shouldn't need to change this parameter's value. 
 7. tordef_file_path: string; directory path that points to the tordef.lib file needed for AmberTools' makeANG_RST script to work. Users shouldn't need to change this paramter's value. 
 8. forcefield: string; file name associated with the leaprc file to be used in AmberTools' tleap to generate the linear 3D structure and respective parameters. Only tested with "leaprc.protein.ff14SB".
