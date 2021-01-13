@@ -1,4 +1,4 @@
-Simulated annealing, 20 ps; no velocities read in; Langevin dynamics thermostat
+Simulated annealing, 2 ps; no velocities read in; Langevin dynamics thermostat
 
  &cntrl
     imin=0,
@@ -10,7 +10,8 @@ Simulated annealing, 20 ps; no velocities read in; Langevin dynamics thermostat
     ioutfm=1,
     nstlim=2000, 
     dt=0.001,
-    ntt=1,
+    ntt=3,
+    gamma_ln=2,
     ig=-1,
     ntc=2,
     ntf=2,
@@ -31,16 +32,6 @@ Simulated annealing, 20 ps; no velocities read in; Langevin dynamics thermostat
  &wt type='TEMP0', istep1=0,istep2=500,value1=100.0,value2=USER_TEMP, /
  &wt type='TEMP0', istep1=501,istep2=1800,value1=USER_TEMP,value2=100.0, /
  &wt type='TEMP0', istep1=1801, istep2=2000, value1=0.0,value2=0.0, /
-#
-#from steps    0- 500: strong temperature coupling (every 0.5 ps)
-#from steps  501-1800: weak temperature coupling (every 4 ps)
-#from steps 1801-1900: default temperature coupling (every 1 ps)
-#from steps 1901-2000: slowly decrease temperature coupling (every from 0.1 ps to 0.05 ps)
-#
- &wt type='TAUTP', istep1=0,istep2=500,value1=0.5,value2=0.5, /
- &wt type='TAUTP', istep1=501,istep2=1800,value1=4.0,value2=4.0, /
- &wt type='TAUTP', istep1=1801,istep2=1900,value1=1.0,value2=1.0,/
- &wt type='TAUTP', istep1=1901,istep2=2000,value1=0.1,value2=0.05, /
 #
 #from steps    0- 300: slowly ramp up restraint strengths
 #from steps  301-2000: maintain restraints at full strength

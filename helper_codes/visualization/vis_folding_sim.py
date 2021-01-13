@@ -7,6 +7,7 @@
 
 import sys
 import numpy as np
+import numpy.ma as ma
 import MDAnalysis
 from MDAnalysis.analysis.align import *
 from MDAnalysis.analysis import dihedrals
@@ -26,9 +27,9 @@ starting_pdb            = sys.argv[2]
 trajectory_file         = sys.argv[3]
 reference_structure     = sys.argv[4]
 dist_restraints_file    = sys.argv[5]
-#dist_restraint          = float(sys.argv[5])
-#pm_bounds               = float(sys.argv[6])
-#angl_restraints_file    = sys.argv[7]
+#dist_spring_constant    = float(sys.argv[6])
+#pm_dist                 = float(sys.argv[7])
+#angl_restraints_file    = sys.argv[8]
 
 #movie_name              = sys.arg[___]
 
@@ -106,6 +107,16 @@ for ts in u.trajectory:
         distance_matrix_traj[frame_index,atom_pair[0],atom_pair[1]] = distance_matrix_traj[frame_index,atom_pair[1],atom_pair[0]] = np.sqrt(temp)
     restraint_total_deviation[ts.frame] = ts_dev   # sum of square deviations
     #restraint_total_deviation[ts.frame] = np.sqrt(ts_dev/nAtom_pairs)   # root mean'ing the sum of square deviations
+
+#distance_cmap = plt.cm.Reds
+distance_cmap = plt.cm.Reds_r
+plt.pcolormesh(range(1,nAtoms+2),range(1,nAtoms+2),ma.masked_where(true_dist_matrix==0,true_dist_matrix),cmap=distance_cmap)
+plt.xlabel('Atom Index',size=12)
+plt.ylabel('Atom Index',size=12)
+cb = plt.colorbar()
+cb.set_label(r'Distance ($\AA$)',size=12)
+plt.savefig('ground_truth_dist_matrix.png',dpi=600,transparent=True)
+plt.close()
 
 # ---------------------------
 
@@ -274,7 +285,8 @@ def animate(i):
         #cb1 ...
         #distance_matrix_traj ...
         min_max = (np.min(distance_matrix_traj[i]),np.max(distance_matrix_traj[i]))
-        dist_dev_plot.set_array(np.ravel(distance_matrix_traj[i]))
+        temp = np.ravel(distance_matrix_traj[i])
+        dist_dev_plot.set_array(ma.masked_where(temp==0,temp))
         dist_dev_plot.set_clim((0,min_max[1]))
 
         return ax1,ax2,ax3,ax4
