@@ -22,9 +22,10 @@ from matplotlib.ticker import MultipleLocator
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 prmtop_file             = sys.argv[1]
-trajectory_file         = sys.argv[2]
-reference_structure     = sys.argv[3]
-dist_restraints_file    = sys.argv[4]
+starting_pdb            = sys.argv[2]
+trajectory_file         = sys.argv[3]
+reference_structure     = sys.argv[4]
+dist_restraints_file    = sys.argv[5]
 #dist_restraint          = float(sys.argv[5])
 #pm_bounds               = float(sys.argv[6])
 #angl_restraints_file    = sys.argv[7]
@@ -34,10 +35,11 @@ dist_restraints_file    = sys.argv[4]
 # -----------------------------------------------------------------------------
 # ANALYZE TRAJECTORY FOR ALL THE DATA
 # -----------------------------------------------------------------------------
-u = MDAnalysis.Universe(prmtop_file,trajectory_file)
+u = MDAnalysis.Universe(prmtop_file,starting_pdb,trajectory_file)
 nSteps = len(u.trajectory)
+print(nSteps)
 u_all = u.select_atoms('all')
-u_ca = u.select_atoms('protein and name CA')    
+u_ca = u.select_atoms('protein and name CA')
 
 ref = MDAnalysis.Universe(reference_structure)
 ref_all = ref.select_atoms('all')
@@ -56,12 +58,8 @@ if u_ca.n_atoms == ref_ca.n_atoms:
         rmsd_values[ts.frame] = rmsd 
         u_all.rotate(R)
 
-print(np.min(rmsd_values),np.max(rmsd_values))
-
 # DIHEDRAL results
 rama = dihedrals.Ramachandran(u_all).run()
-print(rama.angles.shape)
-print(rama.angles[0].shape)
 
 # DISTANCE RESTRAINTS results
 nRes = u_all.n_residues
@@ -85,6 +83,9 @@ print(atoms)
 nAtoms = len(atoms)
 nAtom_pairs = len(rst_file_data)
 
+print(nAtoms)
+print(nAtom_pairs)
+
 atom_pairs = []
 true_dist_matrix = np.zeros((nAtoms,nAtoms))
 for rst in rst_file_data:
@@ -92,11 +93,6 @@ for rst in rst_file_data:
     atom_j = atoms.index('%s %s'%(rst[3].zfill(string_width),rst[5]))
     true_dist_matrix[atom_i,atom_j] = true_dist_matrix[atom_j,atom_i] = rst[-1]
     atom_pairs.append([atom_i,atom_j,u.select_atoms('(resid %s and name %s) or (resid %s and name %s)'%(rst[0],rst[2],rst[3],rst[5])),rst[6],rst[7]])
-
-# plot true_distance matrix?
-
-print(atom_i,atoms[atom_i],atom_j,atoms[atom_j],true_dist_matrix[atom_i,atom_j])
-print(atom_pairs[-1])
 
 restraint_total_deviation = np.zeros(nSteps)
 distance_matrix_traj = np.zeros((nSteps,nAtoms,nAtoms))
@@ -110,8 +106,6 @@ for ts in u.trajectory:
         distance_matrix_traj[frame_index,atom_pair[0],atom_pair[1]] = distance_matrix_traj[frame_index,atom_pair[1],atom_pair[0]] = np.sqrt(temp)
     restraint_total_deviation[ts.frame] = ts_dev   # sum of square deviations
     #restraint_total_deviation[ts.frame] = np.sqrt(ts_dev/nAtom_pairs)   # root mean'ing the sum of square deviations
-
-print(np.min(restraint_total_deviation),np.max(restraint_total_deviation))
 
 # ---------------------------
 
