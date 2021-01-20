@@ -203,8 +203,12 @@ with open(dist_rst_file,'r') as input_file, open('RST.dist','w') as output_file:
         r4 = r3 + 0.5   # NOTE: could be user defined
         try:
             temp_start = timeit.default_timer()
-            atom1_index = linear.select_atoms('resid %s and name %s'%(columns[0],columns[2])).atoms[0].index + 1   # Amber restraint files use 1-indexing; MDAnalysis uses 0-indexing
-            atom2_index = linear.select_atoms('resid %s and name %s'%(columns[3],columns[5])).atoms[0].index + 1
+            atom_pair = linear.select_atoms('(resid %s and name %s) or (resid %s and name %s)'%(columns[0],columns[2],columns[3],columns[5]))
+            atom1_index = atom_pair.atoms[0].index + 1
+            atom2_index = atom_pair.atoms[1].index + 1
+
+            #atom1_index = linear.select_atoms('resid %s and name %s'%(columns[0],columns[2])).atoms[0].index + 1   # Amber restraint files use 1-indexing; MDAnalysis uses 0-indexing
+            #atom2_index = linear.select_atoms('resid %s and name %s'%(columns[3],columns[5])).atoms[0].index + 1
             time_sum += timeit.default_timer() - temp_start
         except IndexError:
             raise Exception('MISMATCH BETWEEN LINEAR FILE AND RESTRAINTS INDEX, see\n %s\n in %s'%(line,dist_rst_file))
