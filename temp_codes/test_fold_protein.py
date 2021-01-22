@@ -22,6 +22,8 @@ import os
 import subprocess
 import json
 import MDAnalysis
+import Bio.PDB
+from Bio import BiopythonWarning
 import timeit
 
 parameter_file = sys.argv[1]
@@ -184,40 +186,82 @@ print('\n\n===== READING USER RESTRAINTS AND MATCHING WITH LINEAR PDB ====')
 
 start_time = timeit.default_timer()
 
-time_sum = 0.
+#time_sum = 0.
 
+### biopython dist restraint process
+#extract correct atom indices from amber linear file
+with warnings.catch_warnings():
+    warnings.simplefilter('ignore', BiopythonWarning)
+    linear_serials = dict() # dict of {(residue #, atom name): linear serial number for cb atom}
+    for model in Bio.PDB.PDBParser().get_structure("linear", "linear.pdb"):
+        for chain in model:
+            for  res in chain:
+                for atom in res:
+                    resname = res.resname
+                    #weird Amber linear naming conversions
+                    if (resname == "HID") or (resname == "HIE") or (resname == "HIP"): resname = "HIS"
+                    linear_serials.update({(res.id[1], resname, atom.id) : atom.serial_number})
+
+first = 1
+with open(distance_rst_file,'r') as input_file, open('RST.dist','w') as output_file:
+    for line in input_file:
+        columns = line.split()
+        atom1_resnum = int(columns[0])
+        atom1_resname = columns[1]
+        atom1_name = columns[2]
+        atom2_resnum = int(columns[3])
+        atom2_resname = columns[4]
+        atom2_name = columns[5]
+        r2 = float(columns[6]) #lower bound
+        r3 = float(columns[7]) #upper bound
+        r1 = r2 - 0.5
+        r4 = r3 + 0.5
+        try:
+            atom1_index = linear_serials.get((atom1_resnum, atom1_resname, atom1_name)) # correct index from linear file
+            atom2_index = linear_serials.get((atom2_resnum, atom2_resname, atom2_name))
+            if first == 1:
+                output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, distance_force_constants[0], distance_force_constants[0]))
+                first = 0
+            else:
+                output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n" % (atom1_index, atom2_index, r1, r2, r3, r4))
+        except KeyError:
+                raise Exception("Mismatch detected between residue sequences")
+
+### AMBER makeDIST_RST dist restraint process
 #with open('RST.dist','w') as stdout_file, open('makeDIST_RST.output','w') as stderr_file:
 #    retcode = subprocess.run('makeDIST_RST -pdb linear.pdb -ual %s -rst %s'%(dist_rst_file,stdout_file), shell=True, stdout='test.txt', stderr=stderr_file)
 #    print(retcode)
+### UNFINISHED need to sed replace default restraints to user defined restraints
 
-linear = MDAnalysis.Universe('linear.pdb')
-first = 1
-with open(dist_rst_file,'r') as input_file, open('RST.dist','w') as output_file:
-    for i, line in enumerate(input_file):
-        if line[0] == '#':
-            continue
-        columns = line.split()
-        r2 = float(columns[6])
-        r3 = float(columns[7])
-        r1 = r2 - 0.5   # NOTE: could be user defined
-        r4 = r3 + 0.5   # NOTE: could be user defined
-        try:
-            temp_start = timeit.default_timer()
-            atom_pair = linear.select_atoms('(resid %s and name %s) or (resid %s and name %s)'%(columns[0],columns[2],columns[3],columns[5]))
-            atom1_index = atom_pair.atoms[0].index + 1
-            atom2_index = atom_pair.atoms[1].index + 1
-
-            #atom1_index = linear.select_atoms('resid %s and name %s'%(columns[0],columns[2])).atoms[0].index + 1   # Amber restraint files use 1-indexing; MDAnalysis uses 0-indexing
-            #atom2_index = linear.select_atoms('resid %s and name %s'%(columns[3],columns[5])).atoms[0].index + 1
-            time_sum += timeit.default_timer() - temp_start
-        except IndexError:
-            raise Exception('MISMATCH BETWEEN LINEAR FILE AND RESTRAINTS INDEX, see\n %s\n in %s'%(line,dist_rst_file))
-        
-        if first:
-            output_file.write(' &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n'%(atom1_index,atom2_index,r1,r2,r3,r4,distance_force_constants[0],distance_force_constants[0]))
-            first = 0
-        else:
-            output_file.write(' &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n'%(atom1_index,atom2_index,r1,r2,r3,r4))
+### MDAnalysis dist restraint process
+#linear = MDAnalysis.Universe('linear.pdb')
+#first = 1
+#with open(dist_rst_file,'r') as input_file, open('RST.dist','w') as output_file:
+#    for i, line in enumerate(input_file):
+#        if line[0] == '#':
+#            continue
+#        columns = line.split()
+#        r2 = float(columns[6])
+#        r3 = float(columns[7])
+#        r1 = r2 - 0.5   # NOTE: could be user defined
+#        r4 = r3 + 0.5   # NOTE: could be user defined
+#        try:
+#            temp_start = timeit.default_timer()
+#            atom_pair = linear.select_atoms('(resid %s and name %s) or (resid %s and name %s)'%(columns[0],columns[2],columns[3],columns[5]))
+#            atom1_index = atom_pair.atoms[0].index + 1
+#            atom2_index = atom_pair.atoms[1].index + 1
+#
+#            #atom1_index = linear.select_atoms('resid %s and name %s'%(columns[0],columns[2])).atoms[0].index + 1   # Amber restraint files use 1-indexing; MDAnalysis uses 0-indexing
+#            #atom2_index = linear.select_atoms('resid %s and name %s'%(columns[3],columns[5])).atoms[0].index + 1
+#            time_sum += timeit.default_timer() - temp_start
+#        except IndexError:
+#            raise Exception('MISMATCH BETWEEN LINEAR FILE AND RESTRAINTS INDEX, see\n %s\n in %s'%(line,dist_rst_file))
+#        
+#        if first:
+#            output_file.write(' &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n'%(atom1_index,atom2_index,r1,r2,r3,r4,distance_force_constants[0],distance_force_constants[0]))
+#            first = 0
+#        else:
+#            output_file.write(' &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n'%(atom1_index,atom2_index,r1,r2,r3,r4))
 
 with open('RST.dist','r') as in_file, open('RST','w') as out_file:
     list_of_lines = in_file.readlines()
@@ -226,8 +270,8 @@ with open('RST.dist','r') as in_file, open('RST','w') as out_file:
 
 print('DISTANCE RESTRAINTS GENERATED')
 
-print(timeit.default_timer() - start_time)
-print(time_sum)
+print(timeit.default_timer() - start_time + ' total time for distance restraint prep')
+#print(time_sum)
 
 ###############
 # PREPARE THE TORSION RESTRAINT FILE
