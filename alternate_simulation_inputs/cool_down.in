@@ -1,4 +1,4 @@
-Simulated annealing, 20 ps; no velocities read in; Langevin dynamics thermostat
+Simulated annealing, 2 ps; no velocities read in; Langevin dynamics thermostat
 
  &cntrl
     imin=0,
@@ -8,7 +8,7 @@ Simulated annealing, 20 ps; no velocities read in; Langevin dynamics thermostat
     ntpr=200, 
     ntwx=200, 
     ioutfm=1,
-    nstlim=20000, 
+    nstlim=2000, 
     dt=0.001,
     ntt=3,
     gamma_ln=2,
@@ -25,17 +25,17 @@ Simulated annealing, 20 ps; no velocities read in; Langevin dynamics thermostat
     eedmeth=5,
  /
 #
-#from steps 0-18000: maintain temp at USER_TEMP K
-#from steps 18001-20000: final cooling to 0 K
+#from steps 0-1800: maintain temp at USER_TEMP K
+#from steps 1801-2000: final cooling to 0 K
 #
- &wt type='TEMP0',istep1=0,istep2=18000,value1=USER_TEMP,value2=USER_TEMP, /
- &wt type='TEMP0',istep1=18001,istep2=20000,value1=USER_TEMP,value2=0.0, /
+ &wt type='TEMP0',istep1=0,istep2=1800,value1=USER_TEMP,value2=USER_TEMP, /
+ &wt type='TEMP0',istep1=1801,istep2=2000,value1=USER_TEMP,value2=0.0, /
 #
-#from steps     0- 3000: slowly ramp up restraint strengths
-#from steps  3001-20000: maintain restraints at full strength
+#from steps     0- 300: slowly ramp up restraint strengths
+#from steps  301-2000: maintain restraints at full strength
 #
- &wt type='REST', istep1=0,istep2=3000,value1=0.1,value2=1.0, /
- &wt type='REST', istep1=3001,istep2=20000,value1=1.0,value2=1.0, /
+ &wt type='REST', istep1=0,istep2=300,value1=0.1,value2=1.0, /
+ &wt type='REST', istep1=301,istep2=2000,value1=1.0,value2=1.0, /
 
  &wt type='END'  /
 LISTOUT=POUT

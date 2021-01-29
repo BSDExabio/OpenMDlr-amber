@@ -23,6 +23,7 @@ import subprocess
 import json
 import MDAnalysis
 import Bio.PDB
+import warnings
 from Bio import BiopythonWarning
 import timeit
 
@@ -200,11 +201,14 @@ with warnings.catch_warnings():
                     resname = res.resname
                     #weird Amber linear naming conversions
                     if (resname == "HID") or (resname == "HIE") or (resname == "HIP"): resname = "HIS"
-                    linear_serials.update({(res.id[1], resname, atom.id) : atom.serial_number})
+                    linear_serials.update({(res.id[1], atom.id) : atom.serial_number})
+                    #linear_serials.update({(res.id[1], resname, atom.id) : atom.serial_number})
 
 first = 1
-with open(distance_rst_file,'r') as input_file, open('RST.dist','w') as output_file:
+with open(dist_rst_file,'r') as input_file, open('RST.dist','w') as output_file:
     for line in input_file:
+        if line[0] == '#':
+            continue
         columns = line.split()
         atom1_resnum = int(columns[0])
         atom1_resname = columns[1]
@@ -217,8 +221,11 @@ with open(distance_rst_file,'r') as input_file, open('RST.dist','w') as output_f
         r1 = r2 - 0.5
         r4 = r3 + 0.5
         try:
-            atom1_index = linear_serials.get((atom1_resnum, atom1_resname, atom1_name)) # correct index from linear file
-            atom2_index = linear_serials.get((atom2_resnum, atom2_resname, atom2_name))
+            atom1_index = linear_serials.get((atom1_resnum, atom1_name)) # correct index from linear file
+            atom2_index = linear_serials.get((atom2_resnum, atom2_name))
+            #print(atom1_index, atom1_resname, atom1_name, atom2_index, atom2_resname, atom2_name, r1, r2, r3, r4, distance_force_constants[0], distance_force_constants[0])
+            #atom1_index = linear_serials.get((atom1_resnum, atom1_resname, atom1_name)) # correct index from linear file
+            #atom2_index = linear_serials.get((atom2_resnum, atom2_resname, atom2_name))
             if first == 1:
                 output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, distance_force_constants[0], distance_force_constants[0]))
                 first = 0
@@ -270,7 +277,7 @@ with open('RST.dist','r') as in_file, open('RST','w') as out_file:
 
 print('DISTANCE RESTRAINTS GENERATED')
 
-print(timeit.default_timer() - start_time + ' total time for distance restraint prep')
+print(timeit.default_timer() - start_time, ' total time for distance restraint prep')
 #print(time_sum)
 
 ###############

@@ -1,4 +1,4 @@
-normal MD, 20 ps; no velocities read in; Langevin dynamics thermostat
+normal MD, 2 ps; no velocities read in; Langevin dynamics thermostat
 
  &cntrl
     imin=0,
@@ -8,7 +8,7 @@ normal MD, 20 ps; no velocities read in; Langevin dynamics thermostat
     ntpr=200, 
     ntwx=200, 
     ioutfm=1,
-    nstlim=20000, 
+    nstlim=2000, 
     dt=0.001,
     ntt=3,
     temp0=USER_TEMP,
