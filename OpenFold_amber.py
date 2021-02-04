@@ -268,21 +268,18 @@ def Run_MD(cfg, iteration):
 #    print('\n\n================= RUNNING SIMULATED ANNEALING =================')
     # NOTE: force constants read into AmberTools need to be scaled by some multiplicative factor... Need to look this up again... need to report units of force constants and so on...
 #    print('SIMULATED ANNEALING CYCLE #1, DISTANCE FORCE CONSTANT = %.2f, ANGLE FORCE CONSTANT = %.2f, TEMPERATURE = %.2f K' %(distance_force_constants[0],torsion_force_constants[0],temperatures[0]))
-    subprocess.run('stat siman.in', shell=True, cwd=run_dir)
-    retcode = subprocess.run('sander -O -i siman.in -p ../linear.prmtop -c ../linear.rst7 -r siman.rst7 -o siman.out -x siman.nc', shell=True, cwd=run_dir)
+    retcode = subprocess.run('echo $PWD && sander -O -i siman.in -p ../linear.prmtop -c ../linear.rst7 -r siman.rst7 -o siman.out -x siman.nc', shell=True, cwd=run_dir)
 #    print(retcode)
-    return
     #os.rename('RST','RST1')
-
 #    print('\n\n====================== WRITING FINAL PDB ======================')
 
-    u = MDAnalysis.Universe('../linear.prmtop','siman.nc')
+    u = MDAnalysis.Universe('linear.prmtop','%s/siman.nc'%(run_dir))
     u.trajectory[-1]
     u_all = u.select_atoms('all')
     for res in u_all.residues:
         if res.resname in ['HIE','HIP']:
             res.resname = 'HIS'
-    u_all.write('%s_final.pdb'%(name))
+    u_all.write('%s/%s_final.pdb'%(run_dir, cfg.name))
 
 #    print('\n\n=========================== COMPLETE ==========================')
 
@@ -295,5 +292,5 @@ if __name__ == '__main__':
 
     #Preprocess(cfg)
     os.chdir(cfg.name+'_output') # moves into the output directory
-    with Parallel(n_jobs=cfg.max_threads) as parallel:
+    with Parallel(n_jobs=cfg.max_threads, prefer="threads") as parallel:
         parallel(delayed(Run_MD)(cfg, i) for i in range(cfg.annealing_runs))
