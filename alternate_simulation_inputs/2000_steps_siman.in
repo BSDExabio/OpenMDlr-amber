@@ -1,0 +1,44 @@
+Simulated annealing, 2 ps; no velocities read in; Langevin dynamics thermostat
+
+ &cntrl
+    imin=0,
+    ntx=1,
+    irest=0,
+    ntxo=2,
+    ntpr=200, 
+    ntwx=200, 
+    ioutfm=1,
+    nstlim=2000, 
+    dt=0.001,
+    ntt=3,
+    gamma_ln=2,
+    ig=-1,
+    ntc=2,
+    ntf=2,
+    ntb=0,
+    cut=15.0, 
+    pencut=-0.001, 
+    vlimit=10, 
+    nmropt=1
+ /
+ &ewald
+    eedmeth=5,
+ /
+#
+#from steps    0- 500: heat from 100 K to USER_TEMP K
+#from steps  501-1800: re-cool to 100 K
+#from steps 1801-2000: final cooling to 0 K
+#
+ &wt type='TEMP0', istep1=0,istep2=500,value1=100.0,value2=USER_TEMP, /
+ &wt type='TEMP0', istep1=501,istep2=1800,value1=USER_TEMP,value2=100.0, /
+ &wt type='TEMP0', istep1=1801, istep2=2000, value1=0.0,value2=0.0, /
+#
+#from steps    0- 300: slowly ramp up restraint strengths
+#from steps  301-2000: maintain restraints at full strength
+#
+ &wt type='REST', istep1=0,istep2=300,value1=0.1,value2=1.0, /
+ &wt type='REST', istep1=301,istep2=2000,value1=1.0,value2=1.0, /
+
+ &wt type='END'  /
+LISTOUT=POUT
+DISANG=RST

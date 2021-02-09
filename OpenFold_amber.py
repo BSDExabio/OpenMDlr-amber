@@ -322,7 +322,7 @@ def Run_MD(cfg, iteration, working_directory):
     # prepare simulation input files for first MD run
     search_string = 'USER_TEMP'
     replace_string = '%s'%(cfg.temperatures[0])
-    find_replace(search_string,replace_string,'siman.in','%s/siman.in'%(run_dir))
+    find_replace(search_string,replace_string,cfg.simulated_annealing_input_file_path,'%s/siman.in'%(run_dir))
     #print('SIMULATED ANNEALING CYCLE #1, DISTANCE FORCE CONSTANT = %.2f, ANGLE FORCE CONSTANT = %.2f, TEMPERATURE = %.2f K' %(cfg.distance_force_constants[0],cfg.torsion_force_constants[0],cfg.temperatures[0]))
     retcode = subprocess.run('sander -O -i siman.in -p ../linear.prmtop -c ../linear.rst7 -r siman.rst7 -o siman.out -x siman.nc', shell=True, cwd=run_dir)
     #print(retcode) # print if verbose mode is on
