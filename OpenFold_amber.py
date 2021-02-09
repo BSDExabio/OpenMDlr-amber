@@ -304,17 +304,18 @@ def Preprocess(cfg):
 ###############
 # RUNNING SIMULATED ANNEALING MOLECULAR DYNAMICS SIMULATIONS
 ###############
-def Run_MD(cfg, iteration):
+def Run_MD(cfg, iteration, working_directory):
     #TODO: fill in details about this function
     '''
     '''
     print('\n====================== RUN SIMULATION %s ======================'%(iteration))
-    
+
+    os.chdir(working_directory)
     run_dir = 'run_%s'%(iteration)
     os.mkdir(run_dir)
-    os.chdir(run_dir)
+    #os.chdir(run_dir)
     
-    new_file_path = shutil.copy2('RST',run_dir)
+    new_file_path = shutil.copy2('RST',run_dir+'/')
     #subprocess.run('cp RST %s'%(run_dir), shell=True)
     #print('Copied RST to ' +new_file_path) # include in verbose mode
 
@@ -325,19 +326,22 @@ def Run_MD(cfg, iteration):
     #print('SIMULATED ANNEALING CYCLE #1, DISTANCE FORCE CONSTANT = %.2f, ANGLE FORCE CONSTANT = %.2f, TEMPERATURE = %.2f K' %(cfg.distance_force_constants[0],cfg.torsion_force_constants[0],cfg.temperatures[0]))
     retcode = subprocess.run('sander -O -i siman.in -p ../linear.prmtop -c ../linear.rst7 -r siman.rst7 -o siman.out -x siman.nc', shell=True, cwd=run_dir)
     #print(retcode) # print if verbose mode is on
-    os.rename('RST','RST1')
+    os.rename('%s/RST'%(run_dir),'%s/RST1'%(run_dir))
     
     ###TODO: ADD CODE TO RUN MORE MD SIMS IF USER DESIRES... 
     
     #print('\n\n====================== WRITING FINAL PDB ======================')
 
-    u = MDAnalysis.Universe('linear.prmtop','%s/siman.nc'%(run_dir))
-    u.trajectory[-1]
-    u_all = u.select_atoms('all')
-    for res in u_all.residues:
-        if res.resname in ['HIE','HIP']:
-            res.resname = 'HIS'
-    u_all.write('%s/%s_final.pdb'%(run_dir, cfg.name))
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore', UserWarning)
+        #warnings.simplefilter('ignore', VisibleDeprecationWarning)
+        u = MDAnalysis.Universe('linear.prmtop','%s/siman.nc'%(run_dir))
+        u.trajectory[-1]
+        u_all = u.select_atoms('all')
+        for res in u_all.residues:
+            if res.resname in ['HIE','HIP']:
+                res.resname = 'HIS'
+        u_all.write('%s/%s_final.pdb'%(run_dir, cfg.name))
 
     #print('\n\n=========================== COMPLETE ==========================')
 
@@ -352,5 +356,5 @@ if __name__ == '__main__':
     print(os.getcwd())
     #os.chdir(cfg.name) # moves into the output directory
     with Parallel(n_jobs=cfg.max_threads, prefer="threads") as parallel:
-        parallel(delayed(Run_MD)(cfg, str(i).zfill(len(str(cfg.nMDIterations)))) for i in range(cfg.nMDIterations))
+        parallel(delayed(Run_MD)(cfg, str(i).zfill(len(str(cfg.nMDIterations))),os.getcwd()) for i in range(cfg.nMDIterations))
 
