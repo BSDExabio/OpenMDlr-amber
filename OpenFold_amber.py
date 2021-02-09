@@ -23,7 +23,11 @@ import subprocess
 import json
 import MDAnalysis
 from argparse import Namespace
-
+import shutil
+import Bio.PDB
+import warnings
+from Bio import BiopythonWarning
+import timeit
 
 def tri(x):
     ''' Read in an amino acid's single letter code and return the aa's three letter code.
@@ -63,13 +67,13 @@ def find_replace(search_string,replace_string,in_file,out_file):
         for line in list_of_lines:
             w.write(line)
 
-
 ###############
 # PARSE COMMAND LINE ARGUMENTS
 ###############
 #TODO rewrite to use argparse
 #TODO include a verbose mode
 def Parse_Args():
+    #TODO: fill in details about this function
     parameter_file = sys.argv[1]
     return parameter_file
 
@@ -81,6 +85,7 @@ def Parse_Args():
 # FILL PARAMETER VARIABLES
 ###############
 def Load_Configs(args):
+    #TODO: fill in details about this function
     with open(args) as json_file:
         data = json.load(json_file)
         cfg = Namespace(
@@ -94,63 +99,71 @@ def Load_Configs(args):
         distance_force_constants            = data['distance_force_constants'],
         torsion_force_constants             = data['torsion_force_constants'],
         temperatures                        = data['temperatures'],
-        annealing_runs                      = int(data['annealing_runs']),
+        nMDIterations                       = int(data['nMDIterations']),
+        nFoldingSims                        = int(data['nFoldingSims']),
         max_threads                         = int(data['max_threads']),
         )
 
-    if len(cfg.distance_force_constants) < cfg.annealing_runs:
-        cfg.distance_force_constants = [cfg.distance_force_constants[0] for i in range(cfg.annealing_runs)]
+    if len(cfg.distance_force_constants) < cfg.nMDIterations:
+        cfg.distance_force_constants = [cfg.distance_force_constants[0] for i in range(cfg.nMDIterations)]
 
-    if len(cfg.torsion_force_constants) < cfg.annealing_runs:
-        cfg.torsion_force_constants = [cfg.torsion_force_constants[0] for i in range(cfg.annealing_runs)]
+    if len(cfg.torsion_force_constants) < cfg.nMDIterations:
+        cfg.torsion_force_constants = [cfg.torsion_force_constants[0] for i in range(cfg.nMDIterations)]
 
-    if len(cfg.temperatures) < cfg.annealing_runs:
-        cfg.temperatures = [cfg.temperatures[0] for i in range(cfg.annealing_runs)]
+    if len(cfg.temperatures) < cfg.nMDIterations:
+        cfg.temperatures = [cfg.temperatures[0] for i in range(cfg.nMDIterations)]
 
     return cfg
-
-
-
-
 
 ###############
 # SET UP WORKING DIRECTORY AND INPUT FILES
 ###############
 def Preprocess(cfg):
+    #TODO: fill in details about this function
+    '''
+    '''
     ###############
     # MAKE AND MOVE INTO THE OUTPUT DIRECTORY
     ###############
 
-    os.mkdir(cfg.name+'_output') # makes the output directory w/in the working directory
-    os.chdir(cfg.name+'_output') # moves into the output directory
-
+    os.mkdir(cfg.name) # makes the output directory w/in the working directory
+    os.chdir(cfg.name) # moves into the output directory
+    #print('Created ' + os.get_cwd()) # include in verbose mode
 
     ###############
     # COPY IMPORTANT FILES INTO THE OUTPUT DIRECTORY
     ###############
-
-    subprocess.run('cp %s .'%(cfg.fasta_file_path), shell=True)
+    
+    new_file_path = shutil.copy2(cfg.fasta_file_path,'.')
+    #subprocess.run('cp %s .'%(cfg.fasta_file_path), shell=True)
     fasta_file = cfg.fasta_file_path.split('/')[-1]
+    #print('Copied '+cfg.fasta_file_path+' to '+new_file_path) # include in verbose mode
 
-    subprocess.run('cp %s .'%(cfg.distance_rst_file_path), shell=True)
+    new_file_path = shutil.copy2(cfg.distance_rst_file_path,'.')
+    #subprocess.run('cp %s .'%(cfg.distance_rst_file_path), shell=True)
     dist_rst_file = cfg.distance_rst_file_path.split('/')[-1]
+    #print('Copied '+cfg.distance_rst_file_path+' to '+new_file_path) # include in verbose mode
 
-    subprocess.run('cp %s .'%(cfg.torsion_rst_file_path), shell=True)
+    new_file_path = shutil.copy2(cfg.torsion_rst_file_path,'.')
+    #subprocess.run('cp %s .'%(cfg.torsion_rst_file_path), shell=True)
     tors_rst_file = cfg.torsion_rst_file_path.split('/')[-1]
+    #print('Copied '+cfg.torsion_rst_file_path+' to '+new_file_path) # include in verbose mode
 
-    subprocess.run('cp %s .'%(cfg.simulated_annealing_input_file_path), shell=True)
+    new_file_path = shutil.copy2(cfg.simulated_annealing_input_file_path,'.')
+    #subprocess.run('cp %s .'%(cfg.simulated_annealing_input_file_path), shell=True)
     simulated_annealing_input_file = cfg.simulated_annealing_input_file_path.split('/')[-1]
+    #print('Copied '+cfg.simulated_annealing_input_file_path+' to '+new_file_path) # include in verbose mode
 
-    subprocess.run('cp %s .'%(cfg.tordef_file_path), shell=True)
+    new_file_path = shutil.copy2(cfg.tordef_file_path,'.')
+    #subprocess.run('cp %s .'%(cfg.tordef_file_path), shell=True)
     tordef_file = cfg.tordef_file_path.split('/')[-1]
-
-
+    #print('Copied '+cfg.tordef_file_path+' to '+new_file_path) # include in verbose mode
 
     ###############
     # READ FASTA FILE TO CREATE 3 LETTER SEQUENCE
     ###############
 
-#    print('\n\n======================== READING FASTA ========================')
+    print('\n\n======================== READING FASTA ========================')
     sequence = ''
     with open(fasta_file,'r') as f:
         for line in f:
@@ -164,20 +177,18 @@ def Preprocess(cfg):
     triseq_list[-1] = 'C'+triseq_list[-1]   # label first residue as C-terminal; necessary for tleap
     triseq = ''
     for i, res in enumerate(triseq_list):
-        if i%50 == 0:
+        if i%50 == 0 and i != 0:        # tleap has bug associated with single lines in input having too many characters; new line characters after a reasonable # of resnames prevents this error from occurring.
             triseq += res + '\n '
         else:
             triseq += res + ' '
 
-#    print('PROTEIN SEQUENCE: '+ str(triseq))
-
-
+    print('PROTEIN SEQUENCE: '+ str(triseq))
 
     ###############
     # PREPARE AMBERTOOLS20 TLEAP SCRIPT
     ###############
 
-#    print('\n\n=============== GENERATING LINEAR PDB WITH TLEAP ==============')
+    print('\n\n=============== GENERATING LINEAR PDB WITH TLEAP ==============')
     with open('tleap.in','w') as f:
         # NOTE: assumes the forcefield_file is readable/source-able by AmberTools tleap; best if user just uses leaprc files provided in AmberTools directories.
         f.write('source ' + cfg.forcefield + '\n' + cfg.name + ' = sequence { ' + triseq + '}\nsaveoff ' + cfg.name + ' linear.lib\nsavepdb ' + cfg.name + ' linear.pdb\nsaveamberparm ' + cfg.name + ' linear.prmtop linear.rst7\nquit')
@@ -185,55 +196,99 @@ def Preprocess(cfg):
     #call Amber Tools tleap
     with open('tleap.out','w') as outfile:
         retcode = subprocess.run('tleap -s -f tleap.in', shell=True, stdout=outfile)
-#        print(retcode)
-
-
+        #print(retcode) # include in verbose mode
 
     ###############
-        # PREPARE THE DISTANCE RESTRAINT FILE
+    # PREPARE THE DISTANCE RESTRAINT FILE
     ###############
 
-#    print('\n\n===== READING USER RESTRAINTS AND MATCHING WITH LINEAR PDB ====')
-    linear = MDAnalysis.Universe('linear.pdb')
+    print('\n\n===== READING USER RESTRAINTS AND MATCHING WITH LINEAR PDB ====')
+
+    ### biopython dist restraint process
+    #extract correct atom indices from amber linear file
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore', BiopythonWarning)
+        linear_serials = dict() # dict of {(residue #, atom name): linear serial number for cb atom}
+        for model in Bio.PDB.PDBParser().get_structure("linear", "linear.pdb"):
+            for chain in model:
+                for  res in chain:
+                    for atom in res:
+                        resname = res.resname
+                        #weird Amber linear naming conversions
+                        if (resname == "HID") or (resname == "HIE") or (resname == "HIP"): resname = "HIS"
+                        linear_serials.update({(res.id[1], atom.id) : atom.serial_number})
+                        #linear_serials.update({(res.id[1], resname, atom.id) : atom.serial_number})
+
+    #TODO: allow the user to read in multiple forms of dist_rst_file formats so we should write a variety of file parsers
     first = 1
     with open(dist_rst_file,'r') as input_file, open('RST.dist','w') as output_file:
-        for i, line in enumerate(input_file):
+        for line in input_file:
             if line[0] == '#':
                 continue
             columns = line.split()
-            r2 = float(columns[6])
-            r3 = float(columns[7])
-            r1 = r2 - 0.5   # NOTE: could be user defined
-            r4 = r3 + 0.5   # NOTE: could be user defined
+            atom1_resnum = int(columns[0])
+            atom1_resname = columns[1]
+            atom1_name = columns[2]
+            atom2_resnum = int(columns[3])
+            atom2_resname = columns[4]
+            atom2_name = columns[5]
+            r2 = float(columns[6]) #lower bound
+            r3 = float(columns[7]) #upper bound
+            r1 = r2 - 0.5
+            r4 = r3 + 0.5
             try:
-                atom1_index = linear.select_atoms('resid %s and name %s'%(columns[0],columns[2])).atoms[0].index + 1   # Amber restraint files use 1-indexing; MDAnalysis uses 0-indexing
-                atom2_index = linear.select_atoms('resid %s and name %s'%(columns[3],columns[5])).atoms[0].index + 1
-            except IndexError:
-                raise Exception('MISMATCH BETWEEN LINEAR FILE AND RESTRAINTS INDEX, see\n %s\n in %s'%(line,dist_rst_file))
+                atom1_index = linear_serials.get((atom1_resnum, atom1_name)) # correct index from linear file
+                atom2_index = linear_serials.get((atom2_resnum, atom2_name))
+                #print(atom1_index, atom1_resname, atom1_name, atom2_index, atom2_resname, atom2_name, r1, r2, r3, r4, distance_force_constants[0], distance_force_constants[0])
+                #atom1_index = linear_serials.get((atom1_resnum, atom1_resname, atom1_name)) # correct index from linear file
+                #atom2_index = linear_serials.get((atom2_resnum, atom2_resname, atom2_name))
+                if first == 1:
+                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, distance_force_constants[0], distance_force_constants[0]))
+                    first = 0
+                else:
+                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n" % (atom1_index, atom2_index, r1, r2, r3, r4))
+            except KeyError:
+                    raise Exception("Mismatch detected between residue sequences")
 
-            if first:
-                output_file.write(' &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n'%(atom1_index,atom2_index,r1,r2,r3,r4,cfg.distance_force_constants[0],cfg.distance_force_constants[0]))
-                first = 0
-            else:
-                output_file.write(' &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n'%(atom1_index,atom2_index,r1,r2,r3,r4))
+    ### OLD MDANALYSIS CODE
+    #linear = MDAnalysis.Universe('linear.pdb')
+    #first = 1
+    #with open(dist_rst_file,'r') as input_file, open('RST.dist','w') as output_file:
+    #    for i, line in enumerate(input_file):
+    #        if line[0] == '#':
+    #            continue
+    #        columns = line.split()
+    #        r2 = float(columns[6])
+    #        r3 = float(columns[7])
+    #        r1 = r2 - 0.5   # NOTE: could be user defined
+    #        r4 = r3 + 0.5   # NOTE: could be user defined
+    #        try:
+    #            atom1_index = linear.select_atoms('resid %s and name %s'%(columns[0],columns[2])).atoms[0].index + 1   # Amber restraint files use 1-indexing; MDAnalysis uses 0-indexing
+    #            atom2_index = linear.select_atoms('resid %s and name %s'%(columns[3],columns[5])).atoms[0].index + 1
+    #        except IndexError:
+    #            raise Exception('MISMATCH BETWEEN LINEAR FILE AND RESTRAINTS INDEX, see\n %s\n in %s'%(line,dist_rst_file))
+
+    #        if first:
+    #            output_file.write(' &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n'%(atom1_index,atom2_index,r1,r2,r3,r4,cfg.distance_force_constants[0],cfg.distance_force_constants[0]))
+    #            first = 0
+    #        else:
+    #            output_file.write(' &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n'%(atom1_index,atom2_index,r1,r2,r3,r4))
 
     with open('RST.dist','r') as in_file, open('RST','w') as out_file:
         list_of_lines = in_file.readlines()
         for line in list_of_lines:
             out_file.write(line)
 
-#    print('DISTANCE RESTRAINTS GENERATED')
-
-
+    print('DISTANCE RESTRAINTS GENERATED')
 
     ###############
     # PREPARE THE TORSION RESTRAINT FILE
     ###############
 
-#    print('\n\n=================== MAKING ANGLE RESTRAINTS ===================')
+    print('\n\n=================== MAKING ANGLE RESTRAINTS ===================')
     with open('RST.angles','w') as stdout_file, open('makeANG_RST.output','w') as stderr_file:
         retcode = subprocess.run('makeANG_RST -pdb linear.pdb -con %s -lib %s'%(tors_rst_file,tordef_file), shell=True, stdout=stdout_file, stderr=stderr_file)
-#        print(retcode)
+        #print(retcode) # return if verbose mode is set
 
     search_string = 'rk2 =   2.0, rk3 =   2.0'
     replace_string = 'rk2 =   %.2f, rk3 =   %.2f'%(cfg.torsion_force_constants[0],cfg.torsion_force_constants[0])
@@ -244,34 +299,37 @@ def Preprocess(cfg):
         for line in list_of_lines:
             out_file.write(line)
 
-#    print('TORSION RESTRAINTS GENERATED')
-
-
-
-
-
-
+    print('TORSION RESTRAINTS GENERATED')
 
 ###############
 # RUNNING SIMULATED ANNEALING MOLECULAR DYNAMICS SIMULATIONS
 ###############
 def Run_MD(cfg, iteration):
-    print("running simulation %d"%(iteration))
-    run_dir = 'run_%d'%(iteration)
+    #TODO: fill in details about this function
+    '''
+    '''
+    print('\n====================== RUN SIMULATION %s ======================'%(iteration))
+    
+    run_dir = 'run_%s'%(iteration)
     os.mkdir(run_dir)
-    subprocess.run('cp RST %s'%(run_dir), shell=True)
+    os.chdir(run_dir)
+    
+    new_file_path = shutil.copy2('RST',run_dir)
+    #subprocess.run('cp RST %s'%(run_dir), shell=True)
+    #print('Copied RST to ' +new_file_path) # include in verbose mode
 
-    # prepare simulation input files
+    # prepare simulation input files for first MD run
     search_string = 'USER_TEMP'
     replace_string = '%s'%(cfg.temperatures[0])
     find_replace(search_string,replace_string,'siman.in','%s/siman.in'%(run_dir))
-#    print('\n\n================= RUNNING SIMULATED ANNEALING =================')
-    # NOTE: force constants read into AmberTools need to be scaled by some multiplicative factor... Need to look this up again... need to report units of force constants and so on...
-#    print('SIMULATED ANNEALING CYCLE #1, DISTANCE FORCE CONSTANT = %.2f, ANGLE FORCE CONSTANT = %.2f, TEMPERATURE = %.2f K' %(distance_force_constants[0],torsion_force_constants[0],temperatures[0]))
-    retcode = subprocess.run('echo $PWD && sander -O -i siman.in -p ../linear.prmtop -c ../linear.rst7 -r siman.rst7 -o siman.out -x siman.nc', shell=True, cwd=run_dir)
-#    print(retcode)
-    #os.rename('RST','RST1')
-#    print('\n\n====================== WRITING FINAL PDB ======================')
+    #print('SIMULATED ANNEALING CYCLE #1, DISTANCE FORCE CONSTANT = %.2f, ANGLE FORCE CONSTANT = %.2f, TEMPERATURE = %.2f K' %(distance_force_constants[0],torsion_force_constants[0],temperatures[0]))
+    retcode = subprocess.run('sander -O -i siman.in -p ../linear.prmtop -c ../linear.rst7 -r siman.rst7 -o siman.out -x siman.nc', shell=True, cwd=run_dir)
+    #print(retcode) # print if verbose mode is on
+    os.rename('RST','RST1')
+    
+    ###TODO: ADD CODE TO RUN MORE MD SIMS IF USER DESIRES... 
+    
+    #print('\n\n====================== WRITING FINAL PDB ======================')
 
     u = MDAnalysis.Universe('linear.prmtop','%s/siman.nc'%(run_dir))
     u.trajectory[-1]
@@ -281,8 +339,7 @@ def Run_MD(cfg, iteration):
             res.resname = 'HIS'
     u_all.write('%s/%s_final.pdb'%(run_dir, cfg.name))
 
-#    print('\n\n=========================== COMPLETE ==========================')
-
+    #print('\n\n=========================== COMPLETE ==========================')
 
 if __name__ == '__main__':
     from joblib import Parallel, delayed
@@ -290,7 +347,10 @@ if __name__ == '__main__':
     args = Parse_Args()
     cfg = Load_Configs(args)
 
-    #Preprocess(cfg)
-    os.chdir(cfg.name+'_output') # moves into the output directory
+    print(os.get_cwd())
+    Preprocess(cfg)
+    print(os.get_cwd())
+    #os.chdir(cfg.name) # moves into the output directory
     with Parallel(n_jobs=cfg.max_threads, prefer="threads") as parallel:
-        parallel(delayed(Run_MD)(cfg, i) for i in range(cfg.annealing_runs))
+        parallel(delayed(Run_MD)(cfg, str(i).zfill(len(str(cfg.nMDIterations))) for i in range(cfg.nMDIterations)))
+
