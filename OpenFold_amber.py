@@ -128,7 +128,7 @@ def Preprocess(cfg):
 
     os.mkdir(cfg.name) # makes the output directory w/in the working directory
     os.chdir(cfg.name) # moves into the output directory
-    #print('Created ' + os.get_cwd()) # include in verbose mode
+    #print('Created ' + os.getcwd()) # include in verbose mode
 
     ###############
     # COPY IMPORTANT FILES INTO THE OUTPUT DIRECTORY
@@ -239,11 +239,11 @@ def Preprocess(cfg):
             try:
                 atom1_index = linear_serials.get((atom1_resnum, atom1_name)) # correct index from linear file
                 atom2_index = linear_serials.get((atom2_resnum, atom2_name))
-                #print(atom1_index, atom1_resname, atom1_name, atom2_index, atom2_resname, atom2_name, r1, r2, r3, r4, distance_force_constants[0], distance_force_constants[0])
+                #print(atom1_index, atom1_resname, atom1_name, atom2_index, atom2_resname, atom2_name, r1, r2, r3, r4, cfg.distance_force_constants[0], cfg.distance_force_constants[0])
                 #atom1_index = linear_serials.get((atom1_resnum, atom1_resname, atom1_name)) # correct index from linear file
                 #atom2_index = linear_serials.get((atom2_resnum, atom2_resname, atom2_name))
                 if first == 1:
-                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, distance_force_constants[0], distance_force_constants[0]))
+                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, cfg.distance_force_constants[0], cfg.distance_force_constants[0]))
                     first = 0
                 else:
                     output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n" % (atom1_index, atom2_index, r1, r2, r3, r4))
@@ -322,7 +322,7 @@ def Run_MD(cfg, iteration):
     search_string = 'USER_TEMP'
     replace_string = '%s'%(cfg.temperatures[0])
     find_replace(search_string,replace_string,'siman.in','%s/siman.in'%(run_dir))
-    #print('SIMULATED ANNEALING CYCLE #1, DISTANCE FORCE CONSTANT = %.2f, ANGLE FORCE CONSTANT = %.2f, TEMPERATURE = %.2f K' %(distance_force_constants[0],torsion_force_constants[0],temperatures[0]))
+    #print('SIMULATED ANNEALING CYCLE #1, DISTANCE FORCE CONSTANT = %.2f, ANGLE FORCE CONSTANT = %.2f, TEMPERATURE = %.2f K' %(cfg.distance_force_constants[0],cfg.torsion_force_constants[0],cfg.temperatures[0]))
     retcode = subprocess.run('sander -O -i siman.in -p ../linear.prmtop -c ../linear.rst7 -r siman.rst7 -o siman.out -x siman.nc', shell=True, cwd=run_dir)
     #print(retcode) # print if verbose mode is on
     os.rename('RST','RST1')
@@ -347,10 +347,10 @@ if __name__ == '__main__':
     args = Parse_Args()
     cfg = Load_Configs(args)
 
-    print(os.get_cwd())
+    print(os.getcwd())
     Preprocess(cfg)
-    print(os.get_cwd())
+    print(os.getcwd())
     #os.chdir(cfg.name) # moves into the output directory
     with Parallel(n_jobs=cfg.max_threads, prefer="threads") as parallel:
-        parallel(delayed(Run_MD)(cfg, str(i).zfill(len(str(cfg.nMDIterations))) for i in range(cfg.nMDIterations)))
+        parallel(delayed(Run_MD)(cfg, str(i).zfill(len(str(cfg.nMDIterations)))) for i in range(cfg.nMDIterations))
 
