@@ -6,10 +6,10 @@
 	"simulated_annealing_input_file_path": "../siman.in",
 	"tordef_file_path": "../tordef.lib",
 	"forcefield": "leaprc.protein.ff14SB",
-	"distance_force_constants": [70.0],
-	"torsion_force_constants": [40.0],
+	"distance_force_constants": [35.0],
+	"torsion_force_constants": [20.0],
 	"temperatures": [600.0],
   	"nMDIterations": 1,
-  	"nFoldingSims": 1,
-  	"max_threads": 3
+  	"nFoldingSims": 100,
+  	"max_threads": 32
 }
