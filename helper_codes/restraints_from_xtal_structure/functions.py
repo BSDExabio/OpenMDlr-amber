@@ -88,7 +88,7 @@ def dist_dask(positions):
     '''
     return da.sqrt(da.sum((positions[:,None,:] - positions[None,:,:3])**2,-1)).compute()
 
-def make_selection_pairs(selection_object, list_of_pair_types, residue_offset):
+def make_selection_pairs(selection_object, list_of_pair_types, residue_offset = 1):
     '''
     create a list of lists where each element contains indices of atoms w/in the selection_object that correspond to a desired pair (set by the list_of_pair_types variable). 
     Input:
