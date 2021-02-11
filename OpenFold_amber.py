@@ -77,10 +77,6 @@ def Parse_Args():
     parameter_file = sys.argv[1]
     return parameter_file
 
-
-
-
-
 ###############
 # FILL PARAMETER VARIABLES
 ###############
@@ -93,6 +89,7 @@ def Load_Configs(args):
         fasta_file_path                     = data['fasta_file_path'],
         forcefield                          = data['forcefield'],
         distance_rst_file_path              = data['distance_restraints_file_path'],
+        distance_rst_file_format            = data['distance_restraints_file_format'],
         torsion_rst_file_path               = data['torsion_restraints_file_path'],
         simulated_annealing_input_file_path = data['simulated_annealing_input_file_path'],
         tordef_file_path                    = data['tordef_file_path'],
@@ -114,6 +111,70 @@ def Load_Configs(args):
         cfg.temperatures = [cfg.temperatures[0] for i in range(cfg.nMDIterations)]
 
     return cfg
+
+###############
+# parse 6 column distance restraints file
+###############
+def parse_6_col_dist_file(dist_file,atom_dictionary,parameters):
+    """
+    """
+    first = 1
+    with open(dist_file,'r') as input_file, open('RST.dist','w') as output_file:
+        for line in input_file:
+            if line[0] == '#':
+                continue
+            columns = line.split()
+            atom1_resnum = int(columns[0])
+            atom1_name   = columns[1]
+            atom2_resnum = int(columns[2])
+            atom2_name   = columns[3]
+            r2 = float(columns[4])
+            r3 = float(columns[5])
+            r1 = r2 - 0.5
+            r4 = r3 + 0.5
+            try:
+                atom1_index = linear_serials.get((atom1_resnum, atom1_name)) # correct index from linear file
+                atom2_index = linear_serials.get((atom2_resnum, atom2_name))
+                if first == 1:
+                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, parameters.distance_force_constants[0], parameters.distance_force_constants[0]))
+                    first = 0
+                else:
+                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n" % (atom1_index, atom2_index, r1, r2, r3, r4))
+            except KeyError:
+                    raise Exception("Mismatch detected between residue sequences")
+    return
+
+###############
+# parse 8 column distance restraints file
+###############
+def parse_8_col_dist_file(dist_file,atom_dictionary,parameters):
+    """
+    """
+    first = 1
+    with open(dist_rst_file,'r') as input_file, open('RST.dist','w') as output_file:
+        for line in input_file:
+            if line[0] == '#':
+                continue
+            columns = line.split()
+            atom1_resnum = int(columns[0])
+            atom1_name = columns[2]
+            atom2_resnum = int(columns[3])
+            atom2_name = columns[5]
+            r2 = float(columns[6]) #lower bound
+            r3 = float(columns[7]) #upper bound
+            r1 = r2 - 0.5
+            r4 = r3 + 0.5
+            try:
+                atom1_index = linear_serials.get((atom1_resnum, atom1_name)) # correct index from linear file
+                atom2_index = linear_serials.get((atom2_resnum, atom2_name))
+                if first == 1:
+                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, parameters.distance_force_constants[0], parameters.distance_force_constants[0]))
+                    first = 0
+                else:
+                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n" % (atom1_index, atom2_index, r1, r2, r3, r4))
+            except KeyError:
+                    raise Exception("Mismatch detected between residue sequences")
+    return
 
 ###############
 # SET UP WORKING DIRECTORY AND INPUT FILES
@@ -144,10 +205,13 @@ def Preprocess(cfg):
     dist_rst_file = cfg.distance_rst_file_path.split('/')[-1]
     #print('Copied '+cfg.distance_rst_file_path+' to '+new_file_path) # include in verbose mode
 
-    new_file_path = shutil.copy2(cfg.torsion_rst_file_path,'.')
-    #subprocess.run('cp %s .'%(cfg.torsion_rst_file_path), shell=True)
-    tors_rst_file = cfg.torsion_rst_file_path.split('/')[-1]
-    #print('Copied '+cfg.torsion_rst_file_path+' to '+new_file_path) # include in verbose mode
+    if cfg.torsion_rst_file_path != None:
+        new_file_path = shutil.copy2(cfg.torsion_rst_file_path,'.')
+        #subprocess.run('cp %s .'%(cfg.torsion_rst_file_path), shell=True)
+        tors_rst_file = cfg.torsion_rst_file_path.split('/')[-1]
+        #print('Copied '+cfg.torsion_rst_file_path+' to '+new_file_path) # include in verbose mode
+    else:
+        tors_rst_file = None
 
     new_file_path = shutil.copy2(cfg.simulated_annealing_input_file_path,'.')
     #subprocess.run('cp %s .'%(cfg.simulated_annealing_input_file_path), shell=True)
@@ -204,8 +268,7 @@ def Preprocess(cfg):
 
     print('\n\n===== READING USER RESTRAINTS AND MATCHING WITH LINEAR PDB ====')
 
-    ### biopython dist restraint process
-    #extract correct atom indices from amber linear file
+    #extract correct atom indices from amber linear.pdb file
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', BiopythonWarning)
         linear_serials = dict() # dict of {(residue #, atom name): linear serial number for cb atom}
@@ -214,65 +277,16 @@ def Preprocess(cfg):
                 for  res in chain:
                     for atom in res:
                         resname = res.resname
-                        #weird Amber linear naming conversions
                         if (resname == "HID") or (resname == "HIE") or (resname == "HIP"): resname = "HIS"
                         linear_serials.update({(res.id[1], atom.id) : atom.serial_number})
-                        #linear_serials.update({(res.id[1], resname, atom.id) : atom.serial_number})
 
-    #TODO: allow the user to read in multiple forms of dist_rst_file formats so we should write a variety of file parsers
-    first = 1
-    with open(dist_rst_file,'r') as input_file, open('RST.dist','w') as output_file:
-        for line in input_file:
-            if line[0] == '#':
-                continue
-            columns = line.split()
-            atom1_resnum = int(columns[0])
-            atom1_resname = columns[1]
-            atom1_name = columns[2]
-            atom2_resnum = int(columns[3])
-            atom2_resname = columns[4]
-            atom2_name = columns[5]
-            r2 = float(columns[6]) #lower bound
-            r3 = float(columns[7]) #upper bound
-            r1 = r2 - 0.5
-            r4 = r3 + 0.5
-            try:
-                atom1_index = linear_serials.get((atom1_resnum, atom1_name)) # correct index from linear file
-                atom2_index = linear_serials.get((atom2_resnum, atom2_name))
-                #print(atom1_index, atom1_resname, atom1_name, atom2_index, atom2_resname, atom2_name, r1, r2, r3, r4, cfg.distance_force_constants[0], cfg.distance_force_constants[0])
-                #atom1_index = linear_serials.get((atom1_resnum, atom1_resname, atom1_name)) # correct index from linear file
-                #atom2_index = linear_serials.get((atom2_resnum, atom2_resname, atom2_name))
-                if first == 1:
-                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, cfg.distance_force_constants[0], cfg.distance_force_constants[0]))
-                    first = 0
-                else:
-                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n" % (atom1_index, atom2_index, r1, r2, r3, r4))
-            except KeyError:
-                    raise Exception("Mismatch detected between residue sequences")
-
-    ### OLD MDANALYSIS CODE
-    #linear = MDAnalysis.Universe('linear.pdb')
-    #first = 1
-    #with open(dist_rst_file,'r') as input_file, open('RST.dist','w') as output_file:
-    #    for i, line in enumerate(input_file):
-    #        if line[0] == '#':
-    #            continue
-    #        columns = line.split()
-    #        r2 = float(columns[6])
-    #        r3 = float(columns[7])
-    #        r1 = r2 - 0.5   # NOTE: could be user defined
-    #        r4 = r3 + 0.5   # NOTE: could be user defined
-    #        try:
-    #            atom1_index = linear.select_atoms('resid %s and name %s'%(columns[0],columns[2])).atoms[0].index + 1   # Amber restraint files use 1-indexing; MDAnalysis uses 0-indexing
-    #            atom2_index = linear.select_atoms('resid %s and name %s'%(columns[3],columns[5])).atoms[0].index + 1
-    #        except IndexError:
-    #            raise Exception('MISMATCH BETWEEN LINEAR FILE AND RESTRAINTS INDEX, see\n %s\n in %s'%(line,dist_rst_file))
-
-    #        if first:
-    #            output_file.write(' &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n'%(atom1_index,atom2_index,r1,r2,r3,r4,cfg.distance_force_constants[0],cfg.distance_force_constants[0]))
-    #            first = 0
-    #        else:
-    #            output_file.write(' &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n'%(atom1_index,atom2_index,r1,r2,r3,r4))
+    if cfg.distance_rst_file_format.lower() == '6col':
+        parse_6_col_dist_file(dist_file,linear_serials,cfg)
+    elif cfg.distance_rst_file_format.lower() == '8col':
+        parse_8_col_dist_file(dist_file,linear_serials,cfg)
+    else:
+        print('Provided distance_rst_file_format variable is not accepted. Killing job now.')
+        sys.exit()
 
     with open('RST.dist','r') as in_file, open('RST','w') as out_file:
         list_of_lines = in_file.readlines()
@@ -285,21 +299,22 @@ def Preprocess(cfg):
     # PREPARE THE TORSION RESTRAINT FILE
     ###############
 
-    print('\n\n=================== MAKING ANGLE RESTRAINTS ===================')
-    with open('RST.angles','w') as stdout_file, open('makeANG_RST.output','w') as stderr_file:
-        retcode = subprocess.run('makeANG_RST -pdb linear.pdb -con %s -lib %s'%(tors_rst_file,tordef_file), shell=True, stdout=stdout_file, stderr=stderr_file)
-        #print(retcode) # return if verbose mode is set
+    if torsion_rst_file != None:
+        print('\n\n=================== MAKING ANGLE RESTRAINTS ===================')
+        with open('RST.angles','w') as stdout_file, open('makeANG_RST.output','w') as stderr_file:
+            retcode = subprocess.run('makeANG_RST -pdb linear.pdb -con %s -lib %s'%(tors_rst_file,tordef_file), shell=True, stdout=stdout_file, stderr=stderr_file)
+            #print(retcode) # return if verbose mode is set
 
-    search_string = 'rk2 =   2.0, rk3 =   2.0'
-    replace_string = 'rk2 =   %.2f, rk3 =   %.2f'%(cfg.torsion_force_constants[0],cfg.torsion_force_constants[0])
-    find_replace(search_string,replace_string,'RST.angles','RST.angles')
+        search_string = 'rk2 =   2.0, rk3 =   2.0'
+        replace_string = 'rk2 =   %.2f, rk3 =   %.2f'%(cfg.torsion_force_constants[0],cfg.torsion_force_constants[0])
+        find_replace(search_string,replace_string,'RST.angles','RST.angles')
 
-    with open('RST.angles','r') as in_file, open('RST','a') as out_file:
-        list_of_lines = in_file.readlines()
-        for line in list_of_lines:
-            out_file.write(line)
+        with open('RST.angles','r') as in_file, open('RST','a') as out_file:
+            list_of_lines = in_file.readlines()
+            for line in list_of_lines:
+                out_file.write(line)
 
-    print('TORSION RESTRAINTS GENERATED')
+        print('TORSION RESTRAINTS GENERATED')
 
 ###############
 # RUNNING SIMULATED ANNEALING MOLECULAR DYNAMICS SIMULATIONS
