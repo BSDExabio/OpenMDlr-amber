@@ -133,8 +133,8 @@ def parse_6_col_dist_file(dist_file,atom_dictionary,parameters):
             r1 = r2 - 0.5
             r4 = r3 + 0.5
             try:
-                atom1_index = linear_serials.get((atom1_resnum, atom1_name)) # correct index from linear file
-                atom2_index = linear_serials.get((atom2_resnum, atom2_name))
+                atom1_index = atom_dictionary.get((atom1_resnum, atom1_name)) # correct index from linear file
+                atom2_index = atom_dictionary.get((atom2_resnum, atom2_name))
                 if first == 1:
                     output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, parameters.distance_force_constants[0], parameters.distance_force_constants[0]))
                     first = 0
@@ -151,7 +151,7 @@ def parse_8_col_dist_file(dist_file,atom_dictionary,parameters):
     """
     """
     first = 1
-    with open(dist_rst_file,'r') as input_file, open('RST.dist','w') as output_file:
+    with open(dist_file,'r') as input_file, open('RST.dist','w') as output_file:
         for line in input_file:
             if line[0] == '#':
                 continue
@@ -165,8 +165,8 @@ def parse_8_col_dist_file(dist_file,atom_dictionary,parameters):
             r1 = r2 - 0.5
             r4 = r3 + 0.5
             try:
-                atom1_index = linear_serials.get((atom1_resnum, atom1_name)) # correct index from linear file
-                atom2_index = linear_serials.get((atom2_resnum, atom2_name))
+                atom1_index = atom_dictionary.get((atom1_resnum, atom1_name)) # correct index from linear file
+                atom2_index = atom_dictionary.get((atom2_resnum, atom2_name))
                 if first == 1:
                     output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, parameters.distance_force_constants[0], parameters.distance_force_constants[0]))
                     first = 0
@@ -281,9 +281,9 @@ def Preprocess(cfg):
                         linear_serials.update({(res.id[1], atom.id) : atom.serial_number})
 
     if cfg.distance_rst_file_format.lower() == '6col':
-        parse_6_col_dist_file(dist_file,linear_serials,cfg)
+        parse_6_col_dist_file(dist_rst_file,linear_serials,cfg)
     elif cfg.distance_rst_file_format.lower() == '8col':
-        parse_8_col_dist_file(dist_file,linear_serials,cfg)
+        parse_8_col_dist_file(dist_rst_file,linear_serials,cfg)
     else:
         print('Provided distance_rst_file_format variable is not accepted. Killing job now.')
         sys.exit()
@@ -299,7 +299,7 @@ def Preprocess(cfg):
     # PREPARE THE TORSION RESTRAINT FILE
     ###############
 
-    if torsion_rst_file != None:
+    if tors_rst_file != None:
         print('\n\n=================== MAKING ANGLE RESTRAINTS ===================')
         with open('RST.angles','w') as stdout_file, open('makeANG_RST.output','w') as stderr_file:
             retcode = subprocess.run('makeANG_RST -pdb linear.pdb -con %s -lib %s'%(tors_rst_file,tordef_file), shell=True, stdout=stdout_file, stderr=stderr_file)
