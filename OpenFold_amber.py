@@ -167,6 +167,7 @@ def parse_8_col_dist_file(dist_file,atom_dictionary,parameters):
             try:
                 atom1_index = atom_dictionary.get((atom1_resnum, atom1_name)) # correct index from linear file
                 atom2_index = atom_dictionary.get((atom2_resnum, atom2_name))
+                print(atom1_index,atom2_index)
                 if first == 1:
                     output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, parameters.distance_force_constants[0], parameters.distance_force_constants[0]))
                     first = 0
@@ -325,10 +326,8 @@ def Run_MD(cfg, iteration, working_directory):
     '''
     print('\n====================== RUN SIMULATION %s ======================'%(iteration))
 
-    os.chdir(working_directory)
     run_dir = 'run_%s'%(iteration)
     os.mkdir(run_dir)
-    #os.chdir(run_dir)
     
     new_file_path = shutil.copy2('RST',run_dir+'/')
     #subprocess.run('cp RST %s'%(run_dir), shell=True)
@@ -349,7 +348,6 @@ def Run_MD(cfg, iteration, working_directory):
 
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', UserWarning)
-        #warnings.simplefilter('ignore', VisibleDeprecationWarning)
         u = MDAnalysis.Universe('linear.prmtop','%s/siman.nc'%(run_dir))
         u.trajectory[-1]
         u_all = u.select_atoms('all')
@@ -366,10 +364,7 @@ if __name__ == '__main__':
     args = Parse_Args()
     cfg = Load_Configs(args)
 
-    print(os.getcwd())
     Preprocess(cfg)
-    print(os.getcwd())
-    #os.chdir(cfg.name) # moves into the output directory
     with Parallel(n_jobs=cfg.max_threads, prefer="threads") as parallel:
-        parallel(delayed(Run_MD)(cfg, str(i).zfill(len(str(cfg.nMDIterations))),os.getcwd()) for i in range(cfg.nMDIterations))
+        parallel(delayed(Run_MD)(cfg, str(i+1).zfill(len(str(cfg.nMDIterations))),os.getcwd()) for i in range(cfg.nMDIterations))
 
