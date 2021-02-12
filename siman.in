@@ -1,4 +1,4 @@
-Simulated annealing, 2 ps; no velocities read in; Langevin dynamics thermostat
+Simulated annealing, 20 ps; no velocities read in; Langevin dynamics thermostat
 
  &cntrl
     imin=0,
@@ -8,7 +8,7 @@ Simulated annealing, 2 ps; no velocities read in; Langevin dynamics thermostat
     ntpr=200, 
     ntwx=200, 
     ioutfm=1,
-    nstlim=2000, 
+    nstlim=20000, 
     dt=0.001,
     ntt=3,
     gamma_ln=2,
