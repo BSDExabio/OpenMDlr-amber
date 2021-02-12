@@ -136,10 +136,10 @@ def parse_6_col_dist_file(dist_file,atom_dictionary,parameters):
                 atom1_index = atom_dictionary.get((atom1_resnum, atom1_name)) # correct index from linear file
                 atom2_index = atom_dictionary.get((atom2_resnum, atom2_name))
                 if first == 1:
-                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, parameters.distance_force_constants[0], parameters.distance_force_constants[0]))
+                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, parameters.distance_force_constants[0], parameters.distance_force_constants[0]))
                     first = 0
                 else:
-                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n" % (atom1_index, atom2_index, r1, r2, r3, r4))
+                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n" % (atom1_index, atom2_index, r1, r2, r3, r4))
             except KeyError:
                     raise Exception("Mismatch detected between residue sequences")
     return
@@ -168,10 +168,10 @@ def parse_8_col_dist_file(dist_file,atom_dictionary,parameters):
                 atom1_index = atom_dictionary.get((atom1_resnum, atom1_name)) # correct index from linear file
                 atom2_index = atom_dictionary.get((atom2_resnum, atom2_name))
                 if first == 1:
-                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, parameters.distance_force_constants[0], parameters.distance_force_constants[0]))
+                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, parameters.distance_force_constants[0], parameters.distance_force_constants[0]))
                     first = 0
                 else:
-                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %i, %i, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n" % (atom1_index, atom2_index, r1, r2, r3, r4))
+                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n" % (atom1_index, atom2_index, r1, r2, r3, r4))
             except KeyError:
                     raise Exception("Mismatch detected between residue sequences")
     return
