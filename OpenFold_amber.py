@@ -205,7 +205,7 @@ def Preprocess(cfg):
     dist_rst_file = cfg.distance_rst_file_path.split('/')[-1]
     #print('Copied '+cfg.distance_rst_file_path+' to '+new_file_path) # include in verbose mode
 
-    if cfg.torsion_rst_file_path != None:
+    if cfg.torsion_rst_file_path != "None":
         new_file_path = shutil.copy2(cfg.torsion_rst_file_path,'.')
         #subprocess.run('cp %s .'%(cfg.torsion_rst_file_path), shell=True)
         tors_rst_file = cfg.torsion_rst_file_path.split('/')[-1]
