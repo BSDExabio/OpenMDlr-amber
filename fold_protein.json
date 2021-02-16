@@ -10,7 +10,6 @@
 	"distance_force_constants": [35.0],
 	"torsion_force_constants": [20.0],
 	"temperatures": [600.0],
-  	"nMDIterations": 1,
   	"nFoldingSims": 100,
   	"max_threads": 32
 }

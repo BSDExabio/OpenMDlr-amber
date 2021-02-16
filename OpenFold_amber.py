@@ -96,19 +96,18 @@ def Load_Configs(args):
         distance_force_constants            = data['distance_force_constants'],
         torsion_force_constants             = data['torsion_force_constants'],
         temperatures                        = data['temperatures'],
-        nMDIterations                       = int(data['nMDIterations']),
         nFoldingSims                        = int(data['nFoldingSims']),
         max_threads                         = int(data['max_threads']),
         )
 
-    if len(cfg.distance_force_constants) < cfg.nMDIterations:
-        cfg.distance_force_constants = [cfg.distance_force_constants[0] for i in range(cfg.nMDIterations)]
+    #if len(cfg.distance_force_constants) < cfg.nMDIterations:
+    #    cfg.distance_force_constants = [cfg.distance_force_constants[0] for i in range(cfg.nMDIterations)]
 
-    if len(cfg.torsion_force_constants) < cfg.nMDIterations:
-        cfg.torsion_force_constants = [cfg.torsion_force_constants[0] for i in range(cfg.nMDIterations)]
+    #if len(cfg.torsion_force_constants) < cfg.nMDIterations:
+    #    cfg.torsion_force_constants = [cfg.torsion_force_constants[0] for i in range(cfg.nMDIterations)]
 
-    if len(cfg.temperatures) < cfg.nMDIterations:
-        cfg.temperatures = [cfg.temperatures[0] for i in range(cfg.nMDIterations)]
+    #if len(cfg.temperatures) < cfg.nMDIterations:
+    #    cfg.temperatures = [cfg.temperatures[0] for i in range(cfg.nMDIterations)]
 
     return cfg
 
@@ -167,7 +166,6 @@ def parse_8_col_dist_file(dist_file,atom_dictionary,parameters):
             try:
                 atom1_index = atom_dictionary.get((atom1_resnum, atom1_name)) # correct index from linear file
                 atom2_index = atom_dictionary.get((atom2_resnum, atom2_name))
-                print(atom1_index,atom2_index)
                 if first == 1:
                     output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, parameters.distance_force_constants[0], parameters.distance_force_constants[0]))
                     first = 0
@@ -342,8 +340,19 @@ def Run_MD(cfg, iteration, working_directory):
     #print(retcode) # print if verbose mode is on
     os.rename('%s/RST'%(run_dir),'%s/RST1'%(run_dir))
     
-    ###TODO: ADD CODE TO RUN MORE MD SIMS IF USER DESIRES... 
-    
+    ###TODO: ADD CODE TO RUN MORE MD SIMS IF USER DESIRES... (LATER)
+
+    ###TODO: ADD POSTPROCESSING CODE 
+	### - RAMACHANDRAN PLOT (FILTER OUT MIRROR IMAGES); PRINT RESULT
+	### - DISTANCE RESTRAINTS EVAL; DIHEDRAL RESTRAINTS EVAL; 
+	### - PRINT OUTPUT AND DECISION MAKING TO A LOG FILE
+
+### RUNNUM	RAMA_Y/N	DIST_RST	DIHEDRAL_RST
+##run03		Y		smallest values in these two columns
+##run01	
+##run02		N
+
+ 
     #print('\n\n====================== WRITING FINAL PDB ======================')
 
     with warnings.catch_warnings():
@@ -358,13 +367,18 @@ def Run_MD(cfg, iteration, working_directory):
 
     #print('\n\n=========================== COMPLETE ==========================')
 
+    return output_array
+
 if __name__ == '__main__':
     from joblib import Parallel, delayed
 
     args = Parse_Args()
     cfg = Load_Configs(args)
 
-    Preprocess(cfg)
+    atom_array = Preprocess(cfg)
+    # prep a numpy array to be filled
     with Parallel(n_jobs=cfg.max_threads, prefer="threads") as parallel:
-        parallel(delayed(Run_MD)(cfg, str(i+1).zfill(len(str(cfg.nMDIterations))),os.getcwd()) for i in range(cfg.nMDIterations))
+        parallel(array[i] = delayed(Run_MD)(cfg, str(i+1).zfill(len(str(cfg.nFoldingSims))),os.getcwd()) for i in range(cfg.nFoldingSims))
+
+   # POST ANALYSIS RANKING CODE
 
