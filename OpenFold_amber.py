@@ -318,7 +318,7 @@ def Preprocess(cfg):
 ###############
 # RUNNING SIMULATED ANNEALING MOLECULAR DYNAMICS SIMULATIONS
 ###############
-def Run_MD(cfg, iteration, working_directory):
+def Run_MD(cfg, iteration):
     #TODO: fill in details about this function
     '''
     '''
@@ -367,7 +367,6 @@ def Run_MD(cfg, iteration, working_directory):
 
     #print('\n\n=========================== COMPLETE ==========================')
 
-    return output_array
 
 if __name__ == '__main__':
     from joblib import Parallel, delayed
@@ -378,7 +377,7 @@ if __name__ == '__main__':
     atom_array = Preprocess(cfg)
     # prep a numpy array to be filled
     with Parallel(n_jobs=cfg.max_threads, prefer="threads") as parallel:
-        parallel(array[i] = delayed(Run_MD)(cfg, str(i+1).zfill(len(str(cfg.nFoldingSims))),os.getcwd()) for i in range(cfg.nFoldingSims))
+        parallel(delayed(Run_MD)(cfg, str(i+1).zfill(len(str(cfg.nFoldingSims)))) for i in range(cfg.nFoldingSims))
 
    # POST ANALYSIS RANKING CODE
 
