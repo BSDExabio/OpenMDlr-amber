@@ -34,7 +34,7 @@ conda install MDAnalysis joblib
 1. Prepare a FASTA/txt file with the amino acid sequence in single letter formatting. 
 2. Prepare the distance and torsion restraint files (accepted formats described below).
 3. Copy the fold_protein.json from the git repository and edit with your parameters (explaination below).
-4. Run fold_protein.py:
+4. Run OpenFold_amber.py:
 
 ### Basic Example:
 
