@@ -64,7 +64,7 @@ python3 $OpenFoldHome/OpenFold_amber.py fold_protein.json
 Two file formats("8col" or "6col") are currently accepted. These formats are nearly identical and should be readily created from standard contact or interatomic distance prediction methods.
 
 **8col** 
-Distance restraints file should be formatted as a list of restraints, with the following 8 columns:
+Distance restraints file should be formatted as a list of restraints, with the following 8 columns. Units of the last two columns are Angstroms.
 
 >atom1_residue_number (int), atom1_residue_name, atom1_name, atom2_residue_number (int), atom2_residue_name, atom2_name, lower_bound_distance (float), upper_bound_distance (float)
 
@@ -76,7 +76,7 @@ For example:
 ```
 
 **6col** 
-Distance restraints file should be formatted as a list of restraints, with the following 6 columns:
+Distance restraints file should be formatted as a list of restraints, with the following 6 columns. Units of the last two columns are Angstroms.
 
 >atom1_residue_number (int), atom1_name, atom2_residue_number (int), atom2_name, lower_bound_distance (float), upper_bound_distance (float)
 
@@ -89,7 +89,7 @@ For example:
 
 ### Torsion Restraints Format: ###
 
-Accepted format is a file specifying the predicted dihedrals of residues, formatted in 5 columns:
+Accepted format is a file specifying the predicted dihedrals of residues, formatted in 5 columns. Units of last two columns are degrees. 
 
 >residue_number (int), residue_name, angle_name, lower_bound (float), upper_bound (float)
 
