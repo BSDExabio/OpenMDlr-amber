@@ -107,8 +107,18 @@ Files that are shared between all folding simulations are written to the top out
 Each independent run of folding simulation has output written to its own directory (named run_x, where x is the zero-filled integer associated with the run), within which simulation output files are written. Specifically, a trajectory file (extension .nc; netcdf file format), a restart structure (extension .rst; netcdf file format), a mdinfo file that contains real-time summary information (no extension), an simulation output file (extension .out), and a final folded structure (extension .pdb). 
 
 
-**Viewing Trajectory:**
+**Viewing Folding Trajectories:**
 
-The relevant files for viewing trajectory in VMD are "prmtop" (file type: AMBER7 Param) and "siman1.nc", "siman2.nc", etc, up to the number of cycles of simulated annealing (let VMD determine the file type automatically).
+To simply view the final folding structures of the body of simulations:
+```
+vmd -m */*final.pdb
+pymol */*final.pdb
+```
+
+
+To visualize a folding simulation: 
+```
+vmd linear.prmtop -netcdf run_001/siman.nc
+```
 
 
