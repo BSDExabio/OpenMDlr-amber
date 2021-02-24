@@ -45,19 +45,20 @@ python3 $OpenFoldHome/OpenFold_amber.py fold_protein.json
 ```
 
 ### Input to the Program: fold_protein.json 
-1. name: string; an identifier string used in naming of output directory and files, so you can really use any string you want. 
-2. fasta_file_path: string; directory path that points to the FASTA file with the to-be folded sequence in single letter format (i.e., "NLYIQWLKDGGPSSGRPPPS").
-3. distance_restraints_file_path: string; directory path that points to the distance restraints file.
-3. distance_restraints_file_format: string; accepts "8col" or "6col"; formats discussed below.
-4. torsion_restraints_file_path: string; directory path that points to the torsion restraints file; format discussed below.
-6. simulated_annealing_input_file_path: string; directory path that points to the AmberTools20 sander input file to perform the simulated annealing MD sims; has regex strings that are used to edit with the user defined parameters. General users shouldn't need to edit this file and so should not change this parameter's value. 
-7. tordef_file_path: string; directory path that points to the tordef.lib file needed for AmberTools' makeANG_RST script to work. Users shouldn't need to change this paramter's value. 
-8. forcefield: string; file name associated with the leaprc file to be used in AmberTools' tleap to generate the linear 3D structure and respective parameters. Only tested with "leaprc.protein.ff14SB" but should accept any available protein leaprc file.
-9. distance_force_constants: float; the harmonic force constant applied to pairwise atom-atom distance restraints. Units: kcal mol<sup>-1</sup>·Angstrom<sup>-2</sup>
-10. torsion_force_constants: float; the harmonic force constant applied to dihedral atom groups. Units: kcal mol<sup>-1</sup>·rad<sup>-2</sup>
-11. temperatures: float; the maximum temperature for the simulated annealing simulation. Units: K
-12. nFoldingSims: integer; number of independent simulations that will be performed, outputting final folded models that are subsequently analyzed. 
-13. max_threads: integer; number of available cpu threads that can be used to run the folding simulations.<br>
+1.  name: string; an identifier string used in naming of output directory and files, so you can really use any string you want. 
+2.  fasta_file_path: string; directory path that points to the FASTA file with the to-be folded sequence in single letter format (i.e., "NLYIQWLKDGGPSSGRPPPS").
+3.  distance_restraints_file_path: string; directory path that points to the distance restraints file.
+3.  distance_restraints_file_format: string; accepts "8col" or "6col"; formats discussed below.
+4.  torsion_restraints_file_path: string; directory path that points to the torsion restraints file; format discussed below.
+6.  simulated_annealing_input_file_path: string; directory path that points to the AmberTools20 sander input file to perform the simulated annealing MD sims; has regex strings that are used to edit with the user defined parameters. General users shouldn't need to edit this file and so should not change this parameter's value. 
+7.  tordef_file_path: string; directory path that points to the tordef.lib file needed for AmberTools' makeANG_RST script to work. Users shouldn't need to change this paramter's value. 
+8.  forcefield: string; file name associated with the leaprc file to be used in AmberTools' tleap to generate the linear 3D structure and respective parameters. Only tested with "leaprc.protein.ff14SB" but should accept any available protein leaprc file.
+9.  distance_force_constants: float; the harmonic force constant applied to pairwise atom-atom distance restraints. Units: kcal mol<sup>-1</sup>·Angstrom<sup>-2</sup>
+10.  torsion_force_constants: float; the harmonic force constant applied to dihedral atom groups. Units: kcal mol<sup>-1</sup>·rad<sup>-2</sup>
+11.  temperatures: float; the maximum temperature for the simulated annealing simulation. Units: K
+12.  nFoldingSims: integer; number of independent simulations that will be performed, outputting final folded models that are subsequently analyzed. 
+13.  max_threads: integer; number of available cpu threads that can be used to run the folding simulations.<br>
+
 
 ### Distance Restraints Format: ###
 Two file formats("8col" or "6col") are currently accepted. These formats are nearly identical and should be readily created from standard contact or interatomic distance prediction methods.
