@@ -1,10 +1,10 @@
 # OpenFold-amber
 
-A set of scripts using open source softwares that can convert an amino acid sequence into a folded 3D structure using simplistic simulated annealing molecular dynamics simulations and user-defined distance and torsion restraints. Mainly just a python wrapper script that calls AmberTools20 sander to run MD simulations.
+A set of scripts using open source softwares that can convert an amino acid sequence into a folded 3D structure using simplistic simulated annealing molecular dynamics simulations and user-defined distance and torsion restraints. Mainly just a python wrapper script that calls AmberTools20 sander to run MD simulations. Scales from using a single CPU thread to a full HPC node. 
 
 ### Pre-Reqs:
 1. [Python3](https://www.python.org) <br/>
-Required non-standard packages: MDAnalysis (version 1.0.0)
+Required non-standard packages: MDAnalysis (version 1.0.0), Joblib (version 1.0.1), Biopython (installed with MDAnalysis)
 
 2. [AmberTools20](http://ambermd.org/GetAmber.php) <br/>
 
@@ -24,47 +24,40 @@ conda create -n OpenFold-amber python==3.8
 conda activate OpenFold-amber
 # Install AmberTools20 within the environment
 conda install -c conda-forge ambertools=20
-# Install MDAnalysis 
-conda install MDAnalysis
+# Install MDAnalysis, Joblib 
+conda install MDAnalysis joblib
 ```
 
 3. Clone or download this git repository to a single location. 
 
 ### To Run:
 1. Prepare a FASTA/txt file with the amino acid sequence in single letter formatting. 
-2. Prepare the 8 column distance restraints file (format below) and 5 column torsion restraints file (format below).
+2. Prepare the distance and torsion restraint files (accepted formats described below).
 3. Copy the fold_protein.json from the git repository and edit with your parameters (explaination below).
 4. Run fold_protein.py:
 
+### Basic Example:
+
 ```bash
-export OpenFoldHome=~/Apps/OpenFold-amber	# edit this line with the global location for this cloned git repository
-python3 $OpenFoldHome/fold_protein.py fold_protein.json
+export OpenFoldHome=~/Path/to/Repository/	# edit this line with the global location for this cloned git repository
+# ADD STEPS to run 1ubq example
+python3 $OpenFoldHome/OpenFold_amber.py fold_protein.json
 ```
 
 ### Input to the Program: fold_protein.json 
 1. name: string; an identifier string used in naming of output directory and files, so you can really use any string you want. 
 2. fasta_file_path: string; directory path that points to the FASTA file with the to-be folded sequence in single letter format (i.e., "NLYIQWLKDGGPSSGRPPPS").
-3. distance_restraints_file_path: string; directory path that points to the distance restraints file in 8 column format.
-4. torsion_restraints_file_path: string; directory path that points to the torsion restraints file in 5 column format.
-6. simulated_annealing_input_file_path: string; directory path that points to the input file to perform basic the simulated annealing MD sims. with the user defined restraints. General users shouldn't need to change this parameter's value. 
+3. distance_restraints_file_path: string; directory path that points to the distance restraints file.
+3. distance_restraints_file_format: string; accepts "8col" or "6col"; formats discussed below.
+4. torsion_restraints_file_path: string; directory path that points to the torsion restraints file; format discussed below.
+6. simulated_annealing_input_file_path: string; directory path that points to the AmberTools20 sander input file to perform the simulated annealing MD sims; has regex strings that are used to edit with the user defined parameters. General users shouldn't need to edit this file and so should not change this parameter's value. 
 7. tordef_file_path: string; directory path that points to the tordef.lib file needed for AmberTools' makeANG_RST script to work. Users shouldn't need to change this paramter's value. 
-8. forcefield: string; file name associated with the leaprc file to be used in AmberTools' tleap to generate the linear 3D structure and respective parameters. Only tested with "leaprc.protein.ff14SB".
-9. distance_force_constants: python list of floats; contains the harmonic force constant applied to pairwise atom-atom distance restraints. Units: kcal/(mol·Angstrom)
-10. torsion_force_constants: python list of floats; contains the harmonic force constant applied to dihedral atom groups. Units: kcal/(mol·rad)
-11. temperatures: python list of floats; contains the maximum temperatures for simulated annealing cycles. Units: K
-12. annealing_runs: integer; number of simulated annealing simulations that will be performed. 
-
->If the length of the force constants and temperatures lists (parameters #9-11) is 1, then the single value is used across all simulated annealing cycles.<br/>
->If the length of these lists is = number of cycles, then the first value is used for the first cycle, the second value for the second cycle, and so on.<br/>
->If the length is > cycles, the extra values are ignored.<br/>
->If the length is < cycles, the first value is used for all cycles.<br/>
->Any of the values in these lists may be 0.0, but it is recommended that temperature values >= 100.0 K.<br/>
-
-
-
-
-
->The given example file has what I have found to be good defaults.
+8. forcefield: string; file name associated with the leaprc file to be used in AmberTools' tleap to generate the linear 3D structure and respective parameters. Only tested with "leaprc.protein.ff14SB" but should accept any available protein leaprc file.
+9. distance_force_constants: float; the harmonic force constant applied to pairwise atom-atom distance restraints. Units: kcal mol<sup>-1</sup>·Angstrom<sup>-2</sup>
+10. torsion_force_constants: float; the harmonic force constant applied to dihedral atom groups. Units: kcal mol<sup>-1</sup>·rad<sup>-2</sup>
+11. temperatures: float; the maximum temperature for the simulated annealing simulation. Units: K
+12. nFoldingSims: integer; number of independent simulations that will be performed, outputting final folded models that are subsequently analyzed. 
+13. max_threads: integer; number of available cpu threads that can be used to run the folding simulations.<br>
 
 **Distance Restraints Format:**
 
