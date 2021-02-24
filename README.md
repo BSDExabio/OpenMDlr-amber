@@ -59,33 +59,44 @@ python3 $OpenFoldHome/OpenFold_amber.py fold_protein.json
 12. nFoldingSims: integer; number of independent simulations that will be performed, outputting final folded models that are subsequently analyzed. 
 13. max_threads: integer; number of available cpu threads that can be used to run the folding simulations.<br>
 
-**Distance Restraints Format:**
+### Distance Restraints Format: ###
+Two file formats("8col" or "6col") are currently accepted. These formats are nearly identical and should be readily created from standard contact or interatomic distance prediction methods.
 
-Distance Restraints File should be formatted as a list of restraints, with the following 8 columns:
+**8col** 
+Distance restraints file should be formatted as a list of restraints, with the following 8 columns:
 
 >atom1_residue_number (int), atom1_residue_name, atom1_name, atom2_residue_number (int), atom2_residue_name, atom2_name, lower_bound_distance (float), upper_bound_distance (float)
 
 For example:
+```
+1   MET   CA    3     ILE   CA    5.58    7.58
+1   MET   CB    4     PHE   CB   10.00   12.00
+2   GLN   CA    4     PHE   CA    5.90    7.90
+```
 
-    2   MET   CB    41    ALA   CB    3.81    5.81
-    3   PHE   CB    15    GLY   CA    9.4     11.6
-    etc
+**6col** 
+Distance restraints file should be formatted as a list of restraints, with the following 6 columns:
 
-I used make_rst.py (details below) to make restraints. The file uses BioPython and should be easy to modify and use if you are making restraints from an original pdb file. Feel free to create your restraints list in other ways.
+>atom1_residue_number (int), atom1_name, atom2_residue_number (int), atom2_name, lower_bound_distance (float), upper_bound_distance (float)
 
-**Torsion Restraints Format:**
+For example:
+```
+1   CA    3     CA    5.58    7.58
+1   CB    4     CB   10.00   12.00
+2   CA    4     CA    5.90    7.90
+```
 
-Similar to Above, but there are 5 columns:
+### Torsion Restraints Format: ###
+
+Accepted format is a file specifying the predicted dihedrals of residues, formatted in 5 columns:
 
 >residue_number (int), residue_name, angle_name, lower_bound (float), upper_bound (float)
 
 For example:
 ```
-1    LYS    PSI    138.7    140.7
-2    VAL    PHI    -103.7    -101.7
-2    VAL    PSI    113.4    115.4
-3    PHE    PHI    -76.1    -74.1
-etc
+1    MET    PSI    134.63    164.63
+2    GLN    PHI   -106.02    -76.02
+2    GLN    PSI    123.26    153.26
 ```
 
 **Output:** folded protein in pdb file; note the starting velocities are randomized, so the output is nondeterministic
