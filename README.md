@@ -99,36 +99,15 @@ For example:
 2    GLN    PSI    123.26    153.26
 ```
 
-**Output:** folded protein in pdb file; note the starting velocities are randomized, so the output is nondeterministic
 
-**Optional Scripts:**
-1. make_rst.py <br/>
-Makes restraints from original pdb file.
-```
-python make_rst.py <name of pdb file without the .pdb extension> <distance range float in Angstroms> <angle range float in degrees>
-```
-2. secstruc.py <br/>
-Appends secondary structure restraints to your original restraints file
-```
-python secstruc.py <sequence> <secondary structure preduction sequence> <distance file> <angle file>
-```
+### Output: ### 
+Files that are shared between all folding simulations are written to the top output directory (specified by the "name" parameter). This includes files created for and output by tleap, copies of the user-specified restraint files, and sander-ready input files.
 
-2. scores.py <br/>
-If you want RMSD and TMScores, the TMScore program (https://zhanglab.ccmb.med.umich.edu/TM-score/) will produce both; scores.py will run the program, parse the info and put it in a seperate file ("scores") for you.
-```
-python scores.py <TMScore executable> <original pdb file> <your new pdb file>
-```
-3. metrics.py <br/>
-If you run it after you run scores.py, it will append the "scores" text file with data on the on the average difference between correct and new atom distances and torsions (as well as standard deviations). Could be easily modified for other metrics.
-```
-python metrics.py <original pdb file> <your new pdb file>
-```
+Each independent run of folding simulation has output written to its own directory (named run_x, where x is the zero-filled integer associated with the run), within which simulation output files are written. Specifically, a trajectory file (extension .nc; netcdf file format), a restart structure (extension .rst; netcdf file format), a mdinfo file that contains real-time summary information (no extension), an simulation output file (extension .out), and a final folded structure (extension .pdb). 
+
 
 **Viewing Trajectory:**
 
 The relevant files for viewing trajectory in VMD are "prmtop" (file type: AMBER7 Param) and "siman1.nc", "siman2.nc", etc, up to the number of cycles of simulated annealing (let VMD determine the file type automatically).
 
 
-**Use:**
-
-Please feel free to use/modify code. Everything is completely open-source. This work was done at the Center for Molecular Biophysics at Oak Ridge National Lab. Contact jesskwoods (at) gmail.com with corrections, questions, comments.
