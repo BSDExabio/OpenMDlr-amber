@@ -39,7 +39,7 @@ conda install MDAnalysis joblib
 ### Basic Example:
 
 ```bash
-export OpenFoldHome=~/Path/to/Repository/	# edit this line with the global location for this cloned git repository
+export OpenFoldHome=/Path/to/Repository/	# edit this line with the global location for this cloned git repository
 cd Test_Suite/1UBQ_example/
 python3 $OpenFoldHome/OpenFold_amber.py fold_protein.json
 # cat folding_output.dat	# place holder for data file review
