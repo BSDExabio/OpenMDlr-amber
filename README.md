@@ -89,7 +89,7 @@ For example:
 
 ### Torsion Restraints Format: ###
 
-Accepted format is a file specifying the predicted dihedrals of residues, formatted in 5 columns. Units of last two columns are degrees. 
+Accepted format is a file specifying the predicted dihedrals of residues, formatted in 5 columns. Units of last two columns are degrees. Can accept any standard backbone and side chain torsions, as defined in the tordef.lib file (pointed to by the tordef_file_path parameter). 
 
 >residue_number (int), residue_name, angle_name, lower_bound (float), upper_bound (float)
 
