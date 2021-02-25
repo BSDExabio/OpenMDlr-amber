@@ -1,0 +1,15 @@
+{
+	"name": "1ubq",
+	"fasta_file_path": "1UBQ.fasta",
+	"distance_restraints_file_path": "1UBQ_8col.dist",
+	"distance_restraints_file_format": "8col",
+	"torsion_restraints_file_path": "1UBQ_5col.angl",
+	"simulated_annealing_input_file_path": "../../siman.in",
+	"tordef_file_path": "../../tordef.lib",
+	"forcefield": "leaprc.protein.ff14SB",
+	"distance_force_constants": 35.0,
+	"torsion_force_constants": 20.0,
+	"temperatures": 600.0,
+  	"nFoldingSims": 1,
+  	"max_threads": 1
+}
