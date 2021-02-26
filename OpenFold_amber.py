@@ -93,21 +93,12 @@ def Load_Configs(args):
         torsion_rst_file_path               = data['torsion_restraints_file_path'],
         simulated_annealing_input_file_path = data['simulated_annealing_input_file_path'],
         tordef_file_path                    = data['tordef_file_path'],
-        distance_force_constants            = data['distance_force_constants'],
-        torsion_force_constants             = data['torsion_force_constants'],
-        temperatures                        = data['temperatures'],
+        distance_force_constant             = float(data['distance_force_constant']),
+        torsion_force_constant              = float(data['torsion_force_constant']),
+        temperature                         = float(data['temperature']),
         nFoldingSims                        = int(data['nFoldingSims']),
         max_threads                         = int(data['max_threads']),
         )
-
-    #if len(cfg.distance_force_constants) < cfg.nMDIterations:
-    #    cfg.distance_force_constants = [cfg.distance_force_constants[0] for i in range(cfg.nMDIterations)]
-
-    #if len(cfg.torsion_force_constants) < cfg.nMDIterations:
-    #    cfg.torsion_force_constants = [cfg.torsion_force_constants[0] for i in range(cfg.nMDIterations)]
-
-    #if len(cfg.temperatures) < cfg.nMDIterations:
-    #    cfg.temperatures = [cfg.temperatures[0] for i in range(cfg.nMDIterations)]
 
     return cfg
 
@@ -135,7 +126,7 @@ def parse_6_col_dist_file(dist_file,atom_dictionary,parameters):
                 atom1_index = atom_dictionary.get((atom1_resnum, atom1_name)) # correct index from linear file
                 atom2_index = atom_dictionary.get((atom2_resnum, atom2_name))
                 if first == 1:
-                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, parameters.distance_force_constants[0], parameters.distance_force_constants[0]))
+                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, parameters.distance_force_constant, parameters.distance_force_constant))
                     first = 0
                 else:
                     output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n" % (atom1_index, atom2_index, r1, r2, r3, r4))
@@ -167,7 +158,7 @@ def parse_8_col_dist_file(dist_file,atom_dictionary,parameters):
                 atom1_index = atom_dictionary.get((atom1_resnum, atom1_name)) # correct index from linear file
                 atom2_index = atom_dictionary.get((atom2_resnum, atom2_name))
                 if first == 1:
-                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, parameters.distance_force_constants[0], parameters.distance_force_constants[0]))
+                    output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,\n      rk2=%.1f, rk3=%.1f, ir6=1, ialtd=0,\n /\n" % (atom1_index, atom2_index, r1, r2, r3, r4, parameters.distance_force_constant, parameters.distance_force_constant))
                     first = 0
                 else:
                     output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n" % (atom1_index, atom2_index, r1, r2, r3, r4))
@@ -305,7 +296,7 @@ def Preprocess(cfg):
             #print(retcode) # return if verbose mode is set
 
         search_string = 'rk2 =   2.0, rk3 =   2.0'
-        replace_string = 'rk2 =   %.2f, rk3 =   %.2f'%(cfg.torsion_force_constants[0],cfg.torsion_force_constants[0])
+        replace_string = 'rk2 =   %.2f, rk3 =   %.2f'%(cfg.torsion_force_constant,cfg.torsion_force_constant)
         find_replace(search_string,replace_string,'RST.angles','RST.angles')
 
         with open('RST.angles','r') as in_file, open('RST','a') as out_file:
@@ -333,9 +324,8 @@ def Run_MD(cfg, iteration):
 
     # prepare simulation input files for first MD run
     search_string = 'USER_TEMP'
-    replace_string = '%s'%(cfg.temperatures[0])
+    replace_string = '%s'%(cfg.temperature)
     find_replace(search_string,replace_string,cfg.simulated_annealing_input_file_path,'%s/siman.in'%(run_dir))
-    #print('SIMULATED ANNEALING CYCLE #1, DISTANCE FORCE CONSTANT = %.2f, ANGLE FORCE CONSTANT = %.2f, TEMPERATURE = %.2f K' %(cfg.distance_force_constants[0],cfg.torsion_force_constants[0],cfg.temperatures[0]))
     retcode = subprocess.run('sander -O -i siman.in -p ../linear.prmtop -c ../linear.rst7 -r siman.rst7 -o siman.out -x siman.nc', shell=True, cwd=run_dir)
     #print(retcode) # print if verbose mode is on
     os.rename('%s/RST'%(run_dir),'%s/RST1'%(run_dir))
