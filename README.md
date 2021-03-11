@@ -42,6 +42,7 @@ conda install MDAnalysis joblib
 export OpenFoldHome=/Path/to/Repository/	# edit this line with the global location for this cloned git repository
 cd Test_Suite/1UBQ_example/
 python3 $OpenFoldHome/OpenFold_amber.py fold_protein.json
+python3 post_analysis.py 1UBQ.pdb run_1/1ubq_final.pdb 
 # cat folding_output.dat	# place holder for data file review
 ### Run TMscore analysis against the xtal structure
 # TMscore 1UBQ.fasta 1ubq/*final.pdb
