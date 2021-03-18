@@ -9,7 +9,7 @@
 	"forcefield": "leaprc.protein.ff14SB",
 	"distance_force_constant": 35.0,
 	"torsion_force_constant": 20.0,
-	"temperatures": 600.0,
+	"temperature": 600.0,
   	"nFoldingSims": 1,
   	"max_threads": 1
 }
