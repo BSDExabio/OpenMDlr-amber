@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export OpenFoldAmberHOME=$PWD
+export OpenFoldHome=$PWD
 
 cd Test_Suite/1UBQ_example/
 time python3 $OpenFoldHome/fold_protein.py fold_protein.json > stdout.txt 2> stderr.txt
