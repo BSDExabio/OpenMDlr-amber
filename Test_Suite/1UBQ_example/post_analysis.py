@@ -12,9 +12,9 @@ target_sel = target.select_atoms('protein and name CA')
 target_all.translate(-target_sel.center_of_mass())
 
 mobile_all = mobile.select_atoms('all')
-mobile_sel = target.select_atoms('protein and name CA')
+mobile_sel = mobile.select_atoms('protein and name CA')
 mobile_all.translate(-mobile_sel.center_of_mass())
 
 R,d = rotation_matrix(mobile_sel.positions,target_sel.positions)
-print('RMSD of CA atoms between xtal structure and final model: %f \AA'%(d))
+print('RMSD of CA atoms between xtal structure and final model: %f Angstroms'%(d))
 
