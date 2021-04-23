@@ -28,6 +28,7 @@ import Bio.PDB
 import warnings
 from Bio import BiopythonWarning
 import timeit
+from joblib import Parallel, delayed
 
 def tri(x):
     ''' Read in an amino acid's single letter code and return the aa's three letter code.
@@ -319,8 +320,6 @@ def Run_MD(cfg, iteration):
     os.mkdir(run_dir)
     
     new_file_path = shutil.copy2('RST',run_dir+'/')
-    #subprocess.run('cp RST %s'%(run_dir), shell=True)
-    #print('Copied RST to ' +new_file_path) # include in verbose mode
 
     # prepare simulation input files for first MD run
     search_string = 'USER_TEMP'
@@ -359,7 +358,6 @@ def Run_MD(cfg, iteration):
 
 
 if __name__ == '__main__':
-    from joblib import Parallel, delayed
 
     args = Parse_Args()
     cfg = Load_Configs(args)
