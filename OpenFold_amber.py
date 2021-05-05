@@ -346,6 +346,7 @@ def Run_MD(cfg, iteration):
 
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', UserWarning)
+        warnings.simplefilter('ignore',DeprecationWarning)
         u = MDAnalysis.Universe('linear.prmtop','%s/siman.nc'%(run_dir))
         u.trajectory[-1]
         u_all = u.select_atoms('all')
@@ -356,6 +357,58 @@ def Run_MD(cfg, iteration):
 
     #print('\n\n=========================== COMPLETE ==========================')
 
+def Run_post(subdir):
+    from MDAnalysis.analysis import dihedrals
+
+    # run dihedral test
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore', UserWarning)
+        warnings.simplefilter('ignore',DeprecationWarning)
+        pdb = glob('%s*final.pdb'%(subdir))[0]
+        print(pdb)
+        u = MDAnalysis.Universe(pdb)
+        prot = u.select_atoms('protein')
+        rama = dihedrals.Ramachandran(prot).run()
+        dihed_angles = rama.angles[0]
+        prob_q1 = np.sum([1. for angles in dihed_angles if angles[0] > 0. and angles[1] > 0.])/dihed_angles.shape[0]
+        prob_q4 = np.sum([1. for angles in dihed_angles if angles[0] > 0. and angles[1] < 0.])/dihed_angles.shape[0]
+        keep_binary= 9999.
+        if prob_q1 > 0.2 or prob_q4 > 0.1:  # folded model samples 'bad' dihedral space; testing mirror image
+            temp = protein.positions
+            temp[:,2] *= -1
+            protein.positions = temp
+            protein.write('%s/mirror_image.pdb'%(subdir))
+            
+            mirror = MDAnalysis.Universe('%s/mirror_image.pdb'%(subdir))
+            m_prot = mirror.select_atoms('protein')
+            m_rama = dihedrals_Ramachandran(m_prot).run()
+            m_dihed_angles = m_rama.angles[0]
+            m_prob_q1 = np.sum([1. for angles in m_dihed_angles if angles[0] > 0. and angles[1] > 0.])/m_dihed_angles.shape[0]
+            m_prob_q4 = np.sum([1. for angles in m_dihed_angles if angles[0] > 0. and angles[1] < 0.])/m_dihed_angles.shape[0]
+            if m_prob_q1 > 0.2 or m_prob_q4 > 0.1:  # mirror image still 'bad' in dihedral space
+                os.remove('%s/mirror_image.pdb'%(subdir))
+                np.savetxt('%s/dihedrals.dat',m_dihed_angles,header='# Phi(deg) Psi(deg)\nProb(q1) = %5.4f   Prob(q4) = %5.4f'%(prob_q1,prob_q4))
+                print('Backbone dihedrals are concerning. Likely a poorly formed structure.')
+                break
+            else:
+                os.rename('%s/mirror_image.pdb'%(subdir),pdb)
+                np.savetxt('%s/dihedrals.dat',m_dihed_angles,header='# Phi(deg) Psi(deg)\nProb(q1) = %5.4f   Prob(q4) = %5.4f'%(m_prob_q1,m_prob_q4))
+                #keep_binary = 1
+        else:
+            np.savetxt('%s/dihedrals.dat',m_dihed_angles,header='# Phi(deg) Psi(deg)\nProb(q1) = %5.4f   Prob(q4) = %5.4f'%(prob_q1,prob_q4))
+            #keep_binary = 1
+
+    # run energy analysis
+    with open('%s*mdinfo'%(subdir),'r') as mdinfo, open('%s*energies.dat','w') as output:
+        output.write('# %12s %12s (units: kcal mol^-1)\n'%('EPtot','RESTRAINT'))
+        for line in results:
+            if 'Etot   =' in line:
+                EPtot = float(line.split()[8])
+            elif 'EELEC  =' in line:
+                Restraint = float(line.split()[8])
+            else:
+                continue
+        output.write('%12.4f %12.4f\n'%(EPtot,Restraint))
 
 if __name__ == '__main__':
 
@@ -366,6 +419,6 @@ if __name__ == '__main__':
     # prep a numpy array to be filled
     with Parallel(n_jobs=cfg.max_threads, prefer="threads") as parallel:
         parallel(delayed(Run_MD)(cfg, str(i+1).zfill(len(str(cfg.nFoldingSims)))) for i in range(cfg.nFoldingSims))
-
-   # POST ANALYSIS RANKING CODE
+        # POST ANALYSIS RANKING CODE
+        parallel(delayed(Run_post)('run_%s/'%(str(i+1).zfill(len(str(cfg.nFoldingSims))))) for i in range(cfg.nFoldingSims))
 
