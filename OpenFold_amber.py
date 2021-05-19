@@ -206,41 +206,42 @@ def preprocess(cfg):
     #TODO: fill in details about this function
     '''
     ###############
-    # MAKE AND MOVE INTO THE OUTPUT DIRECTORY
+    # MAKE THE OUTPUT DIRECTORY
     ###############
     os.mkdir(cfg.name) # makes the output directory w/in the working directory
-    os.chdir(cfg.name) # moves into the output directory
     #print('Created ' + os.getcwd()) # include in verbose mode
 
     ###############
     # COPY IMPORTANT FILES INTO THE OUTPUT DIRECTORY
     ###############
-    new_file_path = shutil.copy2(cfg.fasta_file_path,'.')
+    new_file_path = shutil.copy2(cfg.fasta_file_path,'%s/'%(cfg.name))
     fasta_file = cfg.fasta_file_path.split('/')[-1]
     #print('Copied '+cfg.fasta_file_path+' to '+new_file_path) # include in verbose mode
 
-    new_file_path = shutil.copy2(cfg.simulation_input_file_path,'.')
+    new_file_path = shutil.copy2(cfg.simulation_input_file_path,'%s/'%(cfg.name))
     simulation_input_file = cfg.simulation_input_file_path.split('/')[-1]
     #print('Copied '+cfg.simulation_input_file_path+' to '+new_file_path) # include in verbose mode
 
-    new_file_path = shutil.copy2(cfg.tordef_file_path,'.')
+    new_file_path = shutil.copy2(cfg.tordef_file_path,'%s/'%(cfg.name))
     tordef_file = cfg.tordef_file_path.split('/')[-1]
     #print('Copied '+cfg.tordef_file_path+' to '+new_file_path) # include in verbose mode
 
     # copy user-specified restraint files to working dir
     if cfg.distance_restraints_file_path != None:
-        new_file_path = shutil.copy2(cfg.distance_restraints_file_path,'.')
+        new_file_path = shutil.copy2(cfg.distance_restraints_file_path,'%s/'%(cfg.name))
         dist_rst_file = cfg.distance_restraints_file_path.split('/')[-1]
         #print('Copied '+cfg.distance_restraints_file_path+' to '+new_file_path) # include in verbose mode
     else:
         dist_rst_file = None
 
     if cfg.torsion_restraints_file_path != None:
-        new_file_path = shutil.copy2(cfg.torsion_restraints_file_path,'.')
+        new_file_path = shutil.copy2(cfg.torsion_restraints_file_path,'%s/'%(cfg.name))
         tors_rst_file = cfg.torsion_restraints_file_path.split('/')[-1]
         #print('Copied '+cfg.torsion_restraints_file_path+' to '+new_file_path) # include in verbose mode
     else:
         tors_rst_file = None
+
+    os.chdir(cfg.name) # moves into the output directory; done after copying files so that file paths are accurate whether they are local or global paths.
 
     ###############
     # READ FASTA FILE TO CREATE 3 LETTER SEQUENCE
