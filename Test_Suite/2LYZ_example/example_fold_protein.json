@@ -1,14 +1,15 @@
 {
 	"name": "2lyz",
-	"fasta_file_path": "/home/rbdavid/Scripts/git/OpenFold-amber/Test_Suite/2LYZ_example/2LYZ.fasta",
-	"distance_restraints_file_path": "/home/rbdavid/Scripts/git/OpenFold-amber/Test_Suite/2LYZ_example/2LYZ_8col.dist",
-	"torsion_restraints_file_path": "/home/rbdavid/Scripts/git/OpenFold-amber/Test_Suite/2LYZ_example/2LYZ_5col.angl",
-	"minimization_input_file_path": "/home/rbdavid/Scripts/git/OpenFold-amber/min.in",
-	"simulated_annealing_input_file_path": "/home/rbdavid/Scripts/git/OpenFold-amber/siman.in",
-	"tordef_file_path": "/home/rbdavid/Scripts/git/OpenFold-amber/tordef.lib",
+	"fasta_file_path": "2LYZ.fasta",
+	"distance_restraints_file_path": "2LYZ_8col.dist",
+	"distance_restraints_file_format": "8col",
+	"torsion_restraints_file_path": "2LYZ_5col.angl",
+	"simulation_input_file_path": "siman.in",
+	"tordef_file_path": "tordef.lib",
 	"forcefield": "leaprc.protein.ff14SB",
-	"distance_force_constants": [70.0, 70.0],
-	"torsion_force_constants": [40.0, 40.0],
-	"temperatures": [600.0, 600.0],
-    	"annealing_runs": 2
+	"distance_force_constant": 35.0,
+	"torsion_force_constant": 20.0,
+	"temperature": 600.0,
+  	"n_folding_sims": 1,
+  	"max_threads": 1
 }

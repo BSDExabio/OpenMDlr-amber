@@ -4,12 +4,12 @@
 	"distance_restraints_file_path": "../1UBQ_8col.dist",
 	"distance_restraints_file_format": "8col",
 	"torsion_restraints_file_path": "../1UBQ_5col.angl",
-	"simulated_annealing_input_file_path": "../../../siman.in",
+	"simulation_input_file_path": "../../../siman.in",
 	"tordef_file_path": "../../../tordef.lib",
 	"forcefield": "leaprc.protein.ff14SB",
 	"distance_force_constant": 35.0,
 	"torsion_force_constant": 20.0,
 	"temperature": 600.0,
-  	"nFoldingSims": 1,
+  	"n_folding_sims": 1,
   	"max_threads": 1
 }
