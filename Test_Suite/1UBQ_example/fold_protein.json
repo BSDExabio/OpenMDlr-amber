@@ -1,15 +1,14 @@
 {
-	"name": "1ubq",
-	"fasta_file_path": "1UBQ.fasta",
-	"distance_restraints_file_path": "1UBQ_8col.dist",
+	"name": "reps_64_k_100.00",
+	"fasta_file_path": "/autofs/nccs-svm1_home1/teffler/Projects/OpenFold-amber/Test_Suite/1UBQ_example/1UBQ.fasta",
+	"distance_restraints_file_path": "/autofs/nccs-svm1_home1/teffler/Projects/OpenFold-amber/Test_Suite/1UBQ_example/1UBQ_8col.dist",
 	"distance_restraints_file_format": "8col",
-	"torsion_restraints_file_path": "1UBQ_5col.angl",
-	"simulation_input_file_path": "../../siman.in",
-	"tordef_file_path": "../../tordef.lib",
+	"simulation_input_file_path": "/autofs/nccs-svm1_home1/teffler/Projects/OpenFold-amber/siman.in",
+	"tordef_file_path": "/autofs/nccs-svm1_home1/teffler/Projects/OpenFold-amber/tordef.lib",
 	"forcefield": "leaprc.protein.ff14SB",
-	"distance_force_constant": 35.0,
-	"torsion_force_constant": 20.0,
+	"distance_force_constant": 100.0,
+	"torsion_force_constant": 0.1,
 	"temperature": 600.0,
-  	"n_folding_sims": 1,
-  	"max_threads": 1
+  	"n_folding_sims": 64,
+  	"max_threads": 32
 }

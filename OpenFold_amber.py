@@ -38,12 +38,12 @@ from Bio import BiopythonWarning
 ###############
 
 def tri(x):
-    ''' 
+    '''
     CONVERT BTW 1 AND 3 LETTER AA CODES
     Read in an amino acid's single letter code and return the aa's three letter code.
     Input:
         x: a string of length 1, any case
-    Output: 
+    Output:
         the three letter code of associated aa; if x is unexpected, returns an empty string.
     '''
     return {'A': 'ALA',
@@ -70,7 +70,7 @@ def tri(x):
 def find_replace(search_string,replace_string,in_file,out_file):
     '''
     A BASIC FIND AND REPLACE FUNCTION FOR FILE EDITING
-    Read in a file that may contain the search string and replace that string with another. 
+    Read in a file that may contain the search string and replace that string with another.
     Input:
         search_string : a string w/ all characters specified; no regex allowed currently
         replace_string: a string
@@ -85,13 +85,16 @@ def find_replace(search_string,replace_string,in_file,out_file):
         for line in list_of_lines:
             w.write(line)
 
-#def parse_args():
-#    """
-#    PARSE COMMAND LINE ARGUMENTS
-#    #TODO: fill in details about this function
-#    """
-#    parameter_file = sys.argv[1]
-#    return parameter_file
+def parse_args():
+    """
+    PARSE COMMAND LINE ARGUMENTS
+    #TODO: fill in details about this function
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v", "--verbosity", action="count", default=0, help="increase output verbosity")
+    parser.add_argument("parameter_file", help="JSON parameter file")
+    args = parser.parse_args()
+    return args
 
 def load_configs(args):
     """
@@ -103,11 +106,12 @@ def load_configs(args):
     necessary_parameters    = ['name','fasta_file_path','simulation_input_file_path','tordef_file_path','forcefield','temperature','n_folding_sims','max_threads']
     optional_parameters     = ['distance_restraints_file_path','distance_restraints_file_format','distance_force_constant','torsion_restraints_file_path','torsion_force_constant','verbose']
     all_parameters = necessary_parameters + optional_parameters
-    
+
     # load user parameter file into data dictionary; may be incomplete
-    with open(args) as json_file:
+    with open(args.parameter_file) as json_file:
         prm = json.load(json_file)
     user_defined_params = prm.keys()
+    print(prm)
 
     # set default parameter values in case if the user did not define these values explicitly
     defaults = {}
@@ -116,8 +120,8 @@ def load_configs(args):
     defaults['distance_force_constant']         = 0.0       # default restraint force constant is 0.0 kcal mol^{-1} \AA^{-2}
     defaults['torsion_restraints_file_path']    = None      # user must point to a specific file that contains the necessary restraint information
     defaults['torsion_force_constant']          = 0.0       # default restraint force constant is 0.0 kcal mol^{-1} rad^{-2}
-    defaults['verbose']                         = 'True'    # currently, a boolean value or other alternatives (0 for False or 1 for True). 
-    
+    defaults['verbose']                         = 'True'    # currently, a boolean value or other alternatives (0 for False or 1 for True).
+
     # check for necessary parameters AND check for optional parameters (if undefined, fill in with default values)
     cfg = argparse.Namespace()  # fill the argparse.Namespace object (cfg) rather than the json dictionary object (prm)
     cfg_dict = vars(cfg)
@@ -128,7 +132,7 @@ def load_configs(args):
                 cfg_dict[param] = defaults[param]    # pass the default parameter value to the argparse.Namespace object (cfg)
             except:
                 if param in necessary_parameters:   # user has omitted a "necessary" parameter; gets a specific error message
-                    print('The necessary parameter "%s" was not defined in %s. Explicitly define this parameter and try again.'%(param,args))
+                    print('The necessary parameter "%s" was not defined in %s. Explicitly define this parameter and try again.'%(param,args.parameter_file))
                     sys.exit()
                 else:   # a catch-all for potential corner-cases
                     print('Something weird is happening. Check "%s".'%(param))
@@ -235,6 +239,7 @@ def preprocess(cfg):
         dist_rst_file = None
 
     if cfg.torsion_restraints_file_path != None:
+        print("Test fp=%s"%(cfg.torsion_restraints_file_path))
         new_file_path = shutil.copy2(cfg.torsion_restraints_file_path,'%s/'%(cfg.name))
         tors_rst_file = cfg.torsion_restraints_file_path.split('/')[-1]
         #print('Copied '+cfg.torsion_restraints_file_path+' to '+new_file_path) # include in verbose mode
@@ -333,16 +338,18 @@ def preprocess(cfg):
 
         print('TORSION RESTRAINTS GENERATED')
 
-def run_MD(cfg, iteration):
+def run_MD(cfg, idx, results):
     #TODO: fill in details about this function
     '''
     RUNNING SIMULATED ANNEALING MOLECULAR DYNAMICS SIMULATIONS
     '''
+    iteration = str(idx+1).zfill(len(str(cfg.n_folding_sims)))
     print('\n====================== RUN SIMULATION %s ======================'%(iteration))
+
 
     run_dir = 'run_%s'%(iteration)
     os.mkdir(run_dir)
-    
+
     new_file_path = shutil.copy2('RST',run_dir+'/')
 
     # prepare simulation input files for first MD run
@@ -352,7 +359,7 @@ def run_MD(cfg, iteration):
     retcode = subprocess.run('sander -O -i siman.in -p ../linear.prmtop -c ../linear.rst7 -r siman.rst7 -o siman.out -x siman.nc', shell=True, cwd=run_dir)
     #print(retcode) # print if verbose mode is on
     os.rename('%s/RST'%(run_dir),'%s/RST1'%(run_dir))
- 
+
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', UserWarning)
         warnings.simplefilter('ignore',DeprecationWarning)
@@ -362,18 +369,18 @@ def run_MD(cfg, iteration):
         for res in u_all.residues:
             if res.resname in ['HIE','HIP']:
                 res.resname = 'HIS'
-        u_all.write('%s/%s_final.pdb'%(run_dir, cfg.name))
+        u_all.write('%s/%s_%s_final.pdb'%(run_dir, cfg.name, iteration))
 
-def run_post(subdir):
-    """
-    """
+    run_post_analysis(run_dir, cfg, iteration, results)
+
+def run_post_analysis(run_dir, cfg, iteration, results):
+    idx = int(iteration) - 1
+
     # run dihedral test
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', UserWarning)
         warnings.simplefilter('ignore',DeprecationWarning)
-        pdb = glob.glob('%s*final.pdb'%(subdir))[0]
-        print(pdb)
-        u = MDAnalysis.Universe(pdb)
+        u = MDAnalysis.Universe('%s/%s_%s_final.pdb'%(run_dir, cfg.name, iteration))
         protein = u.select_atoms('protein')
         rama = dihedrals.Ramachandran(protein).run()
         dihed_angles = rama.angles[0]
@@ -384,29 +391,29 @@ def run_post(subdir):
             temp = protein.positions
             temp[:,2] *= -1
             protein.positions = temp
-            protein.write('%smirror_image.pdb'%(subdir))
-            
-            mirror = MDAnalysis.Universe('%smirror_image.pdb'%(subdir))
+            protein.write('%s/mirror_image.pdb'%(run_dir))
+
+            mirror = MDAnalysis.Universe('%s/mirror_image.pdb'%(run_dir))
             m_prot = mirror.select_atoms('protein')
             m_rama = dihedrals.Ramachandran(m_prot).run()
             m_dihed_angles = m_rama.angles[0]
             m_prob_q1 = np.sum([1. for angles in m_dihed_angles if angles[0] > 0. and angles[1] > 0.])/m_dihed_angles.shape[0]
             m_prob_q4 = np.sum([1. for angles in m_dihed_angles if angles[0] > 0. and angles[1] < 0.])/m_dihed_angles.shape[0]
             if m_prob_q1 > 0.2 or m_prob_q4 > 0.1:  # mirror image still 'bad' in dihedral space
-                os.remove('%smirror_image.pdb'%(subdir))
-                np.savetxt('%sdihedrals.dat'%(subdir),m_dihed_angles,header='Prob(q1) = %5.4f   Prob(q4) = %5.4f\nPhi(deg) Psi(deg)'%(prob_q1,prob_q4),footer='Likely a poorly formed structure.')
+                os.remove('%s/mirror_image.pdb'%(run_dir))
+                np.savetxt('%s/dihedrals.dat'%(run_dir),m_dihed_angles,header='Prob(q1) = %5.4f   Prob(q4) = %5.4f\nPhi(deg) Psi(deg)'%(prob_q1,prob_q4),footer='Likely a poorly formed structure.')
                 #print('Backbone dihedrals are concerning. Likely a poorly formed structure.')
-                #break
+                results[idx*3] = 0
             else:
-                os.rename('%smirror_image.pdb'%(subdir),pdb)
-                np.savetxt('%sdihedrals.dat'%(subdir),m_dihed_angles,header='Prob(q1) = %5.4f   Prob(q4) = %5.4f\nPhi(deg) Psi(deg)'%(m_prob_q1,m_prob_q4),footer='Good structure.')
-                #keep_binary = 1
+                os.rename('%s/mirror_image.pdb'%(run_dir),pdb)
+                np.savetxt('%s/dihedrals.dat'%(run_dir),m_dihed_angles,header='Prob(q1) = %5.4f   Prob(q4) = %5.4f\nPhi(deg) Psi(deg)'%(m_prob_q1,m_prob_q4),footer='Good structure.')
+                results[idx*3] = 1
         else:
-            np.savetxt('%sdihedrals.dat'%(subdir),m_dihed_angles,header='Prob(q1) = %5.4f   Prob(q4) = %5.4f\nPhi(deg) Psi(deg)'%(prob_q1,prob_q4),footer='Good structure.')
-            #keep_binary = 1
+            np.savetxt('%s/dihedrals.dat'%(run_dir),m_dihed_angles,header='Prob(q1) = %5.4f   Prob(q4) = %5.4f\nPhi(deg) Psi(deg)'%(prob_q1,prob_q4),footer='Good structure.')
+            results[idx*3] = 1
 
     # run energy analysis
-    with open('%smdinfo'%(subdir),'r') as mdinfo, open('%senergies.dat'%(subdir),'w') as output:
+    with open('%s/mdinfo'%(run_dir),'r') as mdinfo, open('%s/energies.dat'%(run_dir),'w') as output:
         output.write('# %12s %12s (units: kcal mol^-1)\n'%('EPtot','RESTRAINT'))
         for line in mdinfo:
             if 'Etot   =' in line:
@@ -416,17 +423,23 @@ def run_post(subdir):
             else:
                 continue
         output.write('%12.4f %12.4f\n'%(EPtot,Restraint))
+        results[idx*3 + 1] = EPtot
+        results[idx*3 + 2] = Restraint
 
-if __name__ == '__main__':
 
-    #args = Parse_Args()
-    args = sys.argv[1]
+def main():
+    args = parse_args()
     cfg = load_configs(args)
 
     atom_array = preprocess(cfg)
     # prep a numpy array to be filled
-    with Parallel(n_jobs=cfg.max_threads, prefer="threads") as parallel:
-        parallel(delayed(run_MD)(cfg, str(i+1).zfill(len(str(cfg.n_folding_sims)))) for i in range(cfg.n_folding_sims))
-        # POST ANALYSIS RANKING CODE
-        parallel(delayed(run_post)('run_%s/'%(str(i+1).zfill(len(str(cfg.n_folding_sims))))) for i in range(cfg.n_folding_sims))
+    sim_results = np.memmap('./temp_output_memmap', dtype=np.float64, shape=cfg.n_folding_sims*3, mode='w+')
 
+    with Parallel(n_jobs=cfg.max_threads, prefer="threads") as parallel:
+        parallel(delayed(run_MD)(cfg, i, sim_results) for i in range(cfg.n_folding_sims))
+
+    sim_results = sim_results.reshape((cfg.n_folding_sims, 3))
+
+
+if __name__ == '__main__':
+    main()
