@@ -29,7 +29,6 @@ import glob
 #import timeit
 import numpy as np
 import MDAnalysis
-from MDAnalysis.analysis import dihedrals
 import Bio.PDB
 from Bio import BiopythonWarning
 
@@ -86,10 +85,10 @@ def find_replace(search_string,replace_string,in_file,out_file):
             w.write(line)
 
 def parse_args():
-    """
+    '''
     PARSE COMMAND LINE ARGUMENTS
     #TODO: fill in details about this function
-    """
+    '''
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbosity", action="count", default=0, help="increase output verbosity")
     parser.add_argument("parameter_file", help="JSON parameter file")
@@ -97,21 +96,20 @@ def parse_args():
     return args
 
 def load_configs(args):
-    """
+    '''
     FILL PARAMETER VARIABLES
     #TODO: fill in details about this function
-    """
+    '''
 
     # parameter names
     necessary_parameters    = ['name','fasta_file_path','simulation_input_file_path','tordef_file_path','forcefield','temperature','n_folding_sims','max_threads']
-    optional_parameters     = ['distance_restraints_file_path','distance_restraints_file_format','distance_force_constant','torsion_restraints_file_path','torsion_force_constant','verbose']
+    optional_parameters     = ['distance_restraints_file_path','distance_restraints_file_format','distance_force_constant','torsion_restraints_file_path','torsion_force_constant','q1_cutoff','q4_cutoff']
     all_parameters = necessary_parameters + optional_parameters
 
     # load user parameter file into data dictionary; may be incomplete
     with open(args.parameter_file) as json_file:
         prm = json.load(json_file)
     user_defined_params = prm.keys()
-    print(prm)
 
     # set default parameter values in case if the user did not define these values explicitly
     defaults = {}
@@ -120,7 +118,9 @@ def load_configs(args):
     defaults['distance_force_constant']         = 0.0       # default restraint force constant is 0.0 kcal mol^{-1} \AA^{-2}
     defaults['torsion_restraints_file_path']    = None      # user must point to a specific file that contains the necessary restraint information
     defaults['torsion_force_constant']          = 0.0       # default restraint force constant is 0.0 kcal mol^{-1} rad^{-2}
-    defaults['verbose']                         = 'True'    # currently, a boolean value or other alternatives (0 for False or 1 for True).
+    #defaults['verbose']                         = 'True'    # currently, a boolean value or other alternatives (0 for False or 1 for True).
+    defaults['q1_cutoff']                       = 0.25      # float; a cutoff for Ramachandran dihedral space
+    defaults['q4_cutoff']                       = 0.15      # float; a cutoff for Ramachandran dihedral space
 
     # check for necessary parameters AND check for optional parameters (if undefined, fill in with default values)
     cfg = argparse.Namespace()  # fill the argparse.Namespace object (cfg) rather than the json dictionary object (prm)
@@ -140,14 +140,12 @@ def load_configs(args):
         else:   # user has included the parameter
             cfg_dict[param] = prm[param] # pass the parameter on to the argparse.Namespace object (cfg)
 
-    print(cfg_dict)
-
     return cfg
 
 def parse_6_col_dist_file(dist_file,atom_dictionary,parameters):
-    """
+    '''
     parse 6 column distance restraints file
-    """
+    '''
     first = 1
     with open(dist_file,'r') as input_file, open('RST.dist','w') as output_file:
         for line in input_file:
@@ -175,9 +173,9 @@ def parse_6_col_dist_file(dist_file,atom_dictionary,parameters):
     return
 
 def parse_8_col_dist_file(dist_file,atom_dictionary,parameters):
-    """
+    '''
     parse 8 column distance restraints file
-    """
+    '''
     first = 1
     with open(dist_file,'r') as input_file, open('RST.dist','w') as output_file:
         for line in input_file:
@@ -360,57 +358,58 @@ def run_MD(cfg, idx, results):
     #print(retcode) # print if verbose mode is on
     os.rename('%s/RST'%(run_dir),'%s/RST1'%(run_dir))
 
-    with warnings.catch_warnings():
-        warnings.simplefilter('ignore', UserWarning)
-        warnings.simplefilter('ignore',DeprecationWarning)
-        u = MDAnalysis.Universe('linear.prmtop','%s/siman.nc'%(run_dir))
-        u.trajectory[-1]
-        u_all = u.select_atoms('all')
-        for res in u_all.residues:
-            if res.resname in ['HIE','HIP']:
-                res.resname = 'HIS'
-        u_all.write('%s/%s_%s_final.pdb'%(run_dir, cfg.name, iteration))
+    warnings.filterwarnings('ignore')
+    u = MDAnalysis.Universe('linear.prmtop','%s/siman.nc'%(run_dir))
+    u.trajectory[-1]
+    u_all = u.select_atoms('all')
+    for res in u_all.residues:
+        if res.resname in ['HIE','HIP']:
+            res.resname = 'HIS'
+    u_all.write('%s/%s_%s_final.pdb'%(run_dir, cfg.name, iteration))
 
-    run_post_analysis(run_dir, cfg, iteration, results)
+    run_post_analysis(u, run_dir, cfg, idx, results)
 
-def run_post_analysis(run_dir, cfg, iteration, results):
-    idx = int(iteration) - 1
+def run_post_analysis(mda_universe, run_dir, cfg, idx, results):
+    '''
+    #TODO: fill in details about this analysis function
+    '''
+    from MDAnalysis.analysis import dihedrals
+    
+    warnings.filterwarnings('ignore')
+    
+    iteration = str(idx+1).zfill(len(str(cfg.n_folding_sims)))
 
     # run dihedral test
-    with warnings.catch_warnings():
-        warnings.simplefilter('ignore', UserWarning)
-        warnings.simplefilter('ignore',DeprecationWarning)
-        u = MDAnalysis.Universe('%s/%s_%s_final.pdb'%(run_dir, cfg.name, iteration))
-        protein = u.select_atoms('protein')
-        rama = dihedrals.Ramachandran(protein).run()
-        dihed_angles = rama.angles[0]
-        prob_q1 = np.sum([1. for angles in dihed_angles if angles[0] > 0. and angles[1] > 0.])/dihed_angles.shape[0]
-        prob_q4 = np.sum([1. for angles in dihed_angles if angles[0] > 0. and angles[1] < 0.])/dihed_angles.shape[0]
-        keep_binary= 9999.
-        if prob_q1 > 0.2 or prob_q4 > 0.1:  # folded model samples 'bad' dihedral space; testing mirror image
-            temp = protein.positions
-            temp[:,2] *= -1
-            protein.positions = temp
-            protein.write('%s/mirror_image.pdb'%(run_dir))
+    protein = mda_universe.select_atoms('protein')
+    ramachandran_analysis = dihedrals.Ramachandran(protein).run(start=-1)   # only interested in analyzing the last frame of folding trajectory
+    dihedral_angles = ramachandran_analysis.angles[0]
+    prob_q1 = np.sum([1. for angles in dihedral_angles if angles[0] > 0. and angles[1] > 0.])/dihedral_angles.shape[0]
+    prob_q4 = np.sum([1. for angles in dihedral_angles if angles[0] > 0. and angles[1] < 0.])/dihedral_angles.shape[0]
+    if prob_q1 > cfg.q1_cutoff or prob_q4 > cfg.q4_cutoff:  # folded model samples 'bad' dihedral space; test mirror image
+        # create mirror image structure by translating the z coordinates by multiplying by -1
+        temp = protein.positions
+        temp[:,2] *= -1
+        protein.positions = temp
+        protein.write('%s/mirror_image.pdb'%(run_dir))
 
-            mirror = MDAnalysis.Universe('%s/mirror_image.pdb'%(run_dir))
-            m_prot = mirror.select_atoms('protein')
-            m_rama = dihedrals.Ramachandran(m_prot).run()
-            m_dihed_angles = m_rama.angles[0]
-            m_prob_q1 = np.sum([1. for angles in m_dihed_angles if angles[0] > 0. and angles[1] > 0.])/m_dihed_angles.shape[0]
-            m_prob_q4 = np.sum([1. for angles in m_dihed_angles if angles[0] > 0. and angles[1] < 0.])/m_dihed_angles.shape[0]
-            if m_prob_q1 > 0.2 or m_prob_q4 > 0.1:  # mirror image still 'bad' in dihedral space
-                os.remove('%s/mirror_image.pdb'%(run_dir))
-                np.savetxt('%s/dihedrals.dat'%(run_dir),m_dihed_angles,header='Prob(q1) = %5.4f   Prob(q4) = %5.4f\nPhi(deg) Psi(deg)'%(prob_q1,prob_q4),footer='Likely a poorly formed structure.')
-                #print('Backbone dihedrals are concerning. Likely a poorly formed structure.')
-                results[idx*3] = 0
-            else:
-                os.rename('%s/mirror_image.pdb'%(run_dir),pdb)
-                np.savetxt('%s/dihedrals.dat'%(run_dir),m_dihed_angles,header='Prob(q1) = %5.4f   Prob(q4) = %5.4f\nPhi(deg) Psi(deg)'%(m_prob_q1,m_prob_q4),footer='Good structure.')
-                results[idx*3] = 1
+        # load in the mirror image structure for dihedral analysis
+        mirror = MDAnalysis.Universe('%s/mirror_image.pdb'%(run_dir))
+        m_protein = mirror.select_atoms('protein')
+        m_ramachandran_analysis = dihedrals.Ramachandran(m_protein).run()
+        m_dihedral_angles = m_ramachandran_analysis.angles[0]
+        m_prob_q1 = np.sum([1. for angles in m_dihedral_angles if angles[0] > 0. and angles[1] > 0.])/m_dihedral_angles.shape[0]
+        m_prob_q4 = np.sum([1. for angles in m_dihedral_angles if angles[0] > 0. and angles[1] < 0.])/m_dihedral_angles.shape[0]
+        if m_prob_q1 > cfg.q1_cutoff or m_prob_q4 > cfg.q4_cutoff:  # mirror image still 'bad' in dihedral space
+            os.remove('%s/mirror_image.pdb'%(run_dir))
+            np.savetxt('%s/dihedrals.dat'%(run_dir),dihedral_angles,header='Prob(q1) = %5.4f   Prob(q4) = %5.4f\nPhi(deg) Psi(deg)'%(prob_q1,prob_q4),footer='Likely a poorly formed structure.')  # saving original dihedral results
+            results[idx*3] = 0
         else:
-            np.savetxt('%s/dihedrals.dat'%(run_dir),m_dihed_angles,header='Prob(q1) = %5.4f   Prob(q4) = %5.4f\nPhi(deg) Psi(deg)'%(prob_q1,prob_q4),footer='Good structure.')
+            os.rename('%s/mirror_image.pdb'%(run_dir),pdb)
+            np.savetxt('%s/dihedrals.dat'%(run_dir),m_dihedral_angles,header='Prob(q1) = %5.4f   Prob(q4) = %5.4f\nPhi(deg) Psi(deg)'%(m_prob_q1,m_prob_q4),footer='Good structure.')
             results[idx*3] = 1
+    else:
+        np.savetxt('%s/dihedrals.dat'%(run_dir),dihedral_angles,header='Prob(q1) = %5.4f   Prob(q4) = %5.4f\nPhi(deg) Psi(deg)'%(prob_q1,prob_q4),footer='Good structure.')
+        results[idx*3] = 1
 
     # run energy analysis
     with open('%s/mdinfo'%(run_dir),'r') as mdinfo, open('%s/energies.dat'%(run_dir),'w') as output:
@@ -426,12 +425,11 @@ def run_post_analysis(run_dir, cfg, iteration, results):
         results[idx*3 + 1] = EPtot
         results[idx*3 + 2] = Restraint
 
-
 def main():
     args = parse_args()
     cfg = load_configs(args)
 
-    atom_array = preprocess(cfg)
+    preprocess(cfg)
     # prep a numpy array to be filled
     sim_results = np.memmap('./temp_output_memmap', dtype=np.float64, shape=cfg.n_folding_sims*3, mode='w+')
 
@@ -439,6 +437,7 @@ def main():
         parallel(delayed(run_MD)(cfg, i, sim_results) for i in range(cfg.n_folding_sims))
 
     sim_results = sim_results.reshape((cfg.n_folding_sims, 3))
+    # run post analysis on sim_results... Rank by some combo of the three metrics
 
 
 if __name__ == '__main__':
