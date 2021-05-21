@@ -103,7 +103,7 @@ def load_configs(args):
 
     # parameter names
     necessary_parameters    = ['name','fasta_file_path','simulation_input_file_path','tordef_file_path','forcefield','temperature','n_folding_sims','max_threads']
-    optional_parameters     = ['distance_restraints_file_path','distance_restraints_file_format','distance_force_constant','torsion_restraints_file_path','torsion_force_constant','q1_cutoff','q4_cutoff']
+    optional_parameters     = ['distance_restraints_file_path','distance_restraints_file_format','distance_force_constant','torsion_restraints_file_path','torsion_force_constant','q1_cutoff','q4_cutoff','n_top_models']
     all_parameters = necessary_parameters + optional_parameters
 
     # load user parameter file into data dictionary; may be incomplete
@@ -121,6 +121,7 @@ def load_configs(args):
     #defaults['verbose']                         = 'True'    # currently, a boolean value or other alternatives (0 for False or 1 for True).
     defaults['q1_cutoff']                       = 0.25      # float; a cutoff for Ramachandran dihedral space
     defaults['q4_cutoff']                       = 0.15      # float; a cutoff for Ramachandran dihedral space
+    defaults['n_top_models']                    = 1         # integer; number of models to be designated as "best"
 
     # check for necessary parameters AND check for optional parameters (if undefined, fill in with default values)
     cfg = argparse.Namespace()  # fill the argparse.Namespace object (cfg) rather than the json dictionary object (prm)
@@ -287,7 +288,7 @@ def preprocess(cfg):
     # PREPARE THE DISTANCE RESTRAINT FILE
     ###############
     if dist_rst_file != None:
-        print('\n\n===== READING USER DISTANCE RESTRAINTS AND MATCHING WITH LINEAR PDB ====')
+        print('\n\n=== READING DISTANCE RESTRAINTS AND MATCHING WITH LINEAR PDB ==')
 
         #extract correct atom indices from amber linear.pdb file
         with warnings.catch_warnings():
@@ -367,9 +368,9 @@ def run_MD(cfg, idx, results):
             res.resname = 'HIS'
     u_all.write('%s/%s_%s_final.pdb'%(run_dir, cfg.name, iteration))
 
-    run_post_analysis(u, run_dir, cfg, idx, results)
+    structure_analysis(u, run_dir, cfg, idx, results)
 
-def run_post_analysis(mda_universe, run_dir, cfg, idx, results):
+def structure_analysis(mda_universe, run_dir, cfg, idx, results):
     '''
     #TODO: fill in details about this analysis function
     '''
@@ -425,6 +426,31 @@ def run_post_analysis(mda_universe, run_dir, cfg, idx, results):
         results[idx*3 + 1] = EPtot
         results[idx*3 + 2] = Restraint
 
+def rank_structures(results,cfg):
+    '''
+    '''
+    passed_dihedral_test = np.nonzero(results[:,0] == 1)[0]
+    if len(passed_dihedral_test) == 0:
+        # no runs passed the dihedral tests...
+        print('No runs passed the dihedral tests. Note this. Analyzing all results to find top models still.')
+        analysis_data = results
+        idx = np.arange(analysis_data.shape[0])
+    else:
+        print('Runs that passed the Ramachandran dihedral test:')
+        print(passed_dihedral_test+1)
+        analysis_data = results[passed_dihedral_test]
+        idx = passed_dihedral_test
+
+    eptot_idx       = np.argsort(analysis_data[:,1])
+    restraint_idx   = np.argsort(analysis_data[:,2])
+    avg_rank = (np.argsort(eptot_idx) + np.argsort(restraint_idx))/2.
+    idx = idx[np.argsort(avg_rank)]
+    top_models = idx[:cfg.n_top_models]
+    with open('top_folding_models.dat','w') as output:
+        output.write('# The top %s models are determined based on their ranking in both Total Potential and Restraint Energies (units: kcal mol^{-1}).\n# run_num    EPtot    RESTRAINT\n')
+        for model in top_models:
+            output.write('run_%s   %f    %f\n'%(str(model+1).zfill(len(str(cfg.n_folding_sims))),results[model,1],results[model,2])) 
+
 def main():
     args = parse_args()
     cfg = load_configs(args)
@@ -437,8 +463,9 @@ def main():
         parallel(delayed(run_MD)(cfg, i, sim_results) for i in range(cfg.n_folding_sims))
 
     sim_results = sim_results.reshape((cfg.n_folding_sims, 3))
+    np.savetxt('simulation_results.dat',sim_results)
     # run post analysis on sim_results... Rank by some combo of the three metrics
-
+    rank_structures(sim_results,cfg)
 
 if __name__ == '__main__':
     main()
