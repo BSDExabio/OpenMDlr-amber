@@ -430,9 +430,9 @@ def rank_structures(results,cfg):
     '''
     '''
     passed_dihedral_test = np.nonzero(results[:,0] == 1)[0]
-    if len(passed_dihedral_test) == 0:
-        # no runs passed the dihedral tests...
-        print('No runs passed the dihedral tests. Note this. Analyzing all results to find top models still.')
+    if len(passed_dihedral_test) < cfg.n_folding_sims:
+        # not enough runs passed the dihedral test...
+        print('Not enough runs passed the Ramachandran dihedral test. Note this. Analyzing energy results to find top models, naive of dihedrals.')
         analysis_data = results
         idx = np.arange(analysis_data.shape[0])
     else:
