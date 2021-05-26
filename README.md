@@ -1,12 +1,12 @@
 # OpenFold-amber
 
-A set of scripts using open source softwares that can convert an amino acid sequence into a folded 3D structure using simplistic simulated annealing molecular dynamics simulations and user-defined distance and torsion restraints. Mainly just a python wrapper script that calls AmberTools20 sander to run MD simulations. Scales from using a single CPU thread to a full HPC node. 
+A set of scripts using open source softwares that can convert an amino acid sequence into a folded 3D structure using simplistic simulated annealing molecular dynamics simulations and user-defined distance and torsion restraints. Mainly just a python wrapper script that calls AmberTools sander to run MD simulations. Scales from using a single CPU thread to a full HPC node. 
 
 ### Pre-Reqs:
 1. [Python3](https://www.python.org) <br/>
 Required non-standard packages: MDAnalysis (version 1.0.0), Joblib (version 1.0.1), Biopython (installed with MDAnalysis), Numpy (installed with MDAnalysis). 
 
-2. [AmberTools21](http://ambermd.org/GetAmber.php) <br/>
+2. [AmberTools](http://ambermd.org/GetAmber.php) (tested with AmberTools20 and AmberTools21). <br/>
 
 For a simple-to-install, non-parallelized version of AmberTools, you can use conda ([Miniconda](https://docs.conda.io/en/latest/miniconda.html)):
 ```bash
@@ -22,7 +22,7 @@ conda update --yes --all
 conda create -n OpenFold-amber python==3.8
 # Activate the OpenFold-amber environment
 conda activate OpenFold-amber
-# Install AmberTools20 within the environment
+# Install AmberTools21 within the environment
 conda install -c conda-forge ambertools=21
 # Install MDAnalysis, Joblib 
 conda install MDAnalysis joblib
@@ -42,7 +42,7 @@ conda install MDAnalysis joblib
 export OpenFoldHome=/Path/to/This/Repository	# edit this line with the global location for this cloned git repository
 cd $OpenFoldHome/Test_Suite/1UBQ_example/
 python3 $OpenFoldHome/OpenFold_amber.py fold_protein.json
-python3 post_analysis.py 1UBQ.pdb run_1/1ubq_final.pdb 
+#python3 post_analysis.py 1UBQ.pdb run_1/1ubq_final.pdb 
 # cat folding_output.dat	# place holder for data file review
 ### Run TMscore analysis against the xtal structure
 # TMscore 1UBQ.fasta 1ubq/*final.pdb
@@ -57,7 +57,6 @@ python3 post_analysis.py 1UBQ.pdb run_1/1ubq_final.pdb
 5.  temperature: float; the maximum temperature for the simulated annealing simulation. Units: K
 6.  n_folding_sims: integer; number of independent simulations that will be performed, outputting final folded models that are subsequently analyzed. 
 7.  max_threads: integer; number of available cpu threads that can be used to run the folding simulations.
-Optional Parameters:
 #### Restraint parameters:
 8.  distance_restraints_file_path: string; directory path that points to the distance restraints file.
 9.  distance_restraints_file_format: string; accepts "8col" or "6col"; formats discussed below.
@@ -111,11 +110,10 @@ For example:
 2    GLN    PSI    123.26    153.26
 ```
 
-
 ### Output: ### 
-Files that are shared between all folding simulations are written to the top output directory (specified by the "name" parameter). This includes files created for and output by tleap, copies of the user-specified restraint files, and sander-ready input files.
+Files that are shared between all folding simulations are written to the top output directory (specified by the "name" parameter). This includes files created for and output by tleap, copies of the user-specified restraint files, sander-ready input files, and final result files.
 
-Each independent run of folding simulation has output written to its own directory (named run_x, where x is the zero-filled integer associated with the run), within which simulation output files are written. Specifically, a trajectory file (extension .nc; netcdf file format), a restart structure (extension .rst; netcdf file format), a mdinfo file that contains real-time summary information (no extension), an simulation output file (extension .out), and a final folded structure (extension .pdb). 
+Each independent run of folding simulation has output written to its own directory (named run_x, where x is the zero-filled integer associated with the run), within which simulation output files are written. Specifically, a trajectory file (extension .nc; netcdf file format), a restart structure (extension .rst; netcdf file format), a mdinfo file that contains real-time summary information (no extension), a simulation output file (extension .out), a final folded structure (extension .pdb), a data file containing the Ramachandran dihedral values for the final structure (extension .dat), and a data file containing certain energetic values that are used to rank folded structures (extension .dat). 
 
 
 **Viewing Folding Trajectories:**
