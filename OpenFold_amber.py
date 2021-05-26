@@ -102,8 +102,8 @@ def load_configs(args):
     '''
 
     # parameter names
-    necessary_parameters    = ['name','fasta_file_path','simulation_input_file_path','tordef_file_path','forcefield','temperature','n_folding_sims','max_threads']
-    optional_parameters     = ['distance_restraints_file_path','distance_restraints_file_format','distance_force_constant','torsion_restraints_file_path','torsion_force_constant','q1_cutoff','q4_cutoff','n_top_models']
+    necessary_parameters    = ['name','fasta_file_path','simulation_input_file_path','forcefield','temperature','n_folding_sims','max_threads']
+    optional_parameters     = ['distance_restraints_file_path','distance_restraints_file_format','distance_force_constant','torsion_restraints_file_path','torsion_force_constant','tordef_file_path','q1_cutoff','q4_cutoff','n_top_models']
     all_parameters = necessary_parameters + optional_parameters
 
     # load user parameter file into data dictionary; may be incomplete
@@ -225,10 +225,6 @@ def preprocess(cfg):
     simulation_input_file = cfg.simulation_input_file_path.split('/')[-1]
     #print('Copied '+cfg.simulation_input_file_path+' to '+new_file_path) # include in verbose mode
 
-    new_file_path = shutil.copy2(cfg.tordef_file_path,'%s/'%(cfg.name))
-    tordef_file = cfg.tordef_file_path.split('/')[-1]
-    #print('Copied '+cfg.tordef_file_path+' to '+new_file_path) # include in verbose mode
-
     # copy user-specified restraint files to working dir
     if cfg.distance_restraints_file_path != None:
         new_file_path = shutil.copy2(cfg.distance_restraints_file_path,'%s/'%(cfg.name))
@@ -238,10 +234,16 @@ def preprocess(cfg):
         dist_rst_file = None
 
     if cfg.torsion_restraints_file_path != None:
-        print("Test fp=%s"%(cfg.torsion_restraints_file_path))
         new_file_path = shutil.copy2(cfg.torsion_restraints_file_path,'%s/'%(cfg.name))
         tors_rst_file = cfg.torsion_restraints_file_path.split('/')[-1]
         #print('Copied '+cfg.torsion_restraints_file_path+' to '+new_file_path) # include in verbose mode
+        if cfg.tordef_file_path != None:
+            new_file_path = shutil.copy2(cfg.tordef_file_path,'%s/'%(cfg.name))
+            tordef_file = cfg.tordef_file_path.split('/')[-1]
+            #print('Copied '+cfg.tordef_file_path+' to '+new_file_path) # include in verbose mode
+        else:
+            print("The 'tordef_file_path' parameter was not defined. Please define this parameter by pointing to the provided tordef.lib file in the OpenFold repository.")
+            sys.exit()
     else:
         tors_rst_file = None
 
