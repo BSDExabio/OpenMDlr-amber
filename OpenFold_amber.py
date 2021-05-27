@@ -121,7 +121,7 @@ def load_configs(args):
     #defaults['verbose']                         = 'True'    # currently, a boolean value or other alternatives (0 for False or 1 for True).
     defaults['q1_cutoff']                       = 0.25      # float; a cutoff for Ramachandran dihedral space
     defaults['q4_cutoff']                       = 0.15      # float; a cutoff for Ramachandran dihedral space
-    defaults['n_top_models']                    = 1         # integer; number of models to be designated as "best"
+    defaults['n_top_models']                    = 5         # integer; number of models to be designated as "best"
 
     # check for necessary parameters AND check for optional parameters (if undefined, fill in with default values)
     cfg = argparse.Namespace()  # fill the argparse.Namespace object (cfg) rather than the json dictionary object (prm)
@@ -425,14 +425,14 @@ def structure_analysis(mda_universe, run_dir, cfg, idx, results):
             else:
                 continue
         output.write('%12.4f %12.4f\n'%(EPtot,Restraint))
-        results[idx*3 + 1] = EPtot
+        results[idx*3 + 1] = EPtot  # need to remove restraint energies...
         results[idx*3 + 2] = Restraint
 
 def rank_structures(results,cfg):
     '''
     '''
     passed_dihedral_test = np.nonzero(results[:,0] == 1)[0]
-    if len(passed_dihedral_test) < cfg.n_folding_sims:
+    if len(passed_dihedral_test) == 0:
         # not enough runs passed the dihedral test...
         print('Not enough runs passed the Ramachandran dihedral test. Note this. Analyzing energy results to find top models, naive of dihedrals.')
         analysis_data = results
@@ -444,9 +444,9 @@ def rank_structures(results,cfg):
         idx = passed_dihedral_test
 
     eptot_idx       = np.argsort(analysis_data[:,1])
-    restraint_idx   = np.argsort(analysis_data[:,2])
-    avg_rank = (np.argsort(eptot_idx) + np.argsort(restraint_idx))/2.
-    idx = idx[np.argsort(avg_rank)]
+    #restraint_idx   = np.argsort(analysis_data[:,2])
+    #avg_rank = (np.argsort(eptot_idx) + np.argsort(restraint_idx))/2.
+    #idx = idx[np.argsort(avg_rank)]
     top_models = idx[:cfg.n_top_models]
     with open('top_folding_models.dat','w') as output:
         output.write('# The top %s models are determined based on their ranking in both Total Potential and Restraint Energies (units: kcal mol^{-1}).\n# run_num    EPtot    RESTRAINT\n')
