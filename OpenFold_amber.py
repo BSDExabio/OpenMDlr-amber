@@ -356,13 +356,13 @@ def run_MD(cfg, idx, results):
     # prepare simulation input files for first MD run
     search_string = 'USER_TEMP'
     replace_string = '%s'%(cfg.temperature)
-    find_replace(search_string,replace_string,cfg.simulation_input_file_path,'%s/siman.in'%(run_dir))
-    retcode = subprocess.run('sander -O -i siman.in -p ../linear.prmtop -c ../linear.rst7 -r siman.rst7 -o siman.out -x siman.nc', shell=True, cwd=run_dir)
+    find_replace(search_string,replace_string,cfg.simulation_input_file_path,'%s/simulation.in'%(run_dir))
+    retcode = subprocess.run('sander -O -i simulation.in -p ../linear.prmtop -c ../linear.rst7 -r simulation.rst7 -o simulation.out -x simulation.nc', shell=True, cwd=run_dir)
     #print(retcode) # print if verbose mode is on
     os.rename('%s/RST'%(run_dir),'%s/RST1'%(run_dir))
 
     warnings.filterwarnings('ignore')
-    u = MDAnalysis.Universe('linear.prmtop','%s/siman.nc'%(run_dir))
+    u = MDAnalysis.Universe('linear.prmtop','%s/simulation.nc'%(run_dir))
     u.trajectory[-1]
     u_all = u.select_atoms('all')
     for res in u_all.residues:
@@ -415,43 +415,64 @@ def structure_analysis(mda_universe, run_dir, cfg, idx, results):
         results[idx*3] = 1
 
     # run energy analysis
-    with open('%s/mdinfo'%(run_dir),'r') as mdinfo, open('%s/energies.dat'%(run_dir),'w') as output:
-        output.write('# %12s %12s (units: kcal mol^-1)\n'%('EPtot','RESTRAINT'))
-        for line in mdinfo:
-            if 'Etot   =' in line:
-                EPtot = float(line.split()[8])
-            elif 'EELEC  =' in line:
-                Restraint = float(line.split()[8])
+    with open('%s/mdinfo'%(run_dir),'r') as mdinfo:
+        lines = mdinfo.read().splitlines()
+        for line in lines:
+            if 'EAMBER' in line:
+                results[idx*3 + 1] = float(line.split()[3])
             else:
                 continue
-        output.write('%12.4f %12.4f\n'%(EPtot,Restraint))
-        results[idx*3 + 1] = EPtot  # need to remove restraint energies...
-        results[idx*3 + 2] = Restraint
+    # run restraint deviation analysis
+    with open('%s/simulation.out'%(run_dir),'r') as output:
+        lines = output.read().splitlines()
+        restraint_penalty = 0
+        for line in lines:
+            if 'Total distance penalty:' in line:
+                restraint_penalty += float(line.split()[3])
+            if 'Total torsion  penalty:' in line:
+                restraint_penalty += float(line.split()[3])
+        results[idx*3 + 2] = restraint_penalty
 
 def rank_structures(results,cfg):
     '''
     '''
-    passed_dihedral_test = np.nonzero(results[:,0] == 1)[0]
-    if len(passed_dihedral_test) == 0:
-        # not enough runs passed the dihedral test...
-        print('Not enough runs passed the Ramachandran dihedral test. Note this. Analyzing energy results to find top models, naive of dihedrals.')
+    # perform dihedral test trimming
+    passed_dihedral_test = np.nonzero(results[:,0] == 1)[0] # pulls first element of the tuple created; this corresponds to the run indices that pass the dihedral test (runs w/ a 1 in the zeroth element of results array)
+    if passed_dihedral_test.shape[0] == 0:  # no runs passed the dihedral test; grabbing data associated with all runs
+        print('No runs passed the Ramachandran dihedral test. Note this. Analyzing energy results to find top models, naive of dihedral tests.')
         analysis_data = results
         idx = np.arange(analysis_data.shape[0])
-    else:
+    else:   # some runs passed the dihedral test; grabbing only data associated with those runs
         print('Runs that passed the Ramachandran dihedral test:')
         print(passed_dihedral_test+1)
         analysis_data = results[passed_dihedral_test]
         idx = passed_dihedral_test
 
-    eptot_idx       = np.argsort(analysis_data[:,1])
-    #restraint_idx   = np.argsort(analysis_data[:,2])
-    #avg_rank = (np.argsort(eptot_idx) + np.argsort(restraint_idx))/2.
-    #idx = idx[np.argsort(avg_rank)]
-    top_models = idx[:cfg.n_top_models]
-    with open('top_folding_models.dat','w') as output:
-        output.write('# The top %s models are determined based on their ranking in both Total Potential and Restraint Energies (units: kcal mol^{-1}).\n# run_num    EPtot    RESTRAINT\n')
+    # rank by eamber
+    eamber_idx = np.argsort(analysis_data[:,1]) # get sorted indices of the eamber array (completely unrelated to run indices)
+    ranked_idx = idx[eamber_idx]                # rearrange idx (related to run indices) based on sorted indices of eamber array
+    if idx.shape[0] > cfg.n_top_models:
+        top_models = ranked_idx[:cfg.n_top_models]
+    else:
+        top_models = ranked_idx
+
+    with open('top_eamber_models.dat','w') as output:
+        output.write('# The top %s models are determined based on their ranking in Total Potential Energy (ignoring restraint energy penalties) (units: kcal mol^{-1}).\n# run_num    EAMBER    Restraint_Penalty\n'%(cfg.n_top_models))
         for model in top_models:
-            output.write('run_%s   %f    %f\n'%(str(model+1).zfill(len(str(cfg.n_folding_sims))),results[model,1],results[model,2])) 
+            output.write('run_%s   %13f   %13f\n'%(str(model+1).zfill(len(str(cfg.n_folding_sims))),results[model,1],results[model,2])) 
+
+    # rank by restraint penalty
+    penalty_idx = np.argsort(analysis_data[:,2])
+    ranked_idx  = idx[penalty_idx]
+    if idx.shape[0] > cfg.n_top_models:
+        top_models = ranked_idx[:cfg.n_top_models]
+    else:
+        top_models = ranked_idx
+
+    with open('top_penalty_models.dat','w') as output:
+        output.write('# The top %s models are determined based on their ranking in Restraint Penalty Energy (units: kcal mol^{-1}).\n# run_num    EAMBER    Restraint_Penalty\n'%(cfg.n_top_models))
+        for model in top_models:
+            output.write('run_%s   %13f   %13f\n'%(str(model+1).zfill(len(str(cfg.n_folding_sims))),results[model,1],results[model,2])) 
 
 def main():
     args = parse_args()
