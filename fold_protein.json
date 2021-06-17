@@ -2,7 +2,7 @@
 	"name": "1ubq",
 	"fasta_file_path": "1UBQ.fasta",
 	"simulation_input_file_path": "siman.in",
-	"forcefield": "leaprc.protein.ff14SB",
+	"forcefield": "leaprc.protein.ff19SB",
 	"temperature": 600.0,
   	"n_folding_sims": 100,
   	"max_threads": 32,
@@ -12,7 +12,7 @@
 	"torsion_restraints_file_path": "1UBQ_5col.angl",
 	"tordef_file_path": "tordef.lib",
 	"torsion_force_constant": 20.0,
-	"q1_cutoff": 0.25,
-	"q4_cutoff": 0.25,
+	"q1_cutoff": 0.2,
+	"q4_cutoff": 0.1,
 	"n_top_models": 5
 }
