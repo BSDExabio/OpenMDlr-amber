@@ -113,10 +113,10 @@ def load_configs(args):
 
     # set default parameter values in case if the user did not define these values explicitly
     defaults = {}
-    defaults['distance_restraints_file_path']   = None      # user must point to a specific file that contains the necessary restraint information
+    defaults['distance_restraints_file_path']   = "None"    # user must point to a specific file that contains the necessary restraint information
     defaults['distance_restraints_file_format'] = '8col'    # user must specify the format used for the user-defined restraint file
     defaults['distance_force_constant']         = 0.0       # default restraint force constant is 0.0 kcal mol^{-1} \AA^{-2}
-    defaults['torsion_restraints_file_path']    = None      # user must point to a specific file that contains the necessary restraint information
+    defaults['torsion_restraints_file_path']    = "None"    # user must point to a specific file that contains the necessary restraint information
     defaults['torsion_force_constant']          = 0.0       # default restraint force constant is 0.0 kcal mol^{-1} rad^{-2}
     #defaults['verbose']                         = 'True'    # currently, a boolean value or other alternatives (0 for False or 1 for True).
     defaults['q1_cutoff']                       = 0.25      # float; a cutoff for Ramachandran dihedral space
@@ -226,18 +226,18 @@ def preprocess(cfg):
     #print('Copied '+cfg.simulation_input_file_path+' to '+new_file_path) # include in verbose mode
 
     # copy user-specified restraint files to working dir
-    if cfg.distance_restraints_file_path != None:
+    if cfg.distance_restraints_file_path != "None":
         new_file_path = shutil.copy2(cfg.distance_restraints_file_path,'%s/'%(cfg.name))
         dist_rst_file = cfg.distance_restraints_file_path.split('/')[-1]
         #print('Copied '+cfg.distance_restraints_file_path+' to '+new_file_path) # include in verbose mode
     else:
         dist_rst_file = None
 
-    if cfg.torsion_restraints_file_path != None:
+    if cfg.torsion_restraints_file_path != "None":
         new_file_path = shutil.copy2(cfg.torsion_restraints_file_path,'%s/'%(cfg.name))
         tors_rst_file = cfg.torsion_restraints_file_path.split('/')[-1]
         #print('Copied '+cfg.torsion_restraints_file_path+' to '+new_file_path) # include in verbose mode
-        if cfg.tordef_file_path != None:
+        if cfg.tordef_file_path != "None":
             new_file_path = shutil.copy2(cfg.tordef_file_path,'%s/'%(cfg.name))
             tordef_file = cfg.tordef_file_path.split('/')[-1]
             #print('Copied '+cfg.tordef_file_path+' to '+new_file_path) # include in verbose mode
