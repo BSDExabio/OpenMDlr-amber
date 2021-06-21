@@ -489,6 +489,7 @@ def main():
     np.savetxt('simulation_results.dat',sim_results)
     # run post analysis on sim_results... Rank by some combo of the three metrics
     rank_structures(sim_results,cfg)
+    os.remove('./temp_output_memmap')
 
 if __name__ == '__main__':
     main()
