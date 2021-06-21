@@ -419,7 +419,10 @@ def structure_analysis(mda_universe, run_dir, cfg, idx, results):
         lines = mdinfo.read().splitlines()
         for line in lines:
             if 'EAMBER' in line:
-                results[idx*3 + 1] = float(line.split()[3])
+                try:
+                    results[idx*3 + 1] = float(line.split()[3])
+                except ValueError:  # usual suspect is '**********'
+                    results[idx*3 + 1] = np.inf
             else:
                 continue
     # run restraint deviation analysis
@@ -428,9 +431,16 @@ def structure_analysis(mda_universe, run_dir, cfg, idx, results):
         restraint_penalty = 0
         for line in lines:
             if 'Total distance penalty:' in line:
-                restraint_penalty += float(line.split()[3])
+                try:
+                    restraint_penalty += float(line.split()[3])
+                except ValueError:  # usual suspect is '**********'
+                    restraint_penalty = np.inf
+                    
             if 'Total torsion  penalty:' in line:
-                restraint_penalty += float(line.split()[3])
+                try:
+                    restraint_penalty += float(line.split()[3])
+                except ValueError:  # usual suspect is '**********'
+                    restraint_penalty = np.inf
         results[idx*3 + 2] = restraint_penalty
 
 def rank_structures(results,cfg):
