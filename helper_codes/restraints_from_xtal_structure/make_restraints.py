@@ -3,6 +3,7 @@ import sys
 import importlib
 import glob
 import MDAnalysis
+import numpy as np
 
 config_file = sys.argv[1]
 functions_file = sys.argv[2]
@@ -10,7 +11,6 @@ functions_file = sys.argv[2]
 config_parser = importlib.import_module(functions_file.split('.py')[0],package=None).make_restraints_config_parser
 summary = importlib.import_module(functions_file.split('.py')[0],package=None).make_restraints_summary
 distance_calc = importlib.import_module(functions_file.split('.py')[0],package=None).dist_numpy
-#distance_calc = importlib.import_module(functions_file.split('.py')[0],package=None).dist_dask
 make_selection_pairs = importlib.import_module(functions_file.split('.py')[0],package=None).make_selection_pairs
 tri_to_single = importlib.import_module(functions_file.split('.py')[0],package=None).tri_to_single
 
@@ -26,6 +26,10 @@ def main():
     dist_cutoff = float(parameters['dist_cutoff'])
     nearest_neighbors_ignored = int(parameters['nearest_neighbors_ignored'])
     angl_plus_minus = float(parameters['angl_plus_minus'])
+
+    if parameters['noise_type'].upper() == 'GAUSSIAN':
+        gaussian_mean = float(parameters['gaussian_mean'])
+        gaussian_std  = float(parameters['gaussian_std'])
 
     for pdb in pdb_files:
         # ----------------------------------------
@@ -44,14 +48,22 @@ def main():
 
         selection_pairs = make_selection_pairs(sel, parameters['pair_type_list'],nearest_neighbors_ignored) # ID the pairs of atoms of interest; grab the paired atom indices to parse the distance_matrix. 
         
+        if parameters['noise_type'].upper() == 'GAUSSIAN':
+            noise = np.random.normal(loc=gaussian_mean,scale=gaussian_std,size=len(selection_pairs))    # calculate the gaussian noise as determined by user-provided variables.
+            for i, pair in enumerate(selection_pairs):
+                distance_matrix[pair[0],pair[1]] += noise[i]    # add gaussian noise to the specific element in the square distance matrix; permanently alters the calculated distance_matrix elements
+
         restraint_file_name = pdb.split('/')[-1][:-4]+'_'+parameters['dist_restraint_file_name']
         with open(restraint_file_name,'w') as rst_out:
             rst_out.write('#resid resname atom_name resid resname atom_name min_dist max_dist # true_dist\n')
-            for pair in selection_pairs:
+            for a, pair in enumerate(selection_pairs):
                 i = pair[0]
                 j = pair[1]
                 if distance_matrix[i,j] < dist_cutoff:
-                    rst_out.write('%5d   %5s   %5s   %5d   %5s   %5s   %5.2f   %5.2f   # %.5f\n'%(sel.atoms[i].resid - first_res_index,sel.atoms[i].resname,sel.atoms[i].name,sel.atoms[j].resid - first_res_index,sel.atoms[j].resname,sel.atoms[j].name,distance_matrix[i,j]-dist_plus_minus,distance_matrix[i,j]+dist_plus_minus,distance_matrix[i,j]))   # creates 8 column distance restraint file...
+                    if parameters['noise_type'].upper() == 'GAUSSIAN':
+                        rst_out.write('%5d   %5s   %5s   %5d   %5s   %5s   %5.2f   %5.2f   # %.5f + %.5f\n'%(sel.atoms[i].resid - first_res_index,sel.atoms[i].resname,sel.atoms[i].name,sel.atoms[j].resid - first_res_index,sel.atoms[j].resname,sel.atoms[j].name,distance_matrix[i,j]-dist_plus_minus,distance_matrix[i,j]+dist_plus_minus,distance_matrix[i,j]-noise[a],noise[a]))   # creates 8 column distance restraint file...
+                    else:
+                        rst_out.write('%5d   %5s   %5s   %5d   %5s   %5s   %5.2f   %5.2f   # %.5f\n'%(sel.atoms[i].resid - first_res_index,sel.atoms[i].resname,sel.atoms[i].name,sel.atoms[j].resid - first_res_index,sel.atoms[j].resname,sel.atoms[j].name,distance_matrix[i,j]-dist_plus_minus,distance_matrix[i,j]+dist_plus_minus,distance_matrix[i,j]))   # creates 8 column distance restraint file...
    
         # ----------------------------------------
         # Calc dihedrals and prep dihedrals restraint file
