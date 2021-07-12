@@ -36,54 +36,6 @@ from Bio import BiopythonWarning
 # FUNCTIONS
 ###############
 
-def tri(x):
-    '''
-    CONVERT BTW 1 AND 3 LETTER AA CODES
-    Read in an amino acid's single letter code and return the aa's three letter code.
-    Input:
-        x: a string of length 1, any case
-    Output:
-        the three letter code of associated aa; if x is unexpected, returns an empty string.
-    '''
-    return {'A': 'ALA',
-            'R': 'ARG',
-            'N': 'ASN',
-            'D': 'ASP',
-            'C': 'CYS',
-            'Q': 'GLN',
-            'E': 'GLU',
-            'G': 'GLY',
-            'H': 'HIS',
-            'I': 'ILE',
-            'L': 'LEU',
-            'K': 'LYS',
-            'M': 'MET',
-            'F': 'PHE',
-            'P': 'PRO',
-            'S': 'SER',
-            'T': 'THR',
-            'W': 'TRP',
-            'Y': 'TYR',
-            'V': 'VAL'}.get(x.upper(), '')
-
-def find_replace(search_string,replace_string,in_file,out_file):
-    '''
-    A BASIC FIND AND REPLACE FUNCTION FOR FILE EDITING
-    Read in a file that may contain the search string and replace that string with another.
-    Input:
-        search_string : a string w/ all characters specified; no regex allowed currently
-        replace_string: a string
-        in_file       : a string associated with the path to a file to be read and searched
-        out_file      : a string associated with the path to a file to be written to
-    '''
-    with open(in_file,'r') as w:
-        list_of_lines = w.readlines()
-        list_of_lines = [line.replace(search_string,replace_string) for line in list_of_lines]
-
-    with open(out_file,'w') as w:
-        for line in list_of_lines:
-            w.write(line)
-
 def parse_args():
     '''
     PARSE COMMAND LINE ARGUMENTS
@@ -142,6 +94,54 @@ def load_configs(args):
             cfg_dict[param] = prm[param] # pass the parameter on to the argparse.Namespace object (cfg)
 
     return cfg
+
+def tri(x):
+    '''
+    CONVERT BTW 1 AND 3 LETTER AA CODES
+    Read in an amino acid's single letter code and return the aa's three letter code.
+    Input:
+        x: a string of length 1, any case
+    Output:
+        the three letter code of associated aa; if x is unexpected, returns an empty string.
+    '''
+    return {'A': 'ALA',
+            'R': 'ARG',
+            'N': 'ASN',
+            'D': 'ASP',
+            'C': 'CYS',
+            'Q': 'GLN',
+            'E': 'GLU',
+            'G': 'GLY',
+            'H': 'HIS',
+            'I': 'ILE',
+            'L': 'LEU',
+            'K': 'LYS',
+            'M': 'MET',
+            'F': 'PHE',
+            'P': 'PRO',
+            'S': 'SER',
+            'T': 'THR',
+            'W': 'TRP',
+            'Y': 'TYR',
+            'V': 'VAL'}.get(x.upper(), '')
+
+def find_replace(search_string,replace_string,in_file,out_file):
+    '''
+    A BASIC FIND AND REPLACE FUNCTION FOR FILE EDITING
+    Read in a file that may contain the search string and replace that string with another.
+    Input:
+        search_string : a string w/ all characters specified; no regex allowed currently
+        replace_string: a string
+        in_file       : a string associated with the path to a file to be read and searched
+        out_file      : a string associated with the path to a file to be written to
+    '''
+    with open(in_file,'r') as w:
+        list_of_lines = w.readlines()
+        list_of_lines = [line.replace(search_string,replace_string) for line in list_of_lines]
+
+    with open(out_file,'w') as w:
+        for line in list_of_lines:
+            w.write(line)
 
 def parse_6_col_dist_file(dist_file,atom_dictionary,parameters):
     '''
