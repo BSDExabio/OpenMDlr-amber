@@ -39,8 +39,10 @@ from Bio import BiopythonWarning
 def parse_args():
     '''
     PARSE COMMAND LINE ARGUMENTS
-    #TODO: fill in details about this function
+    Returns:
+        args, an argparse namespace that currently only holds any verbosity argument and the required parameter_file
     '''
+
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbosity", action="count", default=0, help="increase output verbosity")
     parser.add_argument("parameter_file", help="JSON parameter file")
@@ -50,7 +52,13 @@ def parse_args():
 def load_configs(args):
     '''
     FILL PARAMETER VARIABLES
-    #TODO: fill in details about this function
+    
+    Takes in the args namespace, reads the user-provided config json file, and creates a new namespace with the config parameters.
+
+    Input:
+        args, an argparse namespace that currently holds the required parameter_file namespace.
+    Returns: 
+        cfg, an argparse namespace that contains the necessary parameters to run the OpenFold pipeline. 
     '''
 
     # parameter names
@@ -97,7 +105,7 @@ def load_configs(args):
 
 def tri(x):
     '''
-    CONVERT BTW 1 AND 3 LETTER AA CODES
+    CONVERT FROM 1 TO 3 LETTER AA CODES
     Read in an amino acid's single letter code and return the aa's three letter code.
     Input:
         x: a string of length 1, any case
@@ -145,7 +153,15 @@ def find_replace(search_string,replace_string,in_file,out_file):
 
 def parse_6_col_dist_file(dist_file,atom_dictionary,parameters):
     '''
-    parse 6 column distance restraints file
+    PARSE 6 COLUMN DISTANCE RESTRAINTS FILE
+
+    ### TO DO: add more details here
+
+    Input:
+        dist_file       : string, local or global path to the user-specified distance restraints; expected format of six columns
+        atom_dictionary : dictionary that contains the {(resid,atom_id) : atom_serial_number} for each atom in the protein.
+        parameters      : argparse namespace that contains the openfold parameters 
+    
     '''
     first = 1
     with open(dist_file,'r') as input_file, open('RST.dist','w') as output_file:
@@ -171,11 +187,16 @@ def parse_6_col_dist_file(dist_file,atom_dictionary,parameters):
                     output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n" % (atom1_index, atom2_index, r1, r2, r3, r4))
             except KeyError:
                     raise Exception("Mismatch detected between residue sequences")
-    return
 
 def parse_8_col_dist_file(dist_file,atom_dictionary,parameters):
     '''
     parse 8 column distance restraints file
+    
+    Input:
+        dist_file       : string, local or global path to the user-specified distance restraints; expected format of six columns
+        atom_dictionary : dictionary that contains the {(resid,atom_id) : atom_serial_number} for each atom in the protein.
+        parameters      : argparse namespace that contains the openfold parameters 
+    
     '''
     first = 1
     with open(dist_file,'r') as input_file, open('RST.dist','w') as output_file:
@@ -201,7 +222,6 @@ def parse_8_col_dist_file(dist_file,atom_dictionary,parameters):
                     output_file.write(" &rst\n  ixpk= 0, nxpk= 0, iat= %d, %d, r1= %.2f, r2= %.2f, r3= %.2f, r4= %.2f,  /\n" % (atom1_index, atom2_index, r1, r2, r3, r4))
             except KeyError:
                     raise Exception("Mismatch detected between residue sequences")
-    return
 
 def preprocess(cfg):
     '''
@@ -295,13 +315,11 @@ def preprocess(cfg):
         #extract correct atom indices from amber linear.pdb file
         with warnings.catch_warnings():
             warnings.simplefilter('ignore', BiopythonWarning)
-            linear_serials = dict() # dict of {(residue #, atom name): linear serial number for cb atom}
+            linear_serials = dict() # dict of {(residue #, atom name): linear serial number for atom}
             for model in Bio.PDB.PDBParser().get_structure("linear", "linear.pdb"):
                 for chain in model:
                     for  res in chain:
                         for atom in res:
-                            resname = res.resname
-                            if (resname == "HID") or (resname == "HIE") or (resname == "HIP"): resname = "HIS"
                             linear_serials.update({(res.id[1], atom.id) : atom.serial_number})
 
         if cfg.distance_restraints_file_format.lower() == '6col':
