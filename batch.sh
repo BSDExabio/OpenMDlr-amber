@@ -9,10 +9,10 @@
 #SBATCH --exclusive
 
 export OUTPUT_DIR="bip198/open_fold_testing/rbd/6poo/joblib_testing/"
-export SUBMIT_DIR="/autofs/nccs-svm1_home1/davidsonrb/Projects/OpenFold/amber/6poo/joblib_testing"
+export SUBMIT_DIR="/autofs/nccs-svm1_home1/davidsonrb/Projects/OpenMDlr/amber/6poo/joblib_testing"
 
 export MEMBERWORK="/gpfs/alpine/scratch/davidsonrb"
-export OpenFoldAmberHOME="/autofs/nccs-svm1_home1/davidsonrb/Apps/OpenFold-amber"
+export OpenMDlrAmberHOME="/autofs/nccs-svm1_home1/davidsonrb/Apps/OpenMDlr-amber"
 
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
@@ -29,7 +29,7 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-conda activate OpenFold-amber
+conda activate OpenMDlr-amber
 
 echo $MEMBERWORK/$OUTPUT_DIR
 mkdir -p $MEMBERWORK/$OUTPUT_DIR
@@ -37,5 +37,5 @@ cp $SUBMIT_DIR/fold_protein.json $MEMBERWORK/$OUTPUT_DIR/
 cd $MEMBERWORK/$OUTPUT_DIR
 cat fold_protein.json
 
-time python3 $OpenFoldAmberHOME/OpenFold_amber.py fold_protein.json
+time python3 $OpenMDlrAmberHOME/OpenMDlr_amber.py fold_protein.json
 

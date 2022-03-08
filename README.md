@@ -1,4 +1,4 @@
-# OpenFold-amber
+# OpenMDlr-amber
 
 A set of scripts using open source softwares that can convert an amino acid sequence into a folded 3D structure using simplistic simulated annealing molecular dynamics simulations and user-defined distance and torsion restraints. Mainly just a python wrapper script that calls AmberTools sander to run MD simulations. Scales from using a single CPU thread to a full HPC node. 
 
@@ -18,10 +18,10 @@ bash Miniconda3-latest-Linux-x86_64.sh
 conda config --add channels conda-forge
 # Update to conda-forge versions of packages
 conda update --yes --all
-# Create a new conda environment named OpenFold-amber
-conda create -n OpenFold-amber python==3.8
-# Activate the OpenFold-amber environment
-conda activate OpenFold-amber
+# Create a new conda environment named OpenMDlr-amber
+conda create -n OpenMDlr-amber python==3.8
+# Activate the OpenMDlr-amber environment
+conda activate OpenMDlr-amber
 # Install AmberTools21 within the environment
 conda install -c conda-forge ambertools=21
 # Install MDAnalysis, Joblib 
@@ -34,14 +34,14 @@ conda install MDAnalysis joblib
 1. Prepare a FASTA/txt file with the amino acid sequence in single letter formatting. 
 2. Prepare the distance and/or torsion restraint files (accepted formats described below).
 3. Copy the fold_protein.json from the git repository and edit with your parameters (explaination below).
-4. Run OpenFold_amber.py: 'python3 OpenFold_amber.py fold_protein.json'
+4. Run OpenMDlr_amber.py: 'python3 OpenMDlr_amber.py fold_protein.json'
 
 ### Basic Example:
 
 ```bash
-export OpenFoldHome=/Path/to/This/Repository	# edit this line with the global location for this cloned git repository
-cd $OpenFoldHome/Test_Suite/1UBQ_example/
-python3 $OpenFoldHome/OpenFold_amber.py fold_protein.json
+export OpenMDlrHome=/Path/to/This/Repository	# edit this line with the global location for this cloned git repository
+cd $OpenMDlrHome/Test_Suite/1UBQ_example/
+python3 $OpenMDlrHome/OpenMDlr_amber.py fold_protein.json
 #python3 post_analysis.py 1UBQ.pdb run_1/1ubq_final.pdb 
 # cat folding_output.dat	# place holder for data file review
 ### Run TMscore analysis against the xtal structure

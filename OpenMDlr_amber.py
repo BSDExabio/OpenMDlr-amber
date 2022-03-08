@@ -1,7 +1,7 @@
 
 #########################################################################################################################
 #                                                                                                                       #
-#       OpenFold Pipeline - From Sequence to Folded Protein                                                             #
+#       OpenMDlr Pipeline - From Sequence to Folded Protein                                                             #
 #                                                                                                                       #
 #       Input: should all come from fold_parameters.json file                                                           #
 #                                                                                                                       #
@@ -9,7 +9,7 @@
 #                                                                                                                       #
 #       Other output: Linear structure and parameters files, sander simulated annealing results                         #
 #                                                                                                                       #
-#       Usage example: python3 $OpenFoldAmberHOME/fold_protein.py fold_protein.json                                     #
+#       Usage example: python3 $OpenMDlrAmberHOME/fold_protein.py fold_protein.json                                     #
 #                                                                                                                       #
 #########################################################################################################################
 
@@ -58,7 +58,7 @@ def load_configs(args):
     Input:
         args, an argparse namespace that currently holds the required parameter_file namespace.
     Returns: 
-        cfg, an argparse namespace that contains the necessary parameters to run the OpenFold pipeline. 
+        cfg, an argparse namespace that contains the necessary parameters to run the OpenMDlr pipeline. 
     '''
 
     # parameter names
@@ -262,7 +262,7 @@ def preprocess(cfg):
             tordef_file = cfg.tordef_file_path.split('/')[-1]
             #print('Copied '+cfg.tordef_file_path+' to '+new_file_path) # include in verbose mode
         else:
-            print("The 'tordef_file_path' parameter was not defined. Please define this parameter by pointing to the provided tordef.lib file in the OpenFold repository.")
+            print("The 'tordef_file_path' parameter was not defined. Please define this parameter by pointing to the provided tordef.lib file in the OpenMDlr repository.")
             sys.exit()
     else:
         tors_rst_file = None

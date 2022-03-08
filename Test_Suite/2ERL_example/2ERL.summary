@@ -2,10 +2,10 @@ Using MDAnalysis version: 1.0.0
 
 Atom selections analyzed have been written out to node_selections.txt
 To recreate this analysis, run this line:
-/home/rbdavid/Scripts/git/OpenFold-amber/helper_codes/restraints_from_xtal_structure/make_restraints.py make_restraints.config functions.py 
+/home/rbdavid/Scripts/git/OpenMDlr-amber/helper_codes/restraints_from_xtal_structure/make_restraints.py make_restraints.config functions.py 
 
 Parameters used:
-file_location = '/home/rbdavid/Scripts/git/OpenFold-amber/Test_Suite/2ERL_example/2ERL.pdb'
+file_location = '/home/rbdavid/Scripts/git/OpenMDlr-amber/Test_Suite/2ERL_example/2ERL.pdb'
 dist_selection = 'name CA CB CG or (resname VAL ILE and name CG1) or (resname THR and name CG2) or (resname SER and name OG) or (resname CYS and name SG)'
 dist_plus_minus = 1.0
 dist_cutoff = 999.0
