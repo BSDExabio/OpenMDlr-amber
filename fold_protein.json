@@ -1,13 +1,18 @@
 {
 	"name": "1ubq",
-	"fasta_file_path": "~/Scripts/git/OpenFold-amber/Test_Suite/1UBQ_example/1UBQ.fasta",
-	"distance_restraints_file_path": "~/Scripts/git/OpenFold-amber/Test_Suite/1UBQ_example/1UBQ_8col.dist",
-	"torsion_restraints_file_path": "~/Scripts/git/OpenFold-amber/Test_Suite/1UBQ_example/1UBQ_5col.angl",
-	"simulated_annealing_input_file_path": "~/Scripts/git/OpenFold-amber/siman.in",
-	"tordef_file_path": "~/Scripts/git/OpenFold-amber/tordef.lib",
-	"forcefield": "leaprc.protein.ff14SB",
-	"distance_force_constants": [70.0],
-	"torsion_force_constants": [40.0],
-	"temperatures": [600.0],
-    	"annealing_runs": 1
+	"fasta_file_path": "1UBQ.fasta",
+	"simulation_input_file_path": "siman.in",
+	"forcefield": "leaprc.protein.ff19SB",
+	"temperature": 600.0,
+  	"n_folding_sims": 100,
+  	"max_threads": 32,
+	"distance_restraints_file_path": "1UBQ_8col.dist",
+	"distance_restraints_file_format": "8col",
+	"distance_force_constant": 35.0,
+	"torsion_restraints_file_path": "1UBQ_5col.angl",
+	"tordef_file_path": "tordef.lib",
+	"torsion_force_constant": 20.0,
+	"q1_cutoff": 0.2,
+	"q4_cutoff": 0.1,
+	"n_top_models": 5
 }

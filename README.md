@@ -1,18 +1,18 @@
 # OpenFold-amber
 
-A set of scripts using open source softwares that can convert an amino acid sequence into a folded 3D structure using simplistic simulated annealing molecular dynamics simulations and user-defined distance and torsion restraints. Mainly just a python wrapper script that calls AmberTools20 sander to run MD simulations.
+A set of scripts using open source softwares that can convert an amino acid sequence into a folded 3D structure using simplistic simulated annealing molecular dynamics simulations and user-defined distance and torsion restraints. Mainly just a python wrapper script that calls AmberTools sander to run MD simulations. Scales from using a single CPU thread to a full HPC node. 
 
 ### Pre-Reqs:
 1. [Python3](https://www.python.org) <br/>
-Required non-standard packages: MDAnalysis (version 1.0.0)
+Required non-standard packages: MDAnalysis (version 1.0.0), Joblib (version 1.0.1), Biopython (installed with MDAnalysis), Numpy (installed with MDAnalysis). 
 
-2. [AmberTools20](http://ambermd.org/GetAmber.php) <br/>
+2. [AmberTools](http://ambermd.org/GetAmber.php) (tested with AmberTools20 and AmberTools21). <br/>
 
 For a simple-to-install, non-parallelized version of AmberTools, you can use conda ([Miniconda](https://docs.conda.io/en/latest/miniconda.html)):
 ```bash
-# Download miniconda if you don't already have installed.
+# Download miniconda if you don't already have it installed.
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-# Install miniconda; initialize the miniconda install within your shell during installation
+# Install miniconda; initialize the miniconda install within your shell during installation.
 bash Miniconda3-latest-Linux-x86_64.sh
 # Add conda-forge to the channel list (it may already be present, but worth checking). 
 conda config --add channels conda-forge
@@ -22,109 +22,112 @@ conda update --yes --all
 conda create -n OpenFold-amber python==3.8
 # Activate the OpenFold-amber environment
 conda activate OpenFold-amber
-# Install AmberTools20 within the environment
-conda install -c conda-forge ambertools=20
-# Install MDAnalysis 
-conda install MDAnalysis
+# Install AmberTools21 within the environment
+conda install -c conda-forge ambertools=21
+# Install MDAnalysis, Joblib 
+conda install MDAnalysis joblib
 ```
 
 3. Clone or download this git repository to a single location. 
 
 ### To Run:
 1. Prepare a FASTA/txt file with the amino acid sequence in single letter formatting. 
-2. Prepare the 8 column distance restraints file (format below) and 5 column torsion restraints file (format below).
+2. Prepare the distance and/or torsion restraint files (accepted formats described below).
 3. Copy the fold_protein.json from the git repository and edit with your parameters (explaination below).
-4. Run fold_protein.py:
+4. Run OpenFold_amber.py: 'python3 OpenFold_amber.py fold_protein.json'
+
+### Basic Example:
 
 ```bash
-export OpenFoldHome=~/Apps/OpenFold-amber	# edit this line with the global location for this cloned git repository
-python3 $OpenFoldHome/fold_protein.py fold_protein.json
+export OpenFoldHome=/Path/to/This/Repository	# edit this line with the global location for this cloned git repository
+cd $OpenFoldHome/Test_Suite/1UBQ_example/
+python3 $OpenFoldHome/OpenFold_amber.py fold_protein.json
+#python3 post_analysis.py 1UBQ.pdb run_1/1ubq_final.pdb 
+# cat folding_output.dat	# place holder for data file review
+### Run TMscore analysis against the xtal structure
+# TMscore 1UBQ.fasta 1ubq/*final.pdb
 ```
 
 ### Input to the Program: fold_protein.json 
-1. name: string; an identifier string used in naming of output directory and files, so you can really use any string you want. 
-2. fasta_file_path: string; directory path that points to the FASTA file with the to-be folded sequence in single letter format (i.e., "NLYIQWLKDGGPSSGRPPPS").
-3. distance_restraints_file_path: string; directory path that points to the distance restraints file in 8 column format.
-4. torsion_restraints_file_path: string; directory path that points to the torsion restraints file in 5 column format.
-6. simulated_annealing_input_file_path: string; directory path that points to the input file to perform basic the simulated annealing MD sims. with the user defined restraints. General users shouldn't need to change this parameter's value. 
-7. tordef_file_path: string; directory path that points to the tordef.lib file needed for AmberTools' makeANG_RST script to work. Users shouldn't need to change this paramter's value. 
-8. forcefield: string; file name associated with the leaprc file to be used in AmberTools' tleap to generate the linear 3D structure and respective parameters. Only tested with "leaprc.protein.ff14SB".
-9. distance_force_constants: python list of floats; contains the harmonic force constant applied to pairwise atom-atom distance restraints. Units: kcal/(mol·Angstrom)
-10. torsion_force_constants: python list of floats; contains the harmonic force constant applied to dihedral atom groups. Units: kcal/(mol·rad)
-11. temperatures: python list of floats; contains the maximum temperatures for simulated annealing cycles. Units: K
-12. annealing_runs: integer; number of simulated annealing simulations that will be performed. 
+#### Necessary parameters:
+1.  name: string; an identifier string used in naming of output directory and files, so you can really use any string you want. 
+2.  fasta_file_path: string; directory path that points to the FASTA file with the to-be folded sequence in single letter format (i.e., "NLYIQWLKDGGPSSGRPPPS"). Can only have one sequence in the file. 
+3. simulation_input_file_path: string; directory path that points to the Sander input file to perform the MD simulations. A variety of files are provided in this repo in alternate_simulation_inputs/. Yet, general users shouldn't need to edit this file and so should not change this parameter's value.
+4.  forcefield: string; file name associated with the leaprc file to be used in AmberTools' tleap to generate the linear 3D structure and respective parameters. Only tested with "leaprc.protein.ff14SB" but should accept any available protein leaprc file.
+5.  temperature: float; the maximum temperature for the simulated annealing simulation. Units: K
+6.  n_folding_sims: integer; number of independent simulations that will be performed, outputting final folded models that are subsequently analyzed. 
+7.  max_threads: integer; number of available cpu threads that can be used to run the folding simulations.
+#### Restraint parameters:
+8.  distance_restraints_file_path: string; directory path that points to the distance restraints file.
+9.  distance_restraints_file_format: string; accepts "8col" or "6col"; formats discussed below.
+10. distance_force_constants: float; the harmonic force constant applied to pairwise atom-atom distance restraints. Units: kcal mol<sup>-1</sup>·Angstrom<sup>-2</sup>.
+11. torsion_restraints_file_path: string; directory path that points to the torsion restraints file; format discussed below.
+12. tordef_file_path: string; directory path that points to the tordef.lib file needed for AmberTools' makeANG_RST script to work. Users shouldn't need to change this parameter's value. 
+13. torsion_force_constants: float; the harmonic force constant applied to dihedral atom groups. Units: kcal mol<sup>-1</sup>·rad<sup>-2</sup>.
+#### Post-analysis parameters:
+14. q1_cutoff: float, less than 1.0; the artificial cutoff applied to a Ramachandran analysis. Structures with many backbone dihedrals w/in the first quadrant of a Ramachandran plot are empirically seen to be poorly folded. 
+15. q4_cutoff: float, less than 1.0; the artificial cutoff applied to a Ramachandran analysis. Structures with many backbone dihedrals w/in the fourth quadrant of a Ramachandran plot are empirically seen to be poorly folded. 
+16. n_top_models: integer, leq to the n_foldings_sims parameter; the number of models that will be ranked and output as top models.
+<br>
 
->If the length of the force constants and temperatures lists (parameters #9-11) is 1, then the single value is used across all simulated annealing cycles.<br/>
->If the length of these lists is = number of cycles, then the first value is used for the first cycle, the second value for the second cycle, and so on.<br/>
->If the length is > cycles, the extra values are ignored.<br/>
->If the length is < cycles, the first value is used for all cycles.<br/>
->Any of the values in these lists may be 0.0, but it is recommended that temperature values >= 100.0 K.<br/>
+### Distance Restraints Format: ###
+Two file formats("8col" or "6col") are currently accepted. These formats are nearly identical and should be readily created from standard contact or interatomic distance prediction methods.
 
-
-
-
-
->The given example file has what I have found to be good defaults.
-
-**Distance Restraints Format:**
-
-Distance Restraints File should be formatted as a list of restraints, with the following 8 columns:
+**8col** 
+Distance restraints file should be formatted as a list of restraints, with the following 8 columns. Units of the last two columns are Angstroms.
 
 >atom1_residue_number (int), atom1_residue_name, atom1_name, atom2_residue_number (int), atom2_residue_name, atom2_name, lower_bound_distance (float), upper_bound_distance (float)
 
 For example:
+```
+1   MET   CA    3     ILE   CA    5.58    7.58
+1   MET   CB    4     PHE   CB   10.00   12.00
+2   GLN   CA    4     PHE   CA    5.90    7.90
+```
 
-    2   MET   CB    41    ALA   CB    3.81    5.81
-    3   PHE   CB    15    GLY   CA    9.4     11.6
-    etc
+**6col** 
+Distance restraints file should be formatted as a list of restraints, with the following 6 columns. Units of the last two columns are Angstroms.
 
-I used make_rst.py (details below) to make restraints. The file uses BioPython and should be easy to modify and use if you are making restraints from an original pdb file. Feel free to create your restraints list in other ways.
+>atom1_residue_number (int), atom1_name, atom2_residue_number (int), atom2_name, lower_bound_distance (float), upper_bound_distance (float)
 
-**Torsion Restraints Format:**
+For example:
+```
+1   CA    3     CA    5.58    7.58
+1   CB    4     CB   10.00   12.00
+2   CA    4     CA    5.90    7.90
+```
 
-Similar to Above, but there are 5 columns:
+### Torsion Restraints Format: ###
+
+Accepted format is a file specifying the predicted dihedrals of residues, formatted in 5 columns. Units of last two columns are degrees. Can accept any standard backbone and side chain torsions, as defined in the tordef.lib file (pointed to by the tordef_file_path parameter). 
 
 >residue_number (int), residue_name, angle_name, lower_bound (float), upper_bound (float)
 
 For example:
 ```
-1    LYS    PSI    138.7    140.7
-2    VAL    PHI    -103.7    -101.7
-2    VAL    PSI    113.4    115.4
-3    PHE    PHI    -76.1    -74.1
-etc
+1    MET    PSI    134.63    164.63
+2    GLN    PHI   -106.02    -76.02
+2    GLN    PSI    123.26    153.26
 ```
 
-**Output:** folded protein in pdb file; note the starting velocities are randomized, so the output is nondeterministic
+### Output: ### 
+Files that are shared between all folding simulations are written to the top output directory (specified by the "name" parameter). This includes files created for and output by tleap, copies of the user-specified restraint files, sander-ready input files, and final result files.
 
-**Optional Scripts:**
-1. make_rst.py <br/>
-Makes restraints from original pdb file.
-```
-python make_rst.py <name of pdb file without the .pdb extension> <distance range float in Angstroms> <angle range float in degrees>
-```
-2. secstruc.py <br/>
-Appends secondary structure restraints to your original restraints file
-```
-python secstruc.py <sequence> <secondary structure preduction sequence> <distance file> <angle file>
-```
-
-2. scores.py <br/>
-If you want RMSD and TMScores, the TMScore program (https://zhanglab.ccmb.med.umich.edu/TM-score/) will produce both; scores.py will run the program, parse the info and put it in a seperate file ("scores") for you.
-```
-python scores.py <TMScore executable> <original pdb file> <your new pdb file>
-```
-3. metrics.py <br/>
-If you run it after you run scores.py, it will append the "scores" text file with data on the on the average difference between correct and new atom distances and torsions (as well as standard deviations). Could be easily modified for other metrics.
-```
-python metrics.py <original pdb file> <your new pdb file>
-```
-
-**Viewing Trajectory:**
-
-The relevant files for viewing trajectory in VMD are "prmtop" (file type: AMBER7 Param) and "siman1.nc", "siman2.nc", etc, up to the number of cycles of simulated annealing (let VMD determine the file type automatically).
+Each independent run of folding simulation has output written to its own directory (named run_x, where x is the zero-filled integer associated with the run), within which simulation output files are written. Specifically, a trajectory file (extension .nc; netcdf file format), a restart structure (extension .rst; netcdf file format), a mdinfo file that contains real-time summary information (no extension), a simulation output file (extension .out), a final folded structure (extension .pdb), a data file containing the Ramachandran dihedral values for the final structure (extension .dat), and a data file containing certain energetic values that are used to rank folded structures (extension .dat). 
 
 
-**Use:**
+**Viewing Folding Trajectories:**
 
-Please feel free to use/modify code. Everything is completely open-source. This work was done at the Center for Molecular Biophysics at Oak Ridge National Lab. Contact jesskwoods (at) gmail.com with corrections, questions, comments.
+To simply view the final folding structures of the body of simulations:
+```
+vmd -m */*final.pdb
+pymol */*final.pdb
+```
+
+
+To visualize a folding simulation: 
+```
+vmd linear.prmtop -netcdf run_001/siman.nc
+```
+
+
